@@ -1,0 +1,250 @@
+// backend/src/controllers/InventoryController.ts
+import type { Request, Response } from 'express'
+import { InventoryService } from '../services/InventoryService'
+import { AccessService } from '../services/AccessService'
+import type { AuthRequest } from '../middleware/auth'
+import { ValidationError } from '../errors'
+
+export class InventoryController {
+  constructor(
+    private inventoryService: InventoryService,
+    private accessService: AccessService
+  ) {}
+
+  createInventory = async (req: AuthRequest, res: Response) => {
+    try {
+      const { title, description, imageUrl, category, tags, isPublic } =
+        req.body
+      const userId = req.user.id
+
+      const inventory = await this.inventoryService.createInventory(
+        { title, description, imageUrl, category, tags: tags || [], isPublic },
+        userId
+      )
+
+      res.status(201).json(inventory)
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        res.status(400).json({ error: error.message })
+      } else {
+        console.error('Create inventory error:', error)
+        res.status(500).json({ error: 'Failed to create inventory' })
+      }
+    }
+  }
+
+  getInventory = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params
+
+      // Check if id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      const inventory = await this.inventoryService.getInventory(id)
+      res.json(inventory)
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        res.status(400).json({ error: error.message })
+      } else {
+        res.status(404).json({ error: 'Inventory not found' })
+      }
+    }
+  }
+
+  updateInventory = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params
+      const updates = req.body
+      const userId = req.user.id
+
+      // Check if id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      const inventory = await this.inventoryService.updateInventory(
+        id,
+        updates,
+        userId
+      )
+      res.json(inventory)
+    } catch (error: any) {
+      if (error.statusCode) {
+        res.status(error.statusCode).json({ error: error.message })
+      } else if (error instanceof ValidationError) {
+        res.status(400).json({ error: error.message })
+      } else {
+        console.error('Update inventory error:', error)
+        res.status(500).json({ error: 'Failed to update inventory' })
+      }
+    }
+  }
+
+  deleteInventory = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params
+      const userId = req.user.id
+
+      // Check if id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      await this.inventoryService.deleteInventory(id, userId)
+      res.json({ message: 'Inventory deleted successfully' })
+    } catch (error: any) {
+      if (error.statusCode) {
+        res.status(error.statusCode).json({ error: error.message })
+      } else if (error instanceof ValidationError) {
+        res.status(400).json({ error: error.message })
+      } else {
+        console.error('Delete inventory error:', error)
+        res.status(500).json({ error: 'Failed to delete inventory' })
+      }
+    }
+  }
+
+  getUserInventories = async (req: AuthRequest, res: Response) => {
+    try {
+      const userId = req.user.id
+      const inventories = await this.inventoryService.getUserInventories(userId)
+      res.json(inventories)
+    } catch (error) {
+      console.error('Get user inventories error:', error)
+      res.status(500).json({ error: 'Failed to fetch inventories' })
+    }
+  }
+
+  getAllInventories = async (req: AuthRequest, res: Response) => {
+    try {
+      const { page, limit, search, category, tags } = req.query
+
+      const inventories = await this.inventoryService.getAllInventories({
+        page: page ? parseInt(page as string) : undefined,
+        limit: limit ? parseInt(limit as string) : undefined,
+        search: search as string,
+        category: category as string,
+        tags: tags
+          ? Array.isArray(tags)
+            ? (tags as string[])
+            : [tags as string]
+          : undefined,
+      })
+
+      res.json(inventories)
+    } catch (error) {
+      console.error('Get all inventories error:', error)
+      res.status(500).json({ error: 'Failed to fetch inventories' })
+    }
+  }
+
+  getPopularInventories = async (req: AuthRequest, res: Response) => {
+    try {
+      const { limit } = req.query
+      const inventories = await this.inventoryService.getPopularInventories(
+        limit ? parseInt(limit as string) : 5
+      )
+      res.json(inventories)
+    } catch (error) {
+      console.error('Get popular inventories error:', error)
+      res.status(500).json({ error: 'Failed to fetch popular inventories' })
+    }
+  }
+
+  getAccessList = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params
+      const userId = req.user.id
+
+      // Check if id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      // Check if user has write access to view access list
+      const canWrite = await this.accessService.canWriteInventory(id, userId)
+      if (!canWrite) {
+        return res
+          .status(403)
+          .json({ error: 'No write access to this inventory' })
+      }
+
+      const accessList = await this.accessService.getAccessList(id)
+      res.json(accessList)
+    } catch (error) {
+      console.error('Get access list error:', error)
+      res.status(500).json({ error: 'Failed to fetch access list' })
+    }
+  }
+
+  grantAccess = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params
+      const { userId: targetUserId, canWrite } = req.body
+      const currentUserId = req.user.id
+
+      // Check if inventory id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      // Check if target user id is provided
+      if (!targetUserId) {
+        return res.status(400).json({ error: 'User ID is required' })
+      }
+
+      // Check if current user has write access
+      const canWriteInventory = await this.accessService.canWriteInventory(
+        id,
+        currentUserId
+      )
+      if (!canWriteInventory) {
+        return res
+          .status(403)
+          .json({ error: 'No write access to this inventory' })
+      }
+
+      await this.accessService.grantAccess(id, targetUserId, canWrite)
+      res.status(201).json({ message: 'Access granted successfully' })
+    } catch (error) {
+      console.error('Grant access error:', error)
+      res.status(500).json({ error: 'Failed to grant access' })
+    }
+  }
+
+  revokeAccess = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id, userId: targetUserId } = req.params
+      const currentUserId = req.user.id
+
+      // Check if inventory id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      // Check if target user id is provided
+      if (!targetUserId) {
+        return res.status(400).json({ error: 'User ID is required' })
+      }
+
+      // Check if current user has write access
+      const canWrite = await this.accessService.canWriteInventory(
+        id,
+        currentUserId
+      )
+      if (!canWrite) {
+        return res
+          .status(403)
+          .json({ error: 'No write access to this inventory' })
+      }
+
+      await this.accessService.revokeAccess(id, targetUserId)
+      res.json({ message: 'Access revoked successfully' })
+    } catch (error) {
+      console.error('Revoke access error:', error)
+      res.status(500).json({ error: 'Failed to revoke access' })
+    }
+  }
+}

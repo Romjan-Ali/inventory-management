@@ -1,0 +1,220 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  avatar    String?
+  isAdmin   Boolean  @default(false)
+  isBlocked Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  ownedInventories      Inventory[]       @relation("InventoryOwner")
+  accessibleInventories InventoryAccess[] @relation("UserAccess")
+  createdItems          Item[]            @relation("ItemCreator")
+  posts                 Post[]            @relation("PostAuthor")
+  likes                 Like[]            @relation("UserLike")
+
+  @@map("users")
+}
+
+model Inventory {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String?
+  isPublic    Boolean  @default(false)
+  category    String   // Equipment, Furniture, Book, Other
+  tags        String[]
+  version     Int      @default(1)
+
+  creatorId String
+  creator   User   @relation("InventoryOwner", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Custom Field Configurations
+    // String fields (single-line text) 
+  string1Name        String?
+  string1Description String?
+  string1Visible     Boolean @default(false)
+  string1Order       Int     @default(0)
+
+  string2Name        String?
+  string2Description String?
+  string2Visible     Boolean @default(false)
+  string2Order       Int     @default(1)
+
+  string3Name        String?
+  string3Description String?
+  string3Visible     Boolean @default(false)
+  string3Order       Int     @default(2)
+
+  // Text fields (multi-line text) 
+  text1Name        String?
+  text1Description String?
+  text1Visible     Boolean @default(false)
+  text1Order       Int     @default(3)
+
+  text2Name        String?
+  text2Description String?
+  text2Visible     Boolean @default(false)
+  text2Order       Int     @default(4)
+
+  text3Name        String?
+  text3Description String?
+  text3Visible     Boolean @default(false)
+  text3Order       Int     @default(5)
+
+  // Number fields 
+  number1Name        String?
+  number1Description String?
+  number1Visible     Boolean @default(false)
+  number1Order       Int     @default(6)
+
+  number2Name        String?
+  number2Description String?
+  number2Visible     Boolean @default(false)
+  number2Order       Int     @default(7)
+
+  number3Name        String?
+  number3Description String?
+  number3Visible     Boolean @default(false)
+  number3Order       Int     @default(8)
+
+  // Boolean fields 
+  boolean1Name        String?
+  boolean1Description String?
+  boolean1Visible     Boolean @default(false)
+  boolean1Order       Int     @default(9)
+
+  boolean2Name        String?
+  boolean2Description String?
+  boolean2Visible     Boolean @default(false)
+  boolean2Order       Int     @default(10)
+
+  boolean3Name        String?
+  boolean3Description String?
+  boolean3Visible     Boolean @default(false)
+  boolean3Order       Int     @default(11)
+
+  // Link fields (document/image) 
+  link1Name        String?
+  link1Description String?
+  link1Visible     Boolean @default(false)
+  link1Order       Int     @default(12)
+
+  link2Name        String?
+  link2Description String?
+  link2Visible     Boolean @default(false)
+  link2Order       Int     @default(13)
+
+  link3Name        String?
+  link3Description String?
+  link3Visible     Boolean @default(false)
+  link3Order       Int     @default(14)
+
+  // Custom ID Format 
+  customIdFormat Json?
+
+  // Relations
+  items    Item[]            @relation("InventoryItems")
+  accesses InventoryAccess[] @relation("InventoryAccess")
+  posts    Post[]            @relation("InventoryPosts")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("inventories")
+}
+
+model Item {
+  id       String @id @default(uuid())
+  customId String
+  version  Int    @default(1)
+
+  inventoryId String
+  inventory   Inventory @relation("InventoryItems", fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  creatorId String
+  creator   User   @relation("ItemCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Custom Field Values
+  string1Value String?
+  string2Value String?
+  string3Value String?
+
+  text1Value String?
+  text2Value String?
+  text3Value String?
+
+  number1Value Float?
+  number2Value Float?
+  number3Value Float?
+
+  boolean1Value Boolean?
+  boolean2Value Boolean?
+  boolean3Value Boolean?
+
+  link1Value String?
+  link2Value String?
+  link3Value String?
+
+  // Relations
+  likes Like[] @relation("ItemLikes")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([inventoryId, customId])
+  @@map("items")
+}
+
+model InventoryAccess {
+  id          String  @id @default(uuid())
+  inventoryId String
+  userId      String
+  canWrite    Boolean @default(true)
+
+  // SINGLE relation definitions
+  inventory Inventory @relation("InventoryAccess", fields: [inventoryId], references: [id], onDelete: Cascade)
+  user      User      @relation("UserAccess", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([inventoryId, userId])
+  @@map("inventory_accesses")
+}
+
+model Post {
+  id          String @id @default(uuid())
+  content     String
+  inventoryId String
+  userId      String
+
+  // SINGLE relation definitions
+  inventory Inventory @relation("InventoryPosts", fields: [inventoryId], references: [id], onDelete: Cascade)
+  user      User      @relation("PostAuthor", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("posts")
+}
+
+model Like {
+  id     String @id @default(uuid())
+  itemId String
+  userId String
+
+  // SINGLE relation definitions
+  item Item @relation("ItemLikes", fields: [itemId], references: [id], onDelete: Cascade)
+  user User @relation("UserLike", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, userId])
+  @@map("likes")
+}
