@@ -209,3 +209,16 @@ export interface PaginatedResponse<T> {
     pages: number;
   };
 }
+
+export interface WebSocketMessage {
+  id: string
+  content: string
+  inventoryId: string
+  userId: string
+  createdAt: string
+  user: {
+    id: string
+    name: string
+    avatar: string
+  }
+}

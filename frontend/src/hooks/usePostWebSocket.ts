@@ -1,88 +1,57 @@
 // frontend/src/hooks/usePostWebSocket.ts
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import type { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
 import { postsApi } from '@/features/posts/postsApi'
 import type { Post } from '@/types'
 import { useWebSocket } from './useWebSocket'
 
 interface PostWebSocketMessage {
-  type: 'post:created' | 'post:deleted' | 'post:updated'
+  type: 'post:created' | 'post:deleted'
   data: Post | { id: string }
 }
 
-// Define proper types for dispatch
-type AppDispatch = ThunkDispatch<any, any, AnyAction>
-
 export function usePostWebSocket(inventoryId: string) {
-  const dispatch = useDispatch<AppDispatch>()
-  const { lastMessage, readyState } = useWebSocket(`inventory:${inventoryId}`)
+  const dispatch = useDispatch()
+  const { lastMessage } = useWebSocket(inventoryId)
 
   useEffect(() => {
-    if (!lastMessage || readyState !== WebSocket.OPEN) return
+    if (!lastMessage) return
 
     try {
-      const message: PostWebSocketMessage = JSON.parse(lastMessage.data)
-      console.log('WebSocket message received:', message)
+      const message: PostWebSocketMessage = lastMessage
       
-      switch (message.type) {
-        case 'post:created':
-          handlePostCreated(message.data as Post)
-          break
-        case 'post:deleted':
-          handlePostDeleted((message.data as { id: string }).id)
-          break
-        default:
-          console.log('Unhandled WebSocket message type:', message.type)
-      }
-    } catch (error) {
-      console.error('Failed to process WebSocket message:', error)
-    }
-  }, [lastMessage, readyState, dispatch, inventoryId])
-
-  const handlePostCreated = (newPost: Post) => {
-    // Update cache for page 1
-    dispatch(
-      postsApi.util.updateQueryData(
+      const updateCache = postsApi.util.updateQueryData(
         'getPosts',
         { inventoryId, page: 1, limit: 50 },
         (draft) => {
-          if (draft && draft.posts) {
-            // Check if post already exists (avoid duplicates)
+          if (!draft || !draft.posts) return
+          
+          if (message.type === 'post:created') {
+            const newPost = message.data as Post
             const exists = draft.posts.find(post => post.id === newPost.id)
             if (!exists) {
-              // Add to beginning for chronological order (newest first)
               draft.posts.unshift(newPost)
-              // Update pagination
-              if (draft.pagination && typeof draft.pagination.total === 'number') {
+              if (draft.pagination?.total !== undefined) {
                 draft.pagination.total += 1
               }
             }
-          }
-        }
-      ) as any // Type assertion to bypass TypeScript issues
-    )
-  }
-
-  const handlePostDeleted = (postId: string) => {
-    // Update cache for page 1
-    dispatch(
-      postsApi.util.updateQueryData(
-        'getPosts',
-        { inventoryId, page: 1, limit: 50 },
-        (draft) => {
-          if (draft && draft.posts) {
+          } else if (message.type === 'post:deleted') {
+            const postId = (message.data as { id: string }).id
             const index = draft.posts.findIndex(post => post.id === postId)
             if (index !== -1) {
               draft.posts.splice(index, 1)
-              // Update pagination
-              if (draft.pagination && typeof draft.pagination.total === 'number') {
+              if (draft.pagination?.total !== undefined) {
                 draft.pagination.total = Math.max(0, draft.pagination.total - 1)
               }
             }
           }
         }
-      ) as any // Type assertion to bypass TypeScript issues
-    )
-  }
+      )
+
+      dispatch(updateCache)
+      
+    } catch (error) {
+      console.error('Failed to process WebSocket message:', error)
+    }
+  }, [lastMessage, dispatch, inventoryId])
 }

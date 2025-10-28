@@ -15,7 +15,10 @@ export const postsApi = createApi({
   }),
   tagTypes: ['Post'],
   endpoints: (builder) => ({
-    getPosts: builder.query<{ posts: Post[]; pagination: any }, { inventoryId: string; page?: number; limit?: number }>({
+    getPosts: builder.query<
+      { posts: Post[]; pagination: any },
+      { inventoryId: string; page?: number; limit?: number }
+    >({
       query: ({ inventoryId, page = 1, limit = 50 }) => ({
         url: `/inventory/${inventoryId}`,
         params: { page, limit },
@@ -25,7 +28,10 @@ export const postsApi = createApi({
       ],
     }),
 
-    createPost: builder.mutation<Post, { inventoryId: string; content: string }>({
+    createPost: builder.mutation<
+      Post,
+      { inventoryId: string; content: string }
+    >({
       query: ({ inventoryId, content }) => ({
         url: `/inventory/${inventoryId}`,
         method: 'POST',

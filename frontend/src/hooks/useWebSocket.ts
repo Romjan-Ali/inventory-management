@@ -1,41 +1,35 @@
-// frontend/src/hooks/useWebSocket.ts
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 
-export function useWebSocket(room: string) {
+export function useWebSocket(inventoryId: string) {
   const socketRef = useRef<Socket | null>(null)
-  const lastMessageRef = useRef<MessageEvent | null>(null)
+  const [lastMessage, setLastMessage] = useState<any>(null)
 
   useEffect(() => {
-    // Initialize socket connection
-    socketRef.current = io(import.meta.env.VITE_WS_URL || 'http://localhost:5000')
+    socketRef.current = io(
+      import.meta.env.VITE_WS_URL || 'http://localhost:5000'
+    )
 
-    // Join room
-    socketRef.current.emit('join:inventory', room)
+    // Join the specific inventory room
+    socketRef.current.emit('join:inventory', inventoryId)
 
-    // Handle incoming messages
-    socketRef.current.on('post:created', (data) => {
-      lastMessageRef.current = new MessageEvent('message', {
-        data: JSON.stringify({ type: 'post:created', data }),
-      })
-    })
+    const messageHandler = (data: any) => {
+      setLastMessage(data)
+    }
 
-    socketRef.current.on('post:deleted', (data) => {
-      lastMessageRef.current = new MessageEvent('message', {
-        data: JSON.stringify({ type: 'post:deleted', data }),
-      })
-    })
+    socketRef.current.on('post:created', messageHandler)
+    socketRef.current.on('post:deleted', messageHandler)
 
-    // Cleanup on unmount
     return () => {
       if (socketRef.current) {
-        socketRef.current.emit('leave:inventory', room)
+        socketRef.current.off('post:created', messageHandler)
+        socketRef.current.off('post:deleted', messageHandler)
+        socketRef.current.emit('leave:inventory', inventoryId)
         socketRef.current.disconnect()
       }
     }
-  }, [room])
-
+  }, [inventoryId])
   return {
-    lastMessage: lastMessageRef.current,
+    lastMessage,
   }
 }

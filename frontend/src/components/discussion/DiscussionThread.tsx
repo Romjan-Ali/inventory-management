@@ -2,10 +2,10 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Inventory } from '@/types'
 import { useGetPostsQuery } from '@/features/posts/postsApi'
-import { usePostWebSocket } from '@/hooks/usePostWebSocket'
 import PostList from './PostList'
 import PostForm from './PostForm'
 import LoadingSpinner from '../common/LoadingSpinner'
+import { useWebSocket } from '@/hooks/useWebSocket'
 
 interface DiscussionThreadProps {
   inventory: Inventory
@@ -14,20 +14,24 @@ interface DiscussionThreadProps {
 export default function DiscussionThread({ inventory }: DiscussionThreadProps) {
   const [page, setPage] = useState(1)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  
-  const { data: postsData, isLoading, error } = useGetPostsQuery({
+  const { lastMessage } = useWebSocket(inventory.id)
+
+  const {
+    data: postsData,
+    isLoading,
+    error,
+    refetch: refetchPostsData
+  } = useGetPostsQuery({
     inventoryId: inventory.id,
     page,
     limit: 50,
   })
 
-  // Add debugging
   useEffect(() => {
-    console.log('Posts data updated:', postsData)
-  }, [postsData])
-
-  // Use the WebSocket hook for real-time cache updates
-  usePostWebSocket(inventory.id)
+    if(lastMessage) {
+      refetchPostsData()
+    }
+  }, [lastMessage])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -43,9 +47,8 @@ export default function DiscussionThread({ inventory }: DiscussionThreadProps) {
     <div className="flex flex-col h-[600px] border-t">
       {/* Debug info - remove in production */}
       <div className="text-xs text-gray-500 p-2 bg-gray-100">
-        Posts count: {postsData?.posts?.length || 0} | 
-        Loading: {isLoading ? 'Yes' : 'No'} | 
-        Error: {error ? 'Yes' : 'No'}
+        Posts count: {postsData?.posts?.length || 0} | Loading:{' '}
+        {isLoading ? 'Yes' : 'No'} | Error: {error ? 'Yes' : 'No'}
       </div>
 
       {/* Messages */}
@@ -55,10 +58,7 @@ export default function DiscussionThread({ inventory }: DiscussionThreadProps) {
             <LoadingSpinner />
           </div>
         ) : (
-          <PostList
-            posts={postsData?.posts || []}
-            inventory={inventory}
-          />
+          <PostList posts={postsData?.posts || []} inventory={inventory} />
         )}
         <div ref={messagesEndRef} />
       </div>
