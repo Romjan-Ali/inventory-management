@@ -128,14 +128,49 @@ backend/
 
 ```rust
 frontend/
-├── 📁 public/                          # Static files
+├── 📁 public/
 │   ├── 🟢 favicon.ico
 │   ├── 🟢 logo.png
 │   └── 🟢 manifest.json
 │
 ├── 📁 src/
-│   ├── 🟣 main.tsx                     # React app entry point
+│   ├── 🟣 main.tsx                     # App entry point with Redux provider
 │   ├── 🟣 App.tsx                      # Root app component
+│   │
+│   ├── 📁 app/                         # Redux store configuration
+│   │   ├── 🟢 store.ts                 # Main store configuration
+│   │   ├── 🟢 rootReducer.ts           # Combined reducers
+│   │   └── 🟢 hooks.ts                 # Typed Redux hooks
+│   │
+│   ├── 📁 features/                    # Redux feature-based structure
+│   │   ├── 📁 auth/                    # Authentication feature
+│   │   │   ├── 🟢 authSlice.ts         # Auth state slice
+│   │   │   ├── 🟢 authApi.ts           # Auth API endpoints (RTK Query)
+│   │   │   └── 🟢 authSelectors.ts     # Auth selectors
+│   │   │
+│   │   ├── 📁 inventory/               # Inventory feature
+│   │   │   ├── 🟢 inventorySlice.ts    # Inventory state
+│   │   │   ├── 🟢 inventoryApi.ts      # Inventory API endpoints
+│   │   │   ├── 🟢 inventorySelectors.ts
+│   │   │   └── 🟢 inventoryThunks.ts   # Async thunks (if needed)
+│   │   │
+│   │   ├── 📁 items/                   # Items feature
+│   │   │   ├── 🟢 itemsSlice.ts
+│   │   │   ├── 🟢 itemsApi.ts
+│   │   │   └── 🟢 itemsSelectors.ts
+│   │   │
+│   │   ├── 📁 search/                  # Search feature
+│   │   │   ├── 🟢 searchSlice.ts
+│   │   │   ├── 🟢 searchApi.ts
+│   │   │   └── 🟢 searchSelectors.ts
+│   │   │
+│   │   ├── 📁 ui/                      # UI state feature
+│   │   │   ├── 🟢 uiSlice.ts           # Loading, modals, notifications
+│   │   │   └── 🟢 uiSelectors.ts
+│   │   │
+│   │   └── 📁 theme/                   # Theme feature
+│   │       ├── 🟢 themeSlice.ts        # Light/dark theme
+│   │       └── 🟢 themeSelectors.ts
 │   │
 │   ├── 📁 components/                  # Reusable UI components
 │   │   ├── 📁 ui/                      # shadcn/ui components
@@ -231,25 +266,15 @@ frontend/
 │   │       └── 🟢 Unauthorized.tsx
 │   │
 │   ├── 📁 hooks/                       # Custom React hooks
-│   │   ├── 🟢 useAuth.ts               # Authentication state
+│   │   ├── 🟢 useAuth.ts               # Authentication hook (uses Redux)
 │   │   ├── 🟢 useOptimisticLock.ts     # Optimistic locking helper
 │   │   ├── 🟢 useAutoSave.ts           # Auto-save functionality
 │   │   ├── 🟢 useWebSocket.ts          # Real-time connections
-│   │   ├── 🟢 useSearch.ts             # Search functionality
-│   │   ├── 🟢 useInventory.ts          # Inventory operations
-│   │   ├── 🟢 useItems.ts              # Item operations
-│   │   ├── 🟢 useFieldConfig.ts        # Field configuration
-│   │   └── 🟢 useDebounce.ts           # Debounce utility
-│   │
-│   ├── 📁 stores/                      # State management (Zustand)
-│   │   ├── 🟢 auth.store.ts            # Authentication state
-│   │   ├── 🟢 theme.store.ts           # Theme management
-│   │   ├── 🟢 inventory.store.ts       # Inventory state
-│   │   ├── 🟢 ui.store.ts              # UI state
-│   │   └── 🟢 search.store.ts          # Search state
+│   │   ├── 🟢 useDebounce.ts           # Debounce utility
+│   │   └── 🟢 useLocalStorage.ts       # Local storage helper
 │   │
 │   ├── 📁 lib/                         # Utility libraries
-│   │   ├── 🟢 api.ts                   # API client configuration
+│   │   ├── 🟢 api.ts                   # Axios instance configuration
 │   │   ├── 🟢 utils.ts                 # General utilities
 │   │   ├── 🟢 validation.ts            # Validation schemas (Zod)
 │   │   ├── 🟢 i18n.ts                  # Internationalization
@@ -261,7 +286,8 @@ frontend/
 │   │   ├── 🟢 api.ts                   # API response types
 │   │   ├── 🟢 inventory.ts             # Inventory-related types
 │   │   ├── 🟢 item.ts                  # Item-related types
-│   │   └── 🟢 form.ts                  # Form types
+│   │   ├── 🟢 form.ts                  # Form types
+│   │   └── 🟢 redux.ts                 # Redux-specific types
 │   │
 │   ├── 📁 styles/                      # Styling
 │   │   ├── 🟢 globals.css              # Global styles

@@ -7,7 +7,7 @@ import { ValidationError } from '../errors'
 export class ItemController {
   constructor(private itemService: ItemService) {}
 
-  async createItem(req: AuthRequest, res: Response) {
+  createItem = async (req: AuthRequest, res: Response) => {
     try {
       const { inventoryId } = req.params
       const itemData = req.body
@@ -36,7 +36,7 @@ export class ItemController {
     }
   }
 
-  async getItem(req: Request, res: Response) {
+  getItem = async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params
 
@@ -59,7 +59,7 @@ export class ItemController {
     }
   }
 
-  async updateItem(req: AuthRequest, res: Response) {
+  updateItem = async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params
       const updates = req.body
@@ -84,7 +84,7 @@ export class ItemController {
     }
   }
 
-  async deleteItem(req: AuthRequest, res: Response) {
+  deleteItem = async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params
       const userId = req.user.id
@@ -108,7 +108,7 @@ export class ItemController {
     }
   }
 
-  async getInventoryItems(req: Request, res: Response) {
+  getInventoryItems = async (req: AuthRequest, res: Response) => {
     try {
       const { inventoryId } = req.params
       const { page, limit } = req.query
@@ -134,7 +134,7 @@ export class ItemController {
     }
   }
 
-  async likeItem(req: AuthRequest, res: Response) {
+  likeItem = async (req: AuthRequest, res: Response) => {
     try {
       const { id } = req.params
       const userId = req.user.id

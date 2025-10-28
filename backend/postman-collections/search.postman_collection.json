@@ -1,0 +1,111 @@
+{
+	"info": {
+		"_postman_id": "01355ca4-98c6-4674-bf3a-40aecb805b60",
+		"name": "search",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30842222",
+		"_collection_link": "https://blue-resonance-77883.postman.co/workspace/Smart-Inventory-Management~9922573c-1e16-4d9c-b139-7bd3dce1c8b0/collection/30842222-01355ca4-98c6-4674-bf3a-40aecb805b60?action=share&source=collection_link&creator=30842222"
+	},
+	"item": [
+		{
+			"name": "/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}?q=Electronics",
+					"host": [
+						"{{base_url}}"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "Electronics"
+						},
+						{
+							"key": "type",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "category",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "tags",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "tags",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/tags",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"tags"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"const global_url =",
+					"    pm.environment.get(\"global_url\");",
+					"pm.collectionVariables.set(\"base_url\", global_url + '/search');"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": ""
+		}
+	]
+}

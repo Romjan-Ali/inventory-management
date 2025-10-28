@@ -1,0 +1,328 @@
+{
+	"info": {
+		"_postman_id": "772a6d62-1512-446c-b034-1fdcb34fceec",
+		"name": "inventories",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30842222",
+		"_collection_link": "https://blue-resonance-77883.postman.co/workspace/Smart-Inventory-Management~9922573c-1e16-4d9c-b139-7bd3dce1c8b0/collection/30842222-772a6d62-1512-446c-b034-1fdcb34fceec?action=share&source=collection_link&creator=30842222"
+	},
+	"item": [
+		{
+			"name": "Get All Inventories",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/?page=1&limit=5&category=Equipment&tags=components",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "5"
+						},
+						{
+							"key": "search",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "category",
+							"value": "Equipment"
+						},
+						{
+							"key": "tags",
+							"value": "components"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "popular",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/popular",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"popular"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": ":id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/5f6d5a8c-a9d8-4ab3-adce-daefb9fc54d6",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"5f6d5a8c-a9d8-4ab3-adce-daefb9fc54d6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Inventory",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Electronics Components\",\n  \"description\": \"Inventory of electronic components for prototyping and repairs.\",\n  \"imageUrl\": \"https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&h=400&fit=crop\",\n  \"isPublic\": true,\n  \"category\": \"Equipment\",\n  \"tags\": [\"electronics\", \"components\", \"prototyping\", \"repairs\"],\n  \"version\": 2,\n  \"creatorId\": \"user-1234\",\n  \n  \"customFields\": {\n    \"strings\": [\n      {\n        \"name\": \"Component Type\",\n        \"description\": \"Type of electronic component\",\n        \"value\": \"Resistor\",\n        \"visible\": true,\n        \"order\": 0\n      },\n      {\n        \"name\": \"Specifications\",\n        \"description\": \"Technical specifications\",\n        \"value\": \"10kΩ 1/4W\",\n        \"visible\": true,\n        \"order\": 1\n      }\n    ],\n    \"numbers\": [\n      {\n        \"name\": \"Quantity\",\n        \"description\": \"Current stock quantity\",\n        \"value\": 150,\n        \"visible\": true,\n        \"order\": 2\n      },\n      {\n        \"name\": \"Unit Price\",\n        \"description\": \"Price per unit in USD\",\n        \"value\": 0.15,\n        \"visible\": true,\n        \"order\": 3\n      }\n    ],\n    \"booleans\": [\n      {\n        \"name\": \"In Stock\",\n        \"description\": \"Whether component is in stock\",\n        \"value\": true,\n        \"visible\": true,\n        \"order\": 4\n      }\n    ],\n    \"links\": [\n      {\n        \"name\": \"Datasheet\",\n        \"description\": \"Link to component datasheet\",\n        \"value\": \"https://example.com/datasheet.pdf\",\n        \"visible\": true,\n        \"order\": 5\n      }\n    ],\n    \"texts\": []\n  },\n\n  \"customIdFormat\": [\n    { \"type\": \"fixed\", \"value\": \"PART-\" },\n    { \"type\": \"fixed\", \"value\": \"ELEC-\" },\n    { \"type\": \"sequence\", \"format\": \"0000\" }\n  ],\n\n  \"creator\": {\n    \"id\": \"user-1234\",\n    \"name\": \"Jane Smith\",\n    \"avatar\": \"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face\"\n  },\n\n  \"_count\": {\n    \"items\": 150,\n    \"accesses\": 12\n  },\n\n  \"createdAt\": \"2025-10-22T14:00:00.000Z\",\n  \"updatedAt\": \"2025-10-22T14:05:00.000Z\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Inventory",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": \"22214a26-eb9c-43f3-8fca-b47b67f0d6c6\",\n  \"title\": \"Updated Electronics Components\",\n  \"description\": \"Updated inventory of electronic components used for testing and prototyping.\",\n  \"imageUrl\": \"https://images.unsplash.com/photo-1581090700227-1e37b190418e?w=600&h=400&fit=crop\",\n  \"isPublic\": true,\n  \"category\": \"Equipment\",\n  \"tags\": [\"electronics\", \"testing\", \"components\"],\n\n  \"string1Name\": \"Component Type\",\n  \"string1Description\": \"Type of electronic component\",\n  \"string1Visible\": true,\n  \"string1Order\": 0,\n\n  \"string2Name\": \"Specifications\",\n  \"string2Description\": \"Technical specs (e.g., 10kΩ resistor)\",\n  \"string2Visible\": true,\n  \"string2Order\": 1,\n\n  \"number1Name\": \"Quantity\",\n  \"number1Description\": \"Current stock available\",\n  \"number1Visible\": true,\n  \"number1Order\": 3,\n\n  \"number2Name\": \"Unit Price\",\n  \"number2Description\": \"Price per unit (USD)\",\n  \"number2Visible\": true,\n  \"number2Order\": 4,\n\n  \"link1Name\": \"Datasheet\",\n  \"link1Description\": \"Manufacturer datasheet link\",\n  \"link1Visible\": true,\n  \"link1Order\": 6,\n\n  \"customIdFormat\": [\n    { \"type\": \"fixed\", \"value\": \"PART-\" },\n    { \"type\": \"fixed\", \"value\": \"ELEC-\" },\n    { \"type\": \"sequence\", \"format\": \"0000\" }\n  ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/22214a26-eb9c-43f3-8fca-b47b67f0d6c6",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"22214a26-eb9c-43f3-8fca-b47b67f0d6c6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": ":id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/5f6d5a8c-a9d8-4ab3-adce-daefb9fc54d6",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"5f6d5a8c-a9d8-4ab3-adce-daefb9fc54d6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "My Inventories",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/user/my-inventories",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"my-inventories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Access List",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/22214a26-eb9c-43f3-8fca-b47b67f0d6c6/access",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"22214a26-eb9c-43f3-8fca-b47b67f0d6c6",
+						"access"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Grant Access",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"d430c072-431c-4145-a365-9eea3aa94fbe\",\n    \"canWrite\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/22214a26-eb9c-43f3-8fca-b47b67f0d6c6/access",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"22214a26-eb9c-43f3-8fca-b47b67f0d6c6",
+						"access"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Revoke Access",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/22214a26-eb9c-43f3-8fca-b47b67f0d6c6/access/d430c072-431c-4145-a365-9eea3aa94fbe",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"22214a26-eb9c-43f3-8fca-b47b67f0d6c6",
+						"access",
+						"d430c072-431c-4145-a365-9eea3aa94fbe"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"const global_url =",
+					"    pm.environment.get(\"global_url\");",
+					"pm.collectionVariables.set(\"base_url\", global_url + '/inventories');"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": ""
+		}
+	]
+}
