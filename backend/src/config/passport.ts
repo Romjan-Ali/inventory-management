@@ -4,10 +4,6 @@ import {
   type Profile as GoogleProfile,
 } from 'passport-google-oauth20'
 import {
-  Strategy as FacebookStrategy,
-  type Profile as FacebookProfile,
-} from 'passport-facebook'
-import {
   Strategy as GitHubStrategy,
   type Profile as GitHubProfile,
 } from 'passport-github2'
@@ -41,52 +37,6 @@ passport.use(
             data: {
               email,
               name: name ?? 'Unknown User',
-              avatar: avatar ?? '',
-            },
-          })
-        }
-
-        return done(null, user)
-      } catch (error) {
-        return done(error as Error, undefined)
-      }
-    }
-  )
-)
-
-// Facebook Strategy
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: process.env.FACEBOOK_APP_ID!,
-      clientSecret: process.env.FACEBOOK_APP_SECRET!,
-      callbackURL: '/api/auth/social/facebook/callback',
-      profileFields: ['id', 'emails', 'name', 'photos'],
-    },
-    async (accessToken, refreshToken, profile: FacebookProfile, done) => {
-      console.log('profile', profile)
-      try {
-        const email = profile.emails?.[0]?.value
-        const avatar = profile.photos?.[0]?.value
-        const name =
-          profile.name && profile.name.givenName && profile.name.familyName
-            ? `${profile.name.givenName} ${profile.name.familyName}`
-            : profile.displayName ?? 'Unknown User'
-
-        console.log({ email, avatar, name })
-
-        if (!email)
-          return done(new Error('No email returned from Facebook'), undefined)
-
-        let user = await prisma.user.findUnique({
-          where: { email },
-        })
-
-        if (!user) {
-          user = await prisma.user.create({
-            data: {
-              email,
-              name,
               avatar: avatar ?? '',
             },
           })

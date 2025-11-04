@@ -16,10 +16,6 @@ router.get(
   passport.authenticate('google', { scope: ['profile', 'email'] })
 )
 router.get(
-  '/social/facebook',
-  passport.authenticate('facebook', { scope: ['email'] })
-)
-router.get(
   '/social/github',
   passport.authenticate('github', {
     scope: ['user:email'],
@@ -30,11 +26,6 @@ router.get(
 router.get(
   '/social/google/callback',
   passport.authenticate('google', { session: false }),
-  authController.socialAuthCallback
-)
-router.get(
-  '/social/facebook/callback',
-  passport.authenticate('facebook', { session: false }),
   authController.socialAuthCallback
 )
 router.get(
