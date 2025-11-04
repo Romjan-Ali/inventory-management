@@ -5,7 +5,7 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import passport from 'passport'
 import dotenv from 'dotenv'
-import expressSession from 'express-session'
+// import expressSession from 'express-session'
 
 import routes from './routes'
 import { errorHandler } from './middleware/errorHandler'
@@ -26,13 +26,13 @@ app.use(
 app.use(morgan('combined'))
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
-app.use(
+/* app.use(
   expressSession({
     secret: process.env.EXPRESS_SESSION_SECRET as string,
     resave: false,
     saveUninitialized: false,
   })
-)
+) */
 
 // Passport middleware
 app.use(passport.initialize())
