@@ -11,6 +11,7 @@ import CreateInventory from './pages/Inventory/CreateInventory'
 import EditInventory from './pages/Inventory/EditInventory'
 import CreateItem from './pages/Item/CreateItem'
 import EditItem from './pages/Item/EditItem'
+import InventoryBrowse from './pages/Inventory/InventoryBrowse'
 import { Toaster } from 'sonner'
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/auth/success" element={<AuthSuccess />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/inventory" element={<InventoryBrowse />} />
           <Route
             path="/inventory/new"
             element={

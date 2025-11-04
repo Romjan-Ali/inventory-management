@@ -11,31 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Eye, EyeOff, Users, Package, Image as ImageIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
-
-interface Creator {
-  id: string
-  name: string
-  avatar: string
-}
-
-interface Inventory {
-  id: string
-  title: string
-  description: string
-  imageUrl: string
-  isPublic: boolean
-  category: string
-  tags: string[]
-  version: number
-  creatorId: string
-  createdAt: string
-  updatedAt: string
-  creator: Creator
-  _count: {
-    items: number
-    accesses: number
-  }
-}
+import type { Inventory } from '@/types'
 
 interface InventoryTableProps {
   inventories: Inventory[]
@@ -138,12 +114,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
               <TableCell className="py-4">
                 <div className="flex items-center gap-1">
                   <Package className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{inventory._count.items}</span>
-                  {inventory._count.accesses > 0 && (
+                  <span className="font-medium">{inventory._count?.items}</span>
+                  {inventory._count?.accesses && inventory._count?.accesses > 0 && (
                     <div className="flex items-center gap-1 ml-2">
                       <Users className="h-3 w-3 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground">
-                        {inventory._count.accesses}
+                        {inventory._count?.accesses}
                       </span>
                     </div>
                   )}
@@ -172,14 +148,14 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6">
                     <AvatarImage
-                      src={inventory.creator.avatar}
-                      alt={inventory.creator.name}
+                      src={inventory.creator?.avatar}
+                      alt={inventory.creator?.name}
                     />
                     <AvatarFallback className="text-xs">
-                      {getInitials(inventory.creator.name)}
+                      {inventory.creator?.name && getInitials(inventory.creator?.name)}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm">{inventory.creator.name}</span>
+                  <span className="text-sm">{inventory.creator?.name}</span>
                 </div>
               </TableCell>
               <TableCell className="py-4">

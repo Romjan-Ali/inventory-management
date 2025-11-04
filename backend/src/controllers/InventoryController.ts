@@ -122,7 +122,7 @@ export class InventoryController {
 
   getInventories = async (req: AuthRequest, res: Response) => {
     try {
-      const { page, limit, search, category, tags } = req.query
+      const { page, limit, search, category, tags, sort } = req.query
 
       const user = (req.user as User | undefined) || undefined
 
@@ -136,6 +136,7 @@ export class InventoryController {
             ? (tags as string[])
             : [tags as string]
           : undefined,
+        sort: sort as 'newest' | 'oldest' | undefined,
       }
 
       if(user?.isAdmin) {

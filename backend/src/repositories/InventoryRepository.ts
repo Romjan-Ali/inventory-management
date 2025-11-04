@@ -231,13 +231,18 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       search?: string
       category?: string
       tags?: string[]
+      sort?: 'newest' | 'oldest'
     },
     isPublic?: boolean
   ): Promise<{ inventories: Inventory[]; total: number }> {
-    const { page = 1, limit = 20, search, category, tags } = params
+    const { page = 1, limit = 20, search, category, tags, sort } = params
     const skip = (page - 1) * limit
 
     const where: any = {}
+
+    const orderBy: any = {
+      createdAt: 'desc',
+    }
 
     if (isPublic) {
       where.isPublic = true
@@ -256,6 +261,11 @@ export class InventoryRepository extends BaseRepository<Inventory> {
 
     if (tags && tags.length > 0) {
       where.tags = { hasSome: tags }
+    }
+
+    if(sort && (sort === 'newest' || sort === 'oldest')) {
+      params.sort === 'newest' ? 
+      orderBy.createdAt = 'desc' : orderBy.createdAt = 'asc'
     }
 
     const [inventories, total] = await Promise.all([
@@ -278,7 +288,7 @@ export class InventoryRepository extends BaseRepository<Inventory> {
         },
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
       }),
       this.prisma.inventory.count({ where }),
     ])

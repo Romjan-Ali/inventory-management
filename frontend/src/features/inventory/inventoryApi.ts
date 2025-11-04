@@ -25,7 +25,7 @@ export const inventoryApi = createApi({
   endpoints: (builder) => ({
     getInventories: builder.query<
       { inventories: Inventory[]; total: number },
-      { page?: number; limit?: number; search?: string }
+      { page?: number; limit?: number; search?: string; category?: string; tags?: string[]; sort?: string; }
     >({
       query: (params) => ({
         url: '/',
