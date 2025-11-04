@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSocialLogin = (provider: 'google' | 'facebook') => {
+  const handleSocialLogin = (provider: 'google' | 'github') => {
     setIsLoading(true)
     window.location.href = `/api/auth/social/${provider}`
   }
@@ -19,11 +19,12 @@ export default function Login() {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="space-y-4">
+        <div className="space-y-3">
+          {/* Google Login */}
           <button
             onClick={() => handleSocialLogin('google')}
             disabled={isLoading}
-            className="flex w-full justify-center items-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0 disabled:opacity-50"
+            className="flex w-full justify-center items-center gap-3 rounded-md bg-white px-3 py-2.5 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0 disabled:opacity-50 transition-colors duration-200"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -46,15 +47,31 @@ export default function Login() {
             Continue with Google
           </button>
 
+          {/* GitHub Login */}
           <button
-            onClick={() => handleSocialLogin('facebook')}
+            onClick={() => handleSocialLogin('github')}
             disabled={isLoading}
-            className="flex w-full justify-center items-center gap-3 rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline-offset-0 disabled:opacity-50"
+            className="flex w-full justify-center items-center gap-3 rounded-md bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline-offset-0 disabled:opacity-50 transition-colors duration-200"
           >
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            <svg
+              className="h-5 w-5"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M12 .5C5.648.5.5 5.648.5 12.001c0 5.095 3.292 9.418 7.865 10.95.575.105.786-.25.786-.554 
+                0-.274-.01-1.002-.015-1.967-3.2.696-3.878-1.543-3.878-1.543-.523-1.327-1.277-1.68-1.277-1.68-1.045-.715.08-.7.08-.7 
+                1.157.082 1.767 1.188 1.767 1.188 1.028 1.761 2.698 1.253 3.356.958.105-.745.402-1.253.73-1.54-2.553-.29-5.236-1.276-5.236-5.68 
+                0-1.255.45-2.282 1.188-3.087-.12-.29-.516-1.454.112-3.034 0 0 .967-.31 3.17 1.178a10.993 10.993 0 0 1 2.886-.389 
+                10.97 10.97 0 0 1 2.885.389c2.203-1.488 3.168-1.178 3.168-1.178.63 1.58.234 2.744.114 3.034.74.805 1.187 1.832 
+                1.187 3.087 0 4.416-2.688 5.387-5.25 5.672.413.357.78 1.062.78 2.142 0 1.546-.014 2.79-.014 3.17 0 .306.208.664.792.552 
+                4.57-1.534 7.86-5.855 7.86-10.948C23.5 5.648 18.352.5 12 .5z"
+              />
             </svg>
-            Continue with Facebook
+            Continue with GitHub
           </button>
         </div>
 
