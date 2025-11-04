@@ -8,6 +8,7 @@
     "vercel:start": "node src/index.ts",
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target node",
+    "postinstall": "prisma generate",
     "db:generate": "bunx prisma generate",
     "db:push": "bunx prisma db push",
     "db:studio": "bunx prisma studio",
