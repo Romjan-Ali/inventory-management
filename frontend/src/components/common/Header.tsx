@@ -2,16 +2,14 @@
 import { Link } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from '@/app/hooks'
 import { logout } from '@/features/auth/authSlice'
-import { toggleTheme } from '@/features/theme/themeSlice'
 import SearchBox from './SearchBox'
-import { Moon, Sun, LogOut, User, Menu, X, Search } from 'lucide-react'
+import { LogOut, User, Menu, X, Search } from 'lucide-react'
 import { ModeToggle } from './ModeToggler'
 import { useState } from 'react'
 
 export default function Header() {
   const dispatch = useAppDispatch()
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
-  const { current: theme } = useAppSelector((state) => state.theme)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showMobileSearch, setShowMobileSearch] = useState(false)
 
@@ -19,10 +17,6 @@ export default function Header() {
     dispatch(logout())
     localStorage.removeItem('token')
     setIsMobileMenuOpen(false)
-  }
-
-  const handleThemeToggle = () => {
-    dispatch(toggleTheme())
   }
 
   const toggleMobileMenu = () => {
@@ -54,8 +48,8 @@ export default function Header() {
             )}
 
             {/* Logo */}
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="flex items-center space-x-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -95,7 +89,9 @@ export default function Header() {
                 <div className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
                   <span className="text-sm hidden xl:block">{user?.name}</span>
-                  <span className="text-sm xl:hidden">{user?.name?.split(' ')[0]}</span>
+                  <span className="text-sm xl:hidden">
+                    {user?.name?.split(' ')[0]}
+                  </span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -108,11 +104,10 @@ export default function Header() {
             ) : (
               <>
                 <button
-                  onClick={handleThemeToggle}
-                  className="p-2 hover:bg-accent rounded-md transition-colors"
+                  className="hover:bg-accent rounded-md transition-colors"
                   title="Toggle theme"
                 >
-                  {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                  <ModeToggle />
                 </button>
                 <Link
                   to="/login"
@@ -127,11 +122,10 @@ export default function Header() {
           {/* Mobile Theme Toggle for non-authenticated users */}
           {!isAuthenticated && (
             <button
-              onClick={handleThemeToggle}
-              className="lg:hidden p-2 hover:bg-accent rounded-md transition-colors"
+              className="lg:hidden hover:bg-accent rounded-md transition-colors"
               title="Toggle theme"
             >
-              {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              <ModeToggle />
             </button>
           )}
         </div>
@@ -165,7 +159,7 @@ export default function Header() {
                 >
                   Dashboard
                 </Link>
-                
+
                 <Link
                   to="/inventories"
                   className="block py-2 px-3 text-sm font-medium transition-colors hover:text-primary hover:bg-accent rounded-md"
@@ -173,7 +167,7 @@ export default function Header() {
                 >
                   My Inventories
                 </Link>
-                
+
                 <Link
                   to="/profile"
                   className="block py-2 px-3 text-sm font-medium transition-colors hover:text-primary hover:bg-accent rounded-md"

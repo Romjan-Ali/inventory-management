@@ -4,7 +4,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { X, Plus } from 'lucide-react'
-import { useCreateInventoryMutation, useUpdateInventoryMutation } from '@/features/inventory/inventoryApi'
+import {
+  useCreateInventoryMutation,
+  useUpdateInventoryMutation,
+} from '@/features/inventory/inventoryApi'
 import type { Inventory } from '@/types'
 import { CATEGORIES } from '@/lib/constants'
 import LoadingSpinner from '../common/LoadingSpinner'
@@ -20,17 +23,23 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
-// Fixed schema - make isPublic required with a default value
+// Updated schema to match Inventory type
 const inventorySchema = z.object({
   title: z.string().min(1, 'Title is required').max(100),
   description: z.string().min(1, 'Description is required').max(500),
-  category: z.enum(['Equipment', 'Furniture', 'Book', 'Electronics', 'Tools', 'Other']),
+  category: z.string().min(1, 'Category is required'), // Changed from enum to string
   tags: z.array(z.string().min(1)).max(10, 'Maximum 10 tags allowed'),
   isPublic: z.boolean(),
   imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
@@ -41,6 +50,9 @@ type InventoryFormData = z.infer<typeof inventorySchema>
 interface Props {
   inventory?: Inventory
   onSuccess?: () => void
+  showHeader?: boolean
+  headerTitle?: string
+  headerDescription?: string
 }
 
 export default function InventoryForm({ inventory, onSuccess }: Props) {
@@ -51,17 +63,16 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
 
   const isLoading = creating || updating
 
-  // Fixed form configuration with proper default values
   const form = useForm<InventoryFormData>({
     resolver: zodResolver(inventorySchema),
     defaultValues: {
       title: inventory?.title || '',
       description: inventory?.description || '',
-      category: (inventory?.category as any) || 'Equipment',
+      category: inventory?.category || 'Equipment',
       tags: inventory?.tags || [],
-      isPublic: inventory?.isPublic ?? false, 
+      isPublic: inventory?.isPublic ?? false,
       imageUrl: inventory?.imageUrl || '',
-    }
+    },
   })
 
   const tags = form.watch('tags')
@@ -76,7 +87,10 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
   }
 
   const removeTag = (tag: string) => {
-    form.setValue('tags', tags.filter(t => t !== tag))
+    form.setValue(
+      'tags',
+      tags.filter((t) => t !== tag)
+    )
   }
 
   const handleTagKeyDown = (e: React.KeyboardEvent) => {
@@ -88,24 +102,26 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
 
   const onSubmit = async (data: InventoryFormData) => {
     try {
-      const body = { 
-        ...data, 
-        imageUrl: data.imageUrl || undefined 
+      // Prepare the data for API - this only handles basic fields
+      const body = {
+        ...data,
+        imageUrl: data.imageUrl || undefined,
+        // Note: customIdFormat and field configurations would need to be handled separately
+        // if you want to edit them in this form
       }
 
-      
       if (inventory) {
-        await updateInventory({ 
-          id: inventory.id, 
-          data: { 
-            ...body, 
-            version: inventory.version || 1
-          } 
+        await updateInventory({
+          id: inventory.id,
+          data: {
+            ...body,
+            version: inventory.version || 1,
+          },
         }).unwrap()
       } else {
         await createInventory(body).unwrap()
       }
-      
+
       onSuccess?.()
       navigate('/dashboard')
     } catch (err) {
@@ -114,26 +130,13 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
+    <div className="max-w-2xl mx-auto py-2">
       <Card className="border border-border shadow-md rounded-2xl">
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl font-bold">
-            {inventory ? 'Edit Inventory' : 'Create New Inventory'}
-          </CardTitle>
-          <CardDescription className="text-muted-foreground">
-            {inventory
-              ? 'Update your inventory details and visibility settings.'
-              : 'Fill in the details below to add a new inventory.'}
-          </CardDescription>
-        </CardHeader>
-
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               {/* ---------- BASIC INFO ---------- */}
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
-
                 <FormField
                   control={form.control}
                   name="title"
@@ -141,7 +144,10 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                     <FormItem>
                       <FormLabel>Inventory Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Office Equipment" {...field} />
+                        <Input
+                          placeholder="e.g., Office Equipment"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -173,14 +179,17 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {CATEGORIES.map(cat => (
+                          {CATEGORIES.map((cat) => (
                             <SelectItem key={cat} value={cat}>
                               {cat}
                             </SelectItem>
@@ -193,64 +202,62 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                 />
               </div>
 
-              {/* ---------- TAGS ---------- */}
-              <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-foreground">Tags</h3>
-                <FormField
-                  control={form.control}
-                  name="tags"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Tag your inventory</FormLabel>
-                      <FormControl>
-                        <div className="space-y-3">
-                          <div className="flex gap-2">
-                            <Input
-                              value={tagInput}
-                              onChange={e => setTagInput(e.target.value)}
-                              onKeyDown={handleTagKeyDown}
-                              placeholder="Add a tag and press Enter"
-                            />
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              size="sm"
-                              onClick={addTag}
-                              disabled={tags.length >= 10}
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Add
-                            </Button>
-                          </div>
-
-                          {tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 pt-1">
-                              {tags.map(tag => (
-                                <Badge
-                                  key={tag}
-                                  variant="outline"
-                                  className="flex items-center gap-1 bg-muted text-foreground hover:bg-muted/70"
-                                >
-                                  {tag}
-                                  <button
-                                    type="button"
-                                    onClick={() => removeTag(tag)}
-                                    className="hover:text-destructive transition-colors"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
+              <FormField
+                control={form.control}
+                name="tags"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Tag your inventory</FormLabel>
+                    <FormControl>
+                      <div className="space-y-3">
+                        <div className="flex gap-2">
+                          <Input
+                            value={tagInput}
+                            onChange={(e) => setTagInput(e.target.value)}
+                            onKeyDown={handleTagKeyDown}
+                            placeholder="Add a tag and press Enter"
+                          />
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={addTag}
+                            disabled={tags.length >= 10}
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Add
+                          </Button>
                         </div>
-                      </FormControl>
-                      <FormDescription>Add up to 10 relevant tags.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+
+                        {tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {tags.map((tag) => (
+                              <Badge
+                                key={tag}
+                                variant="outline"
+                                className="flex items-center gap-1 bg-muted text-foreground hover:bg-muted/70"
+                              >
+                                {tag}
+                                <button
+                                  type="button"
+                                  onClick={() => removeTag(tag)}
+                                  className="hover:text-destructive transition-colors"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      Add up to 10 relevant tags.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               {/* ---------- IMAGE ---------- */}
               <FormField
@@ -260,7 +267,10 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                   <FormItem>
                     <FormLabel>Image URL (optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://example.com/image.jpg" {...field} />
+                      <Input
+                        placeholder="https://example.com/image.jpg"
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
                       Provide a public URL that represents this inventory
@@ -277,9 +287,9 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-start space-x-3 rounded-lg border p-4">
                     <FormControl>
-                      <Checkbox 
-                        checked={field.value} 
-                        onCheckedChange={field.onChange} 
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">

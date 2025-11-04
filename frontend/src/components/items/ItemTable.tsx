@@ -1,19 +1,12 @@
-// frontend/src/components/inventory/InventoryTable/InventoryTable.tsx
+// frontend/src/components/items/ItemTable.tsx
 import { useState } from 'react'
 import type { Inventory, Item } from '@/types'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ChevronsUpDown, Edit, Trash2, MoreHorizontal } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
-import BulkEditModal from './BulkEditModal'
 
-interface InventoryTableProps {
+interface ItemTableProps {
   inventory: Inventory
   items: Item[]
   totalItems: number
@@ -24,20 +17,17 @@ interface InventoryTableProps {
   canEdit?: boolean
 }
 
-export default function InventoryTable({
+export default function ItemTable({
   inventory,
   items,
   totalItems,
   page,
   onPageChange,
   onItemDelete,
-  onItemsUpdate,
   canEdit = false,
-}: InventoryTableProps) {
+}: ItemTableProps) {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
-  const [isDeleting, setIsDeleting] = useState<string | null>(null)
-  const [showBulkEdit, setShowBulkEdit] = useState(false)
-  const [isBulkEditing, setIsBulkEditing] = useState(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const navigate = useNavigate()
 
   // Get visible custom fields
@@ -160,37 +150,15 @@ export default function InventoryTable({
     }
 
     return value || '-'
-  }
-
-  const handleEditItem = (itemId: string) => {
-    navigate(`/items/${itemId}/edit`)
-  }
-
-  const handleDeleteItem = async (itemId: string) => {
-    if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
-      return
-    }
-
-    setIsDeleting(itemId)
-    try {
-      await onItemDelete(itemId)
-      // Remove from selection if it was selected
-      const newSelection = new Set(selectedItems)
-      newSelection.delete(itemId)
-      setSelectedItems(newSelection)
-    } catch (error) {
-      console.error('Failed to delete item:', error)
-      alert('Failed to delete item. Please try again.')
-    } finally {
-      setIsDeleting(null)
-    }
-  }
+  }  
 
   const handleBulkDelete = async () => {
     if (!confirm(`Are you sure you want to delete ${selectedItems.size} items? This action cannot be undone.`)) {
       return
     }
 
+    setIsDeleting(true)
+    
     try {
       const deletePromises = Array.from(selectedItems).map(itemId => onItemDelete(itemId))
       await Promise.all(deletePromises)
@@ -198,29 +166,8 @@ export default function InventoryTable({
     } catch (error) {
       console.error('Failed to delete items:', error)
       alert('Failed to delete some items. Please try again.')
-    }
-  }
-
-  const handleBulkEdit = () => {
-    setShowBulkEdit(true)
-  }
-
-  const handleBulkUpdate = async (updates: Partial<Item>) => {
-    if (!onItemsUpdate) {
-      console.error('onItemsUpdate function is not provided')
-      return
-    }
-
-    setIsBulkEditing(true)
-    try {
-      await onItemsUpdate(Array.from(selectedItems), updates)
-      setShowBulkEdit(false)
-      setSelectedItems(new Set())
-    } catch (error) {
-      console.error('Failed to update items:', error)
-      alert('Failed to update items. Please try again.')
     } finally {
-      setIsBulkEditing(false)
+      setIsDeleting(false)
     }
   }
 
@@ -239,7 +186,7 @@ export default function InventoryTable({
                 variant="outline"
                 size="sm"
                 onClick={handleBulkDelete}
-                disabled={isDeleting !== null}
+                disabled={isDeleting}
               >
                 {isDeleting ? 'Deleting...' : 'Delete Selected'}
               </Button>
@@ -247,7 +194,8 @@ export default function InventoryTable({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleBulkEdit}
+                  onClick={() => navigate(`/items/${[...selectedItems][0]}/edit`)}
+                  disabled={selectedItems.size > 1}
                 >
                   Edit Selected
                 </Button>
@@ -285,11 +233,6 @@ export default function InventoryTable({
                     </th>
                   ))}
                   <th className="px-4 py-3 text-left font-medium">Created</th>
-                  {canEdit && (
-                    <th className="w-12 px-4 py-3 text-left font-medium">
-                      Actions
-                    </th>
-                  )}
                 </tr>
               </thead>
               <tbody>
@@ -315,39 +258,7 @@ export default function InventoryTable({
                     ))}
                     <td className="px-4 py-3 text-muted-foreground">
                       {new Date(item.createdAt).toLocaleDateString()}
-                    </td>
-                    {canEdit && (
-                      <td className="px-4 py-3">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleEditItem(item.id)}
-                              className="flex items-center gap-2"
-                            >
-                              <Edit className="h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleDeleteItem(item.id)}
-                              disabled={isDeleting === item.id}
-                              className="flex items-center gap-2 text-destructive focus:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              {isDeleting === item.id ? 'Deleting...' : 'Delete'}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    )}
+                    </td>                    
                   </tr>
                 ))}
               </tbody>
@@ -392,17 +303,6 @@ export default function InventoryTable({
           )}
         </div>
       </div>
-
-      {/* Bulk Edit Modal */}
-      {showBulkEdit && (
-        <BulkEditModal
-          inventory={inventory}
-          selectedCount={selectedItems.size}
-          onClose={() => setShowBulkEdit(false)}
-          onSave={handleBulkUpdate}
-          isSaving={isBulkEditing}
-        />
-      )}
     </>
   )
 }

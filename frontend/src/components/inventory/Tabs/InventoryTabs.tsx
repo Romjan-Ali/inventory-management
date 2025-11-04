@@ -1,13 +1,13 @@
-// frontend/src/components/inventory/InventoryTabs.tsx
+// frontend/src/components/inventory/Tabs/InventoryTabs.tsx
 import { useState } from 'react'
 import type { Inventory } from '@/types'
 import ItemsTab from './ItemsTab'
 import DiscussionTab from './DiscussionTab'
 import SettingsTab from './SettingsTab'
 import StatsTab from './StatsTab'
-import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import { useDeleteInventoryMutation } from '@/features/inventory/inventoryApi'
 import { toast } from 'sonner'
 

@@ -22,6 +22,26 @@ export default function EditInventory() {
     return <Navigate to="/dashboard" replace />
   }
 
+  const canEdit = inventory.canWrite
+
+  if (!canEdit) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold text-destructive">Access Denied</h2>
+        <p className="text-muted-foreground mt-2">
+          You don't have permission to edit this inventory.
+        </p>
+        <Link
+          to={`/inventory/${inventory.id}`}
+          className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Inventory
+        </Link>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}

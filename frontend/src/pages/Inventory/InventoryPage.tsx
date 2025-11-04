@@ -2,9 +2,9 @@
 import { useParams } from 'react-router-dom'
 import { useGetInventoryQuery } from '@/features/inventory/inventoryApi'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import InventoryTabs from '@/components/inventory/InventoryTabs'
-import { ArrowLeft, Pencil } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import InventoryTabs from '@/components/inventory/Tabs/InventoryTabs'
+import { ArrowLeft} from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function InventoryPage() {  
   const { id } = useParams<{ id: string }>()

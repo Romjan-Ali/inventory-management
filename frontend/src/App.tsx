@@ -11,6 +11,7 @@ import CreateInventory from './pages/Inventory/CreateInventory'
 import EditInventory from './pages/Inventory/EditInventory'
 import CreateItem from './pages/Item/CreateItem'
 import EditItem from './pages/Item/EditItem'
+import { Toaster } from 'sonner'
 
 function App() {
   return (
@@ -20,14 +21,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/success" element={<AuthSuccess />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route
             path="/inventory/new"
             element={
@@ -36,14 +30,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/inventory/:id"
-            element={
-              <ProtectedRoute>
-                <InventoryPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/inventory/:id" element={<InventoryPage />} />
           <Route
             path="/inventory/:id/edit"
             element={
@@ -67,9 +54,10 @@ function App() {
                 <CreateItem />
               </ProtectedRoute>
             }
-          />          
+          />
         </Route>
       </Routes>
+      <Toaster />
     </Router>
   )
 }

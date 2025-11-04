@@ -1,6 +1,6 @@
 // frontend/src/components/inventory/AccessManager/AccessManager.tsx
 import { useState } from 'react'
-import type { Inventory } from '@/types'
+import type { Inventory, User } from '@/types'
 import { useGetAccessListQuery, useGrantAccessMutation, useRevokeAccessMutation } from '@/features/inventory/inventoryApi'
 import UserSearch from './UserSearch'
 import AccessList from './AccessList'
@@ -11,7 +11,7 @@ interface AccessManagerProps {
 }
 
 export default function AccessManager({ inventory }: AccessManagerProps) {
-  const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [canWrite, setCanWrite] = useState(true)
   
   const { data: accessList, isLoading, refetch } = useGetAccessListQuery(inventory.id)

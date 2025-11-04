@@ -3,6 +3,7 @@ import type { Request, Response } from 'express'
 import { InventoryService } from '../services/InventoryService'
 import { AccessService } from '../services/AccessService'
 import type { AuthRequest } from '../middleware/auth'
+import { type User } from '@prisma/client'
 import { ValidationError } from '../errors'
 
 export class InventoryController {
@@ -42,7 +43,9 @@ export class InventoryController {
         return res.status(400).json({ error: 'Inventory ID is required' })
       }
 
-      const inventory = await this.inventoryService.getInventory(id)
+      const userId = (req.user as User | undefined)?.id || undefined
+
+      const inventory = await this.inventoryService.getInventory(id, userId)
       res.json(inventory)
     } catch (error) {
       if (error instanceof ValidationError) {
@@ -115,13 +118,15 @@ export class InventoryController {
       console.error('Get user inventories error:', error)
       res.status(500).json({ error: 'Failed to fetch inventories' })
     }
-  }
+  }  
 
-  getAllInventories = async (req: AuthRequest, res: Response) => {
+  getInventories = async (req: AuthRequest, res: Response) => {
     try {
       const { page, limit, search, category, tags } = req.query
 
-      const inventories = await this.inventoryService.getAllInventories({
+      const user = (req.user as User | undefined) || undefined
+
+      const params = {
         page: page ? parseInt(page as string) : undefined,
         limit: limit ? parseInt(limit as string) : undefined,
         search: search as string,
@@ -131,11 +136,20 @@ export class InventoryController {
             ? (tags as string[])
             : [tags as string]
           : undefined,
-      })
+      }
 
-      res.json(inventories)
+      if(user?.isAdmin) {
+        const inventories = await this.inventoryService.getAllInventories(params)
+        return res.json(inventories)
+      }
+
+      const inventories = user?.id
+        ? await this.inventoryService.getInventories(params, user.id)
+        : await this.inventoryService.getInventories(params)
+
+      return res.json(inventories)
     } catch (error) {
-      console.error('Get all inventories error:', error)
+      console.error('Get inventories error:', error)
       res.status(500).json({ error: 'Failed to fetch inventories' })
     }
   }
@@ -245,6 +259,111 @@ export class InventoryController {
     } catch (error) {
       console.error('Revoke access error:', error)
       res.status(500).json({ error: 'Failed to revoke access' })
+    }
+  }
+
+  updateCustomIdFormat = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params
+      const { format } = req.body
+      const currentUserId = req.user.id
+
+      // Check if inventory id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      // Check if user owns the inventory
+      const canWrite = await this.accessService.canWriteInventory(
+        id,
+        currentUserId
+      )
+      if (!canWrite) {
+        return res
+          .status(403)
+          .json({ error: 'No permission to edit this inventory' })
+      }
+
+      const inventory = await this.inventoryService.updateCustomIdFormat(
+        id,
+        format
+      )
+      res.json(inventory)
+    } catch (error: any) {
+      if (error instanceof ValidationError) {
+        res.status(400).json({ error: error.message })
+      } else {
+        console.error('Update custom ID format error:', error)
+        res.status(500).json({ error: 'Failed to update custom ID format' })
+      }
+    }
+  }
+
+  generateCustomId = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params
+
+      // Check if inventory id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      const customId = await this.inventoryService.generateItemCustomId(id)
+      
+      res.json( customId )
+    } catch (error: any) {
+      console.error('Generate custom ID error:', error)
+      res.status(500).json({ error: 'Failed to generate custom ID' })
+    }
+  }
+
+  previewCustomId = async (req: AuthRequest, res: Response) => {
+    try {
+      const { format } = req.body
+      const preview = await this.inventoryService.generateCustomIdPreview(
+        format
+      )
+      res.json({ preview })
+    } catch (error: any) {
+      console.error('Preview custom ID error:', error)
+      res.status(500).json({ error: 'Failed to generate preview' })
+    }
+  }
+
+  getInventoryStatistics = async (req: AuthRequest, res: Response) => {
+    try {
+      const { id } = req.params
+
+      // Check if inventory id is provided
+      if (!id) {
+        return res.status(400).json({ error: 'Inventory ID is required' })
+      }
+
+      const stats = await this.inventoryService.getInventoryStatistics(id)
+      res.json(stats)
+    } catch (error: any) {
+      console.error('Get inventory statistics error:', error)
+      res.status(500).json({ error: 'Failed to fetch statistics' })
+    }
+  }
+
+  getAllInventoryTags = async (req: Request, res: Response) => {
+    try {
+      const tags = await this.inventoryService.getAllInventoryTags()
+      res.json(tags)
+    } catch (error: any) {
+      console.error('Get all inventory tags error:', error)
+      res.status(500).json({ error: 'Failed to fetch inventory tags' })
+    }
+  }
+
+  getAllPublicInventoryTags = async (req: Request, res: Response) => {
+    try {
+      const tags = await this.inventoryService.getAllPublicInventoryTags()
+      res.json(tags)
+    } catch (error: any) {
+      console.error('Get all public inventory tags error:', error)
+      res.status(500).json({ error: 'Failed to fetch public inventory tags' })
     }
   }
 }

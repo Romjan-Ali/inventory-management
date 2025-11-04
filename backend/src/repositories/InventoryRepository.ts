@@ -224,6 +224,68 @@ export class InventoryRepository extends BaseRepository<Inventory> {
     return { inventories, total }
   }
 
+  async find(
+    params: {
+      page?: number
+      limit?: number
+      search?: string
+      category?: string
+      tags?: string[]
+    },
+    isPublic?: boolean
+  ): Promise<{ inventories: Inventory[]; total: number }> {
+    const { page = 1, limit = 20, search, category, tags } = params
+    const skip = (page - 1) * limit
+
+    const where: any = {}
+
+    if (isPublic) {
+      where.isPublic = true
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ]
+    }
+
+    if (category) {
+      where.category = category
+    }
+
+    if (tags && tags.length > 0) {
+      where.tags = { hasSome: tags }
+    }
+
+    const [inventories, total] = await Promise.all([
+      this.prisma.inventory.findMany({
+        where,
+        include: {
+          creator: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+            },
+          },
+          _count: {
+            select: {
+              items: true,
+              accesses: true,
+            },
+          },
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.inventory.count({ where }),
+    ])
+
+    return { inventories, total }
+  }
+
   async getPopular(limit: number = 5): Promise<Inventory[]> {
     return this.prisma.inventory.findMany({
       include: {
@@ -246,6 +308,47 @@ export class InventoryRepository extends BaseRepository<Inventory> {
         },
       },
       take: limit,
+    })
+  }
+
+  async findItemsByInventoryId(inventoryId: string) {
+    return this.prisma.item.findMany({
+      where: { inventoryId },
+      orderBy: { createdAt: 'desc' },
+    })
+  }
+
+  async updateCustomIdFormat(id: string, format: any[]): Promise<Inventory> {
+    return this.prisma.inventory.update({
+      where: { id },
+      data: {
+        customIdFormat: format,
+        version: { increment: 1 },
+      },
+      include: {
+        creator: {
+          select: { id: true, name: true, avatar: true },
+        },
+      },
+    })
+  }
+
+  async getAllInventoryTags() {
+    return this.prisma.inventory.findMany({
+      select: {
+        tags: true,
+      },
+    })
+  }
+
+  async getAllPublicInventoryTags() {
+    return this.prisma.inventory.findMany({
+      where: {
+        isPublic: true,
+      },
+      select: {
+        tags: true,
+      },
     })
   }
 }

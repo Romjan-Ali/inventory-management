@@ -9,7 +9,10 @@ interface UserSearchProps {
   onUserSelect: (user: User | null) => void
 }
 
-export default function UserSearch({ selectedUser, onUserSelect }: UserSearchProps) {
+export default function UserSearch({
+  selectedUser,
+  onUserSelect,
+}: UserSearchProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -41,7 +44,7 @@ export default function UserSearch({ selectedUser, onUserSelect }: UserSearchPro
   return (
     <div className="relative">
       {selectedUser ? (
-        <div className="flex items-center justify-between rounded-lg border bg-gray-50 p-3">
+        <div className="flex items-center justify-between rounded-lg border bg-gray-50 dark:bg-gray-800 dark:border-gray-700 p-3">
           <div className="flex items-center gap-3">
             {selectedUser.avatar ? (
               <img
@@ -50,47 +53,55 @@ export default function UserSearch({ selectedUser, onUserSelect }: UserSearchPro
                 className="h-8 w-8 rounded-full"
               />
             ) : (
-              <UserIcon className="h-8 w-8 rounded-full bg-gray-200 p-1.5" />
+              <UserIcon className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 p-1.5 text-gray-500 dark:text-gray-300" />
             )}
             <div>
-              <p className="font-medium">{selectedUser.name}</p>
-              <p className="text-sm text-muted-foreground">{selectedUser.email}</p>
+              <p className="font-medium text-gray-900 dark:text-gray-100">
+                {selectedUser.name}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {selectedUser.email}
+              </p>
             </div>
           </div>
           <button
             onClick={clearSelection}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
       ) : (
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-400" />
           <input
             ref={inputRef}
             type="text"
             value={searchQuery}
             onChange={handleInputChange}
             placeholder="Search users by name or email..."
-            className="block w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+            className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 pl-10 pr-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary"
           />
         </div>
       )}
 
       {/* Dropdown Results */}
       {isOpen && searchQuery.length >= 2 && (
-        <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-white py-1 shadow-lg">
+        <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-white dark:bg-gray-800 dark:border-gray-700 py-1 shadow-lg">
           {isLoading ? (
-            <div className="px-4 py-2 text-sm text-gray-500">Searching...</div>
+            <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+              Searching...
+            </div>
           ) : users.length === 0 ? (
-            <div className="px-4 py-2 text-sm text-gray-500">No users found</div>
+            <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+              No users found
+            </div>
           ) : (
             users.map((user) => (
               <button
                 key={user.id}
                 onClick={() => handleUserSelect(user)}
-                className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 {user.avatar ? (
                   <img
@@ -99,11 +110,15 @@ export default function UserSearch({ selectedUser, onUserSelect }: UserSearchPro
                     className="h-8 w-8 rounded-full"
                   />
                 ) : (
-                  <UserIcon className="h-8 w-8 rounded-full bg-gray-200 p-1.5" />
+                  <UserIcon className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 p-1.5 text-gray-500 dark:text-gray-300" />
                 )}
                 <div>
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">
+                    {user.name}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {user.email}
+                  </p>
                 </div>
               </button>
             ))

@@ -1,5 +1,6 @@
+// frontend/src/features/posts/postsApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { Post } from '@/types'
+import type { Post, PaginationInfo, PostsResponse } from '@/types'
 
 export const postsApi = createApi({
   reducerPath: 'postsApi',
@@ -16,7 +17,7 @@ export const postsApi = createApi({
   tagTypes: ['Post'],
   endpoints: (builder) => ({
     getPosts: builder.query<
-      { posts: Post[]; pagination: any },
+      PostsResponse,
       { inventoryId: string; page?: number; limit?: number }
     >({
       query: ({ inventoryId, page = 1, limit = 50 }) => ({
@@ -57,3 +58,6 @@ export const {
   useCreatePostMutation,
   useDeletePostMutation,
 } = postsApi
+
+// Export the types for use in components
+export type { PaginationInfo, PostsResponse }

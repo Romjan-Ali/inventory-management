@@ -33,7 +33,7 @@ model Inventory {
   description String
   imageUrl    String?
   isPublic    Boolean  @default(false)
-  category    String   // Equipment, Furniture, Book, Other
+  category    String // Equipment, Furniture, Book, Other
   tags        String[]
   version     Int      @default(1)
 
@@ -41,7 +41,7 @@ model Inventory {
   creator   User   @relation("InventoryOwner", fields: [creatorId], references: [id], onDelete: Cascade)
 
   // Custom Field Configurations
-    // String fields (single-line text) 
+  // String fields (single-line text) 
   string1Name        String?
   string1Description String?
   string1Visible     Boolean @default(false)
@@ -136,9 +136,10 @@ model Inventory {
 }
 
 model Item {
-  id       String @id @default(uuid())
-  customId String
-  version  Int    @default(1)
+  id             String @id @default(uuid())
+  customId       String
+  version        Int    @default(1)
+  sequenceNumber Int?
 
   inventoryId String
   inventory   Inventory @relation("InventoryItems", fields: [inventoryId], references: [id], onDelete: Cascade)

@@ -4,7 +4,10 @@ import type {
   Inventory,
   CreateInventoryRequest,
   UpdateInventoryRequest,
+  IdFormatElement,
+  InventoryAccess
 } from '@/types'
+
 
 export const inventoryApi = createApi({
   reducerPath: 'inventoryApi',
@@ -34,6 +37,11 @@ export const inventoryApi = createApi({
     getInventory: builder.query<Inventory, string>({
       query: (id) => `/${id}`,
       providesTags: (result, error, id) => [{ type: 'Inventory', id }],
+    }),
+
+    getAllPublicInventoryTags: builder.query<{ name: string; count: number }[], void>({
+      query: () => '/tags/public',
+      providesTags: ['Inventory'],
     }),
 
     createInventory: builder.mutation<Inventory, CreateInventoryRequest>({
@@ -69,7 +77,12 @@ export const inventoryApi = createApi({
       query: (limit = 5) => `/popular?limit=${limit}`,
     }),
 
-    getAccessList: builder.query<any[], string>({
+    getUserInventories: builder.query<Inventory[], void>({
+      query: () => '/user/my-inventories',
+      providesTags: ['Inventory'],
+    }),
+
+    getAccessList: builder.query<InventoryAccess[], string>({
       query: (id) => `/${id}/access`,
       providesTags: (result, error, id) => [{ type: 'Inventory', id }],
     }),
@@ -88,7 +101,10 @@ export const inventoryApi = createApi({
       ],
     }),
 
-    revokeAccess: builder.mutation<void, { inventoryId: string; userId: string }>({
+    revokeAccess: builder.mutation<
+      void,
+      { inventoryId: string; userId: string }
+    >({
       query: ({ inventoryId, userId }) => ({
         url: `/${inventoryId}/access/${userId}`,
         method: 'DELETE',
@@ -97,17 +113,53 @@ export const inventoryApi = createApi({
         { type: 'Inventory', id: inventoryId },
       ],
     }),
+
+    // Custom ID Generation Endpoints
+    updateCustomIdFormat: builder.mutation<
+      Inventory,
+      { id: string; format: IdFormatElement[] }
+    >({
+      query: ({ id, format }) => ({
+        url: `/${id}/custom-id-format`,
+        method: 'PUT',
+        body: { format },
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Inventory', id }],
+    }),
+
+    generateCustomId: builder.query<{ customId: string }, string>({
+      query: (inventoryId) => `/${inventoryId}/generate-custom-id`,
+      // Don't cache this as it should generate a new ID each time
+      providesTags: ['Inventory'],
+    }),
+
+    previewCustomId: builder.mutation<
+      { preview: string },
+      { format: IdFormatElement[] }
+    >({
+      query: ({ format }) => ({ 
+        url: '/preview-custom-id',
+        method: 'POST',
+        body: { format },
+      }),
+    }),
   }),
 })
 
 export const {
   useGetInventoriesQuery,
   useGetInventoryQuery,
+  useGetAllPublicInventoryTagsQuery,
   useCreateInventoryMutation,
   useUpdateInventoryMutation,
   useDeleteInventoryMutation,
   useGetPopularInventoriesQuery,
+  useGetUserInventoriesQuery,
   useGetAccessListQuery,
   useGrantAccessMutation,
   useRevokeAccessMutation,
+  // Custom ID Generation hooks
+  useUpdateCustomIdFormatMutation,
+  useGenerateCustomIdQuery,
+  usePreviewCustomIdMutation,
 } = inventoryApi

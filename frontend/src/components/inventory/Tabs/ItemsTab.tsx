@@ -1,13 +1,12 @@
-// frontend/src/components/inventory/ItemsTab.tsx
+// frontend/src/components/inventory/Tabs/ItemsTab.tsx
 import { useState } from 'react'
 import type { Inventory } from '@/types'
-import InventoryTable from './InventoryTable/InventoryTable'
+import ItemTable from '../../items/ItemTable'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import {
   useGetInventoryItemsQuery,
-  useUpdateItemMutation,
   useDeleteItemMutation,
 } from '@/features/items/itemsApi'
 import { useAppSelector } from '@/app/hooks'
@@ -20,7 +19,6 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
   const [page, setPage] = useState(1)
   const {
     data: itemsData,
-    refetch,
     isLoading,
     error,
   } = useGetInventoryItemsQuery({
@@ -29,7 +27,6 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
     limit: 50,
   })
 
-  const [updateItem] = useUpdateItemMutation()
   const [deleteItem] = useDeleteItemMutation()
   const { user } = useAppSelector((state) => state.auth)
 
@@ -42,28 +39,7 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
     user?.isAdmin ||
     inventory.isPublic ||
     // Add logic to check if user has write access via access list
-    false
-
-  const handleItemsUpdate = async (
-    itemIds: string[],
-    updates: Partial<Item>
-  ) => {
-    try {
-      // Update each item individually
-      const updatePromises = itemIds.map((itemId) =>
-        updateItem({
-          id: itemId,
-          data: updates,
-        }).unwrap()
-      )
-
-      await Promise.all(updatePromises)
-      refetch()
-    } catch (error) {
-      console.error('Failed to update items:', error)
-      throw error
-    }
-  }
+    false  
 
   const handleItemDelete = async (itemId: string) => {
     try {
@@ -71,7 +47,7 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
       // The cache will be automatically invalidated due to the tag system
     } catch (error) {
       console.error('Failed to delete item:', error)
-      throw error // Re-throw to handle in InventoryTable
+      throw error // Re-throw to handle in ItemTable
     }
   }
 
@@ -114,14 +90,13 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
       </div>
 
       {/* Inventory Table */}
-      <InventoryTable
+      <ItemTable
         inventory={inventory}
         items={items}
         totalItems={totalItems}
         page={page}
         onPageChange={setPage}
         onItemDelete={handleItemDelete}
-        onItemsUpdate={handleItemsUpdate}
         canEdit={canEdit}
       />
     </div>

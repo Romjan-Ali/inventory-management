@@ -3,8 +3,19 @@ import type { Inventory } from '@/types'
 import { User, Edit, Edit2, Trash2 } from 'lucide-react'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
+interface Access {
+  id: string
+  user: {
+    id: string
+    name: string
+    email: string
+    avatar?: string
+  }
+  canWrite: boolean
+}
+
 interface AccessListProps {
-  accessList: any[]
+  accessList: Access[]
   inventory: Inventory
   onRevokeAccess: (userId: string) => void
   isRevoking: boolean

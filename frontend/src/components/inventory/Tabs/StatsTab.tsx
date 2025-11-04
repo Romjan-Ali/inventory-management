@@ -1,4 +1,4 @@
-// frontend/src/components/inventory/StatsTab.tsx
+// frontend/src/components/inventory/Tabs/StatsTab.tsx
 import type { Inventory } from '@/types'
 import { useGetInventoryItemsQuery } from '@/features/items/itemsApi'
 import { getActiveFields } from '@/utils/fieldConfig'
@@ -154,7 +154,7 @@ export default function StatsTab({ inventory }: StatsTabProps) {
       {/* Boolean Field Stats */}
       {booleanStats.length > 0 && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {booleanStats.map((stat, index) => (
+          {booleanStats.map(stat => (
             <div key={stat.name} className="rounded-lg border p-6">
               <h3 className="text-lg font-medium mb-4">{stat.name}</h3>
               <div className="h-48">
@@ -168,7 +168,7 @@ export default function StatsTab({ inventory }: StatsTabProps) {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) => `${name} ${(Number(percent) * 100).toFixed(0)}%`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"

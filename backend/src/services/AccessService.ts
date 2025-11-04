@@ -45,7 +45,17 @@ export class AccessService {
     if (inventory.isPublic) return true
 
     // Check explicit access
-    const hasAccess = inventory.accesses.some((access) => access.canWrite)
+    const access = await prisma.inventoryAccess.findUnique({
+      where: {
+        inventoryId_userId: {
+          inventoryId,
+          userId
+        }
+      },
+    })
+
+    const hasAccess = access?.canWrite || false
+
     return hasAccess
   }
 

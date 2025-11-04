@@ -120,18 +120,23 @@ export interface Item {
 }
 
 // Custom ID Format Types
-export type IdElementType =
-  | 'fixed'
-  | 'random20'
-  | 'random32'
-  | 'sequence'
-  | 'guid'
-  | 'date'
+export type IdElementType = 
+  | 'FIXED_TEXT'
+  | 'RANDOM_20BIT'
+  | 'RANDOM_32BIT'
+  | 'RANDOM_6DIGIT'
+  | 'RANDOM_9DIGIT'
+  | 'GUID'
+  | 'DATETIME'
+  | 'SEQUENCE'
 
 export interface IdFormatElement {
+  id: string 
   type: IdElementType
   value?: string
   format?: string
+  prefix?: string
+  suffix?: string
 }
 
 export type CustomIdFormat = IdFormatElement[]

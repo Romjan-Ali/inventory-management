@@ -1,6 +1,6 @@
-// frontend/src/components/inventory/DiscussionTab.tsx
+// frontend/src/components/inventory/Tabs/DiscussionTab.tsx
 import type { Inventory } from '@/types'
-import DiscussionThread from '../discussion/DiscussionThread'
+import DiscussionThread from '../../discussion/DiscussionThread'
 
 interface DiscussionTabProps {
   inventory: Inventory

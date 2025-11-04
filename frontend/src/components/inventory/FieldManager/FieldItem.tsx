@@ -1,9 +1,8 @@
 // frontend/src/components/inventory/FieldManager/FieldItem.tsx
 import { useState } from 'react'
-import type { FieldConfig, FieldType } from '@/types'
+import type { FieldConfig } from '@/types'
 import { FIELD_TYPES } from '@/lib/constants'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'

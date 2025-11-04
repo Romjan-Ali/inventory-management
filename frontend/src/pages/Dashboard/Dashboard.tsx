@@ -4,26 +4,30 @@ import { Link } from 'react-router-dom'
 import { useAppSelector } from '@/app/hooks'
 import { useGetInventoriesQuery } from '@/features/inventory/inventoryApi'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
-import { Plus, FolderOpen, Users } from 'lucide-react'
+import { Plus, FolderOpen, Users, List, LayoutGrid } from 'lucide-react'
+import InventoryCard from '@/components/inventory/View/InventoryCard'
+import InventoryTable from '@/components/inventory/View/InventoryTable'
 
 export default function Dashboard() {
   const { user } = useAppSelector((state) => state.auth)
   const [activeTab, setActiveTab] = useState<'owned' | 'accessible'>('owned')
-  
+  const [viewType, setViewType] = useState<'table' | 'card'>('table')
+
   const { data: inventoriesData, isLoading } = useGetInventoriesQuery({
     page: 1,
     limit: 50,
   })
 
-  const ownedInventories = inventoriesData?.inventories.filter(
-    inv => inv.creatorId === user?.id
-  ) || []
+  const ownedInventories =
+    inventoriesData?.inventories.filter((inv) => inv.creatorId === user?.id) ||
+    []
 
-  const accessibleInventories = inventoriesData?.inventories.filter(
-    inv => inv.creatorId !== user?.id
-  ) || []
+  const accessibleInventories =
+    inventoriesData?.inventories.filter((inv) => inv.creatorId !== user?.id) ||
+    []
 
-  const displayInventories = activeTab === 'owned' ? ownedInventories : accessibleInventories
+  const displayInventories =
+    activeTab === 'owned' ? ownedInventories : accessibleInventories
 
   return (
     <div className="space-y-6">
@@ -55,17 +59,19 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        
+
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center gap-3">
             <Users className="h-8 w-8 text-primary" />
             <div>
-              <p className="text-2xl font-bold">{accessibleInventories.length}</p>
+              <p className="text-2xl font-bold">
+                {accessibleInventories.length}
+              </p>
               <p className="text-sm text-muted-foreground">Shared with Me</p>
             </div>
           </div>
         </div>
-        
+
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
@@ -82,7 +88,7 @@ export default function Dashboard() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b">
+      <div className="border-b flex justify-between">
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('owned')}
@@ -105,6 +111,28 @@ export default function Dashboard() {
             Shared with Me ({accessibleInventories.length})
           </button>
         </nav>
+        <div className="flex items-center">
+          <div className="flex rounded-full border overflow-hidden">
+            <button
+              title='View as Table'
+              className={`px-4 py-1 text-accent ${
+                viewType === 'table' ? 'bg-accent-foreground' : 'text-primary'
+              }`}
+              onClick={() => setViewType('table')}
+            >
+              <List size={16} />
+            </button>
+            <button
+              title='View as Card'
+              className={`px-4 py-1 text-accent ${
+                viewType === 'card' ? 'bg-accent-foreground' : 'text-primary'
+              }`}
+              onClick={() => setViewType('card')}
+            >
+              <LayoutGrid size={16} />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Inventories List */}
@@ -113,20 +141,26 @@ export default function Dashboard() {
           <LoadingSpinner size="lg" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {displayInventories.map((inventory) => (
-            <InventoryCard key={inventory.id} inventory={inventory} />
-          ))}
-          
+        <div className={viewType === 'table' ? "" : "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"}>
+          {viewType === 'card' &&
+            displayInventories.map((inventory) => (
+              <InventoryCard key={inventory.id} inventory={inventory} />
+            ))}
+
+                      {viewType === 'table' && (
+            <InventoryTable inventories={displayInventories} />
+          )}
+
           {displayInventories.length === 0 && (
             <div className="col-span-full text-center py-12">
               <FolderOpen className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-4 text-lg font-semibold">No inventories found</h3>
+              <h3 className="mt-4 text-lg font-semibold">
+                No inventories found
+              </h3>
               <p className="text-muted-foreground mt-2">
-                {activeTab === 'owned' 
-                  ? "Get started by creating your first inventory."
-                  : "No one has shared any inventories with you yet."
-                }
+                {activeTab === 'owned'
+                  ? 'Get started by creating your first inventory.'
+                  : 'No one has shared any inventories with you yet.'}
               </p>
               {activeTab === 'owned' && (
                 <Link
@@ -142,51 +176,5 @@ export default function Dashboard() {
         </div>
       )}
     </div>
-  )
-}
-
-// Inventory Card Component
-function InventoryCard({ inventory }: { inventory: any }) {
-  return (
-    <Link
-      to={`/inventory/${inventory.id}`}
-      className="block rounded-lg border bg-card p-6 hover:shadow-lg transition-shadow"
-    >
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="font-semibold text-lg leading-6">{inventory.title}</h3>
-        {inventory.isPublic && (
-          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-            Public
-          </span>
-        )}
-      </div>
-      
-      <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-        {inventory.description}
-      </p>
-      
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>{inventory.category}</span>
-        <span>{inventory._count?.items || 0} items</span>
-      </div>
-      
-      {inventory.tags.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-1">
-          {inventory.tags.slice(0, 3).map((tag: string) => (
-            <span
-              key={tag}
-              className="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600"
-            >
-              {tag}
-            </span>
-          ))}
-          {inventory.tags.length > 3 && (
-            <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
-              +{inventory.tags.length - 3}
-            </span>
-          )}
-        </div>
-      )}
-    </Link>
   )
 }

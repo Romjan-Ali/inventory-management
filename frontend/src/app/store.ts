@@ -7,6 +7,7 @@ import { inventoryApi } from '@/features/inventory/inventoryApi'
 import { itemsApi } from '@/features/items/itemsApi'
 import { searchApi } from '@/features/search/searchApi'
 import { postsApi } from '@/features/posts/postsApi'
+import { usersApi } from '@/features/users/usersApi'
 
 const persistConfig = {
   key: 'root',
@@ -27,7 +28,8 @@ export const store = configureStore({
       inventoryApi.middleware,
       itemsApi.middleware,
       searchApi.middleware,
-      postsApi.middleware
+      postsApi.middleware,
+      usersApi.middleware
     ),
 })
 

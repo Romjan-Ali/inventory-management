@@ -13,45 +13,61 @@ interface FieldManagerProps {
   inventory: Inventory
 }
 
+type FieldUpdate = {
+  version: number
+} & Record<string, string | boolean | number | null>
+
 export default function FieldManager({ inventory }: FieldManagerProps) {
   const [updateInventory, { isLoading }] = useUpdateInventoryMutation()
-  const [fields, setFields] = useState<FieldConfig[]>(() => getFieldConfigs(inventory))
+  const [fields, setFields] = useState<FieldConfig[]>(() =>
+    getFieldConfigs(inventory)
+  )
 
   const addField = (type: FieldType) => {
     // Find the next available slot for this field type
-    const existingFieldsOfType = fields.filter(f => f.type === type)
+    const existingFieldsOfType = fields.filter((f) => f.type === type)
     if (existingFieldsOfType.length >= 3) return
 
     const nextIndex = existingFieldsOfType.length + 1
-    const newOrder = Math.max(...fields.map(f => f.order), -1) + 1
+    const newOrder = Math.max(...fields.map((f) => f.order), -1) + 1
 
     const newField: FieldConfig = {
       type,
       index: nextIndex,
-      name: `New ${FIELD_TYPES.find(t => t.value === type)?.label || type} Field`,
+      name: `New ${
+        FIELD_TYPES.find((t) => t.value === type)?.label || type
+      } Field`,
       description: '',
       visibleInTable: false,
       order: newOrder,
     }
 
-    setFields(prev => [...prev, newField])
+    setFields((prev) => [...prev, newField])
   }
 
   const updateField = (fieldId: string, updates: Partial<FieldConfig>) => {
-    setFields(prev =>
-      prev.map(field =>
-        `${field.type}-${field.index}` === fieldId ? { ...field, ...updates } : field
+    setFields((prev) =>
+      prev.map((field) =>
+        `${field.type}-${field.index}` === fieldId
+          ? { ...field, ...updates }
+          : field
       )
     )
   }
 
   const removeField = (fieldId: string) => {
-    setFields(prev => prev.filter(field => `${field.type}-${field.index}` !== fieldId))
+    setFields((prev) =>
+      prev.filter((field) => `${field.type}-${field.index}` !== fieldId)
+    )
   }
 
   const reorderFields = (activeId: string, overId: string) => {
-    const activeIndex = fields.findIndex(field => `${field.type}-${field.index}` === activeId)
-    const overIndex = fields.findIndex(field => `${field.type}-${field.index}` === overId)
+    const activeIndex = fields.findIndex(
+      (field) => `${field.type}-${field.index}` === activeId
+    )
+    const overIndex = fields.findIndex(
+      (field) => `${field.type}-${field.index}` === overId
+    )
 
     if (activeIndex === -1 || overIndex === -1) return
 
@@ -71,13 +87,19 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
   const saveChanges = async () => {
     try {
       // Create update object for all field configurations
-      const updates: any = {
+      const updates: FieldUpdate = {
         version: inventory.version,
       }
 
       // Reset all fields first
-      const fieldTypes = ['string', 'text', 'number', 'boolean', 'link'] as const
-      fieldTypes.forEach(type => {
+      const fieldTypes = [
+        'string',
+        'text',
+        'number',
+        'boolean',
+        'link',
+      ] as const
+      fieldTypes.forEach((type) => {
         for (let i = 1; i <= 3; i++) {
           updates[`${type}${i}Name`] = null
           updates[`${type}${i}Description`] = null
@@ -87,7 +109,7 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
       })
 
       // Apply current field configurations
-      fields.forEach(field => {
+      fields.forEach((field) => {
         const prefix = `${field.type}${field.index}`
         updates[`${prefix}Name`] = field.name
         updates[`${prefix}Description`] = field.description
@@ -104,7 +126,8 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
     }
   }
 
-  const hasChanges = JSON.stringify(fields) !== JSON.stringify(getFieldConfigs(inventory))
+  const hasChanges =
+    JSON.stringify(fields) !== JSON.stringify(getFieldConfigs(inventory))
 
   return (
     <div className="space-y-6">
@@ -116,7 +139,7 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
             Configure custom fields for items in this inventory
           </p>
         </div>
-        
+
         <button
           onClick={saveChanges}
           disabled={!hasChanges || isLoading}
@@ -134,16 +157,13 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
       {/* Field Limits Info */}
       <div className="rounded-lg bg-blue-700/10 dark:bg-blue-700/40 p-4">
         <p className="text-sm text-blue-700 dark:text-white">
-          You can configure up to 3 fields of each type (text, number, boolean, link).
-          Drag and drop to reorder fields.
+          You can configure up to 3 fields of each type (text, number, boolean,
+          link). Drag and drop to reorder fields.
         </p>
       </div>
 
       {/* Toolbar */}
-      <FieldToolbar
-        fields={fields}
-        onAddField={addField}
-      />
+      <FieldToolbar fields={fields} onAddField={addField} />
 
       {/* Field List */}
       <FieldList
@@ -157,8 +177,8 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
       <div className="rounded-lg border p-4">
         <h4 className="font-medium mb-2">Field Preview</h4>
         <p className="text-sm text-muted-foreground">
-          Fields marked as "Show in Table" will appear as columns in the items table.
-          Field descriptions will be shown as tooltips in forms.
+          Fields marked as "Show in Table" will appear as columns in the items
+          table. Field descriptions will be shown as tooltips in forms.
         </p>
       </div>
     </div>

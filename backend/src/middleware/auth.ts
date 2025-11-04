@@ -44,6 +44,42 @@ export const authMiddleware = async (
   }
 }
 
+export const optionalAuthMiddleware = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '')
+    
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any
+      
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.userId },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          avatar: true,
+          isAdmin: true,
+          isBlocked: true,
+          createdAt: true,
+        },
+      })
+
+      if (user && !user.isBlocked) {
+        req.user = user
+      }
+    }
+
+  } catch (error) {
+    req.user = undefined
+  } finally {
+    next()
+  }
+}
+
 export const adminMiddleware = (
   req: AuthRequest,
   res: Response,
