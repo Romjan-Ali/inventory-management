@@ -114,7 +114,7 @@ export default function Dashboard() {
         <div className="flex items-center">
           <div className="flex rounded-full border overflow-hidden">
             <button
-              title='View as Table'
+              title="View as Table"
               className={`px-4 py-1 text-accent ${
                 viewType === 'table' ? 'bg-accent-foreground' : 'text-primary'
               }`}
@@ -123,7 +123,7 @@ export default function Dashboard() {
               <List size={16} />
             </button>
             <button
-              title='View as Card'
+              title="View as Card"
               className={`px-4 py-1 text-accent ${
                 viewType === 'card' ? 'bg-accent-foreground' : 'text-primary'
               }`}
@@ -141,13 +141,19 @@ export default function Dashboard() {
           <LoadingSpinner size="lg" />
         </div>
       ) : (
-        <div className={viewType === 'table' ? "" : "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"}>
+        <div
+          className={
+            viewType === 'table'
+              ? ''
+              : 'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'
+          }
+        >
           {viewType === 'card' &&
             displayInventories.map((inventory) => (
               <InventoryCard key={inventory.id} inventory={inventory} />
             ))}
 
-                      {viewType === 'table' && (
+          {viewType === 'table' && (
             <InventoryTable inventories={displayInventories} />
           )}
 

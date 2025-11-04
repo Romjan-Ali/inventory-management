@@ -12,8 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ReduxProvider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">          
           <App />
         </ThemeProvider>
       </PersistGate>
