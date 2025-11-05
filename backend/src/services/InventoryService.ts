@@ -134,7 +134,6 @@ export class InventoryService {
     userId?: string
   ) {
     const isPublic = !userId
-    console.log({isPublic, userId})
     const result = isPublic
       ? this.inventoryRepository.find(params, isPublic)
       : this.inventoryRepository.find(params)

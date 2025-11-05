@@ -19,8 +19,6 @@ export class AuthController {
     // This will be called after successful social authentication
     const token = generateToken(req.user.id)
 
-    console.log( 'token:', token )
-
     // Redirect to frontend with token
     res.redirect(`${process.env.CLIENT_URL}/auth/success?token=${token}`)
   }

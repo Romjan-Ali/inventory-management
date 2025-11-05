@@ -83,17 +83,14 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       },
     })
   }
-
+ 
   async updateWithLock(
     id: string,
     version: number,
     data: Prisma.InventoryUpdateInput
   ): Promise<Inventory> {
     return this.prisma.inventory.update({
-      where: {
-        id,
-        version, // Optimistic locking
-      },
+      where: { id_version: { id, version } }, // Optimistic locking
       data: {
         ...data,
         version: { increment: 1 },

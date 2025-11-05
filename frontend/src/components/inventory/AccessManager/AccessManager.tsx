@@ -5,6 +5,7 @@ import { useGetAccessListQuery, useGrantAccessMutation, useRevokeAccessMutation 
 import UserSearch from './UserSearch'
 import AccessList from './AccessList'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { Button } from '@/components/ui/button'
 
 interface AccessManagerProps {
   inventory: Inventory
@@ -93,14 +94,13 @@ export default function AccessManager({ inventory }: AccessManagerProps) {
                 </label>
               </div>
               
-              <button
+              <Button
                 onClick={handleGrantAccess}
-                disabled={isGranting}
-                className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50"
+                disabled={isGranting}                
               >
                 {isGranting && <LoadingSpinner size="sm" />}
                 Grant Access
-              </button>
+              </Button>
             </div>
           )}
         </div>

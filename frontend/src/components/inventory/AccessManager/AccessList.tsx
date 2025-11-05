@@ -2,6 +2,7 @@
 import type { Inventory } from '@/types'
 import { User, Edit, Edit2, Trash2 } from 'lucide-react'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { Button } from '@/components/ui/button'
 
 interface Access {
   id: string
@@ -42,10 +43,10 @@ export default function AccessList({ accessList, inventory, onRevokeAccess, isRe
                 className="h-10 w-10 rounded-full"
               />
             ) : (
-              <User className="h-10 w-10 rounded-full bg-gray-200 p-2" />
+              <User className="h-10 w-10 rounded-full bg-muted p-2 text-muted-foreground" />
             )}
             <div>
-              <p className="font-medium">{access.user.name}</p>
+              <p className="font-medium text-foreground">{access.user.name}</p>
               <p className="text-sm text-muted-foreground">{access.user.email}</p>
             </div>
           </div>
@@ -66,17 +67,19 @@ export default function AccessList({ accessList, inventory, onRevokeAccess, isRe
             </div>
 
             {access.user.id !== inventory.creatorId && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => onRevokeAccess(access.user.id)}
                 disabled={isRevoking}
-                className="text-destructive hover:text-destructive/70 disabled:opacity-50"
+                className="h-8 w-8 p-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
               >
                 {isRevoking ? (
                   <LoadingSpinner size="sm" />
                 ) : (
                   <Trash2 className="h-4 w-4" />
                 )}
-              </button>
+              </Button>
             )}
           </div>
         </div>

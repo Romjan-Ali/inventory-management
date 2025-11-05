@@ -54,17 +54,6 @@ export default function InventoryBrowse() {
     { refetchOnMountOrArgChange: true }
   )
 
-  console.log('inventoriesData', inventoriesData)
-
-  console.log({
-    search,
-    sort,
-    category,
-    tag,
-    page,
-    limit,
-  })
-
   const { data: tagsData } = useGetAllPublicInventoryTagsQuery()
 
   // Update URL params

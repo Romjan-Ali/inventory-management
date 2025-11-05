@@ -102,7 +102,6 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
 
   const onSubmit = async (data: InventoryFormData) => {
     try {
-      // Prepare the data for API - this only handles basic fields
       const body = {
         ...data,
         imageUrl: data.imageUrl || undefined,

@@ -23,8 +23,6 @@ passport.use(
         const avatar = profile.photos?.[0]?.value
         const name = profile.displayName
 
-        console.log({ email, avatar, name })
-
         if (!email)
           return done(new Error('No email returned from Google'), undefined)
 
@@ -65,15 +63,7 @@ passport.use(
       profile: GitHubProfile & { _json?: any },
       done: (error: any, user?: any) => void
     ) => {
-      console.log('profile', profile)
       try {
-        console.log('GitHub profile received:', {
-          id: profile.id,
-          username: profile.username,
-          displayName: profile.displayName,
-          emailCount: profile.emails?.length || 0,
-        })
-
         // Extract user information with fallbacks
         const email = profile.emails?.[0]?.value
         const avatar = profile.photos?.[0]?.value || profile._json.avatar_url

@@ -38,9 +38,6 @@ export default function CustomIdElement({
   onRemove,
   dragHandleProps,
 }: CustomIdElementProps) {
-
-  console.log('element:', element)
-
   const getElementDescription = (type: IdElementType): string => {
     switch (type) {
       case 'FIXED_TEXT':

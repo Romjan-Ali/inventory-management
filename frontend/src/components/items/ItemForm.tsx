@@ -53,7 +53,6 @@ export default function ItemForm({
 
   // Update custom ID when initialCustomId changes
   useEffect(() => {
-    console.log({ initialCustomId, item })
     if (initialCustomId && !item) {
       setCustomId(initialCustomId)
     }
