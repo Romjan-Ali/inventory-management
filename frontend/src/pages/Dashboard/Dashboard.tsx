@@ -5,7 +5,7 @@ import { useAppSelector } from '@/app/hooks'
 import { useGetInventoriesQuery } from '@/features/inventory/inventoryApi'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Plus, FolderOpen, Users, List, LayoutGrid } from 'lucide-react'
-import InventoryCard from '@/components/inventory/View/InventoryCard'
+import InventoryCards from '@/components/inventory/View/InventoryCards'
 import InventoryTable from '@/components/inventory/View/InventoryTable'
 
 export default function Dashboard() {
@@ -148,10 +148,9 @@ export default function Dashboard() {
               : 'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'
           }
         >
-          {viewType === 'card' &&
-            displayInventories.map((inventory) => (
-              <InventoryCard key={inventory.id} inventory={inventory} />
-            ))}
+          {viewType === 'card' && (
+            <InventoryCards inventories={displayInventories} />
+          )}
 
           {viewType === 'table' && (
             <InventoryTable inventories={displayInventories} />

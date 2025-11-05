@@ -2,14 +2,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSearchQuery } from '@/features/search/searchApi'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useDebounce } from 'use-debounce'
 import { Search, X, Folder, FileText } from 'lucide-react'
 
 export default function SearchBox() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
-  const debouncedQuery = useDebounce(query, 300)
+  const [debouncedQuery] = useDebounce(query, 300)
 
   const { data: searchResults, isLoading } = useSearchQuery(
     { q: debouncedQuery, type: 'all', limit: 5 },

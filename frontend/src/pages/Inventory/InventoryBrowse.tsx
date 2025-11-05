@@ -1,21 +1,37 @@
 // frontend/src/pages/Inventory/InventoryBrowse.tsx
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { useGetInventoriesQuery } from '@/features/inventory/inventoryApi'
 import { useGetAllPublicInventoryTagsQuery } from '@/features/inventory/inventoryApi'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import InventoryTable from '@/components/inventory/View/InventoryTable'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, Filter, Grid, List } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Search, Filter, Grid, List, X } from 'lucide-react'
+import InventoryCards from '@/components/inventory/View/InventoryCards'
+import { useDebounce } from 'use-debounce'
 
 export default function InventoryBrowse() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [viewType, setViewType] = useState<'table' | 'card'>('table')
-  
+  const [localSearch, setLocalSearch] = useState('')
+  const [debouncedSearch] = useDebounce(localSearch, 500)
+
   // Get URL params with defaults
   const search = searchParams.get('search') || ''
   const sort = searchParams.get('sort') || 'newest'
@@ -24,12 +40,27 @@ export default function InventoryBrowse() {
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
 
+
   // Fetch inventories with filters
-  const { data: inventoriesData, isLoading } = useGetInventoriesQuery({
+  const { data: inventoriesData, isLoading } = useGetInventoriesQuery(
+    {
+      search: debouncedSearch,
+      sort,
+      category,
+      tags: tag ? [tag] : undefined,
+      page,
+      limit,
+    },
+    { refetchOnMountOrArgChange: true }
+  )
+
+  console.log('inventoriesData', inventoriesData)
+
+  console.log({
     search,
     sort,
     category,
-    tags: tag ? [tag] : undefined,
+    tag,
     page,
     limit,
   })
@@ -50,9 +81,9 @@ export default function InventoryBrowse() {
     setSearchParams(newParams)
   }
 
-  const handleSearchChange = (value: string) => {
-    updateSearchParams({ search: value })
-  }
+  useEffect(() => {
+    updateSearchParams({ search: debouncedSearch })
+  }, [debouncedSearch])
 
   const handleSortChange = (value: string) => {
     updateSearchParams({ sort: value })
@@ -64,9 +95,10 @@ export default function InventoryBrowse() {
 
   const clearFilters = () => {
     setSearchParams(new URLSearchParams())
+    setLocalSearch('')
   }
 
-  const categories = ['Book', 'Electronics', 'Furniture', 'Clothing', 'Other']
+  // const categories = ['Book', 'Electronics', 'Furniture', 'Clothing', 'Other']
 
   return (
     <div className="space-y-6">
@@ -98,8 +130,8 @@ export default function InventoryBrowse() {
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search inventories..."
-                value={search}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -134,18 +166,23 @@ export default function InventoryBrowse() {
           </div>
 
           {/* Active Filters */}
-          {(search || tag) && (
+          {(debouncedSearch || tag) && (
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Active filters:</span>
-              {search && (
+              <span className="text-sm text-muted-foreground">
+                Active filters:
+              </span>
+              {debouncedSearch && (
                 <Badge variant="secondary" className="flex items-center gap-1">
-                  Search: "{search}"
+                  Search: "{debouncedSearch}"
                   <button
-                    onClick={() => updateSearchParams({ search: '' })}
+                    onClick={() => {
+                      setLocalSearch('')
+                      updateSearchParams({ search: '' })
+                    }}
                     className="ml-1 hover:text-destructive"
                   >
-                    ×
+                    <X size={12} />
                   </button>
                 </Badge>
               )}
@@ -156,7 +193,7 @@ export default function InventoryBrowse() {
                     onClick={() => updateSearchParams({ tag: '' })}
                     className="ml-1 hover:text-destructive"
                   >
-                    ×
+                    <X size={12} />
                   </button>
                 </Badge>
               )}
@@ -179,7 +216,9 @@ export default function InventoryBrowse() {
                     onClick={() => handleTagClick(tagItem.name)}
                   >
                     {tagItem.name}
-                    <span className="ml-1 text-xs opacity-70">({tagItem.count})</span>
+                    <span className="ml-1 text-xs opacity-70">
+                      ({tagItem.count})
+                    </span>
                   </Badge>
                 ))}
               </div>
@@ -191,9 +230,7 @@ export default function InventoryBrowse() {
       {/* Results */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            {inventoriesData?.total || 0} Inventories Found
-          </CardTitle>
+          <CardTitle>{inventoriesData?.total || 0} Inventories Found</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -203,14 +240,18 @@ export default function InventoryBrowse() {
           ) : (
             <>
               {viewType === 'table' ? (
-                <InventoryTable inventories={inventoriesData?.inventories || []} />
+                <InventoryTable
+                  inventories={inventoriesData?.inventories || []}
+                />
               ) : (
                 // Your card view component here
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {/* Card view implementation */}
+                  <InventoryCards
+                    inventories={inventoriesData?.inventories || []}
+                  />
                 </div>
               )}
-              
+
               {/* Pagination */}
               {inventoriesData && inventoriesData.total > limit && (
                 <div className="flex justify-center mt-6">
@@ -218,14 +259,18 @@ export default function InventoryBrowse() {
                     <Button
                       variant="outline"
                       disabled={page <= 1}
-                      onClick={() => updateSearchParams({ page: (page - 1).toString() })}
+                      onClick={() =>
+                        updateSearchParams({ page: (page - 1).toString() })
+                      }
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       disabled={page * limit >= inventoriesData.total}
-                      onClick={() => updateSearchParams({ page: (page + 1).toString() })}
+                      onClick={() =>
+                        updateSearchParams({ page: (page + 1).toString() })
+                      }
                     >
                       Next
                     </Button>

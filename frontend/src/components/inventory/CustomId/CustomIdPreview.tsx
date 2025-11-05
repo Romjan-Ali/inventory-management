@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { RefreshCw, Copy, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useDebounce } from 'use-debounce' 
 
 interface CustomIdPreviewProps {
   format: IdFormatElement[]
@@ -18,7 +18,7 @@ export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
   const [lastValidPreview, setLastValidPreview] = useState<string>('')
 
   // Debounce the format to prevent too many API calls (500ms delay)
-  const debouncedFormat = useDebounce(format, 500)
+  const [debouncedFormat] = useDebounce(format, 500)
 
   useEffect(() => {
     if (debouncedFormat.length > 0) {      

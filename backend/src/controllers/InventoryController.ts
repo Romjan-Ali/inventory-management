@@ -136,7 +136,7 @@ export class InventoryController {
             ? (tags as string[])
             : [tags as string]
           : undefined,
-        sort: sort as 'newest' | 'oldest' | undefined,
+        sort: sort as string,
       }
 
       if(user?.isAdmin) {

@@ -451,18 +451,8 @@ async function main() {
   console.log('');
   console.log('📊 Seed Data Summary:');
   console.log(`   👥 Users: ${users.length}`);
-  console.log(`   📦 Inventories: 3`);
   console.log(`   📝 Items: ${officeEquipmentItems.length + libraryItems.length + electronicsItems.length}`);
-  console.log(`   ❤️ Likes: 6`);
   console.log(`   💬 Posts: ${posts.length}`);
-  console.log('');
-  console.log('🔑 Test User Emails:');
-  console.log(`   Admin: admin@inventory.com`);
-  console.log(`   Regular: john.doe@company.com`);
-  console.log(`   Regular: jane.smith@company.com`);
-  console.log(`   Regular: bob.wilson@company.com`);
-  console.log('');
-  console.log('🚀 You can now start the server with: bun run dev');
 }
 
 main()

@@ -129,7 +129,7 @@ export class InventoryService {
       search?: string
       category?: string
       tags?: string[]
-      sort?: 'newest' | 'oldest'
+      sort?: string
     },
     userId?: string
   ) {

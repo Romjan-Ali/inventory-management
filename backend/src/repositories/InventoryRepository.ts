@@ -231,7 +231,7 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       search?: string
       category?: string
       tags?: string[]
-      sort?: 'newest' | 'oldest'
+      sort?: string
     },
     isPublic?: boolean
   ): Promise<{ inventories: Inventory[]; total: number }> {
@@ -240,9 +240,7 @@ export class InventoryRepository extends BaseRepository<Inventory> {
 
     const where: any = {}
 
-    const orderBy: any = {
-      createdAt: 'desc',
-    }
+    let orderBy: any = {}
 
     if (isPublic) {
       where.isPublic = true
@@ -263,9 +261,28 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       where.tags = { hasSome: tags }
     }
 
-    if(sort && (sort === 'newest' || sort === 'oldest')) {
-      params.sort === 'newest' ? 
-      orderBy.createdAt = 'desc' : orderBy.createdAt = 'asc'
+    switch (sort) {
+      case 'oldest':
+        orderBy = { createdAt: 'asc' }
+        break
+      case 'popular':
+        orderBy = { updatedAt: 'desc' }
+        break
+      case 'items':
+        orderBy = { updatedAt: 'desc' }
+        break
+      case 'title':
+        orderBy = { title: 'asc' }
+        break
+      case 'newest':
+      default:
+        orderBy = { createdAt: 'desc' }
+    }
+
+    if (sort && (sort === 'newest' || sort === 'oldest')) {
+      params.sort === 'newest'
+        ? (orderBy.createdAt = 'desc')
+        : (orderBy.createdAt = 'asc')
     }
 
     const [inventories, total] = await Promise.all([

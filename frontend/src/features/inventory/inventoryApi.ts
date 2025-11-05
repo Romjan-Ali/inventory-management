@@ -5,9 +5,8 @@ import type {
   CreateInventoryRequest,
   UpdateInventoryRequest,
   IdFormatElement,
-  InventoryAccess
+  InventoryAccess,
 } from '@/types'
-
 
 export const inventoryApi = createApi({
   reducerPath: 'inventoryApi',
@@ -25,7 +24,14 @@ export const inventoryApi = createApi({
   endpoints: (builder) => ({
     getInventories: builder.query<
       { inventories: Inventory[]; total: number },
-      { page?: number; limit?: number; search?: string; category?: string; tags?: string[]; sort?: string; }
+      {
+        page?: number
+        limit?: number
+        search?: string
+        category?: string
+        tags?: string[]
+        sort?: string
+      }
     >({
       query: (params) => ({
         url: '/',
@@ -39,7 +45,10 @@ export const inventoryApi = createApi({
       providesTags: (result, error, id) => [{ type: 'Inventory', id }],
     }),
 
-    getAllPublicInventoryTags: builder.query<{ name: string; count: number }[], void>({
+    getAllPublicInventoryTags: builder.query<
+      { name: string; count: number }[],
+      void
+    >({
       query: () => '/tags/public',
       providesTags: ['Inventory'],
     }),
@@ -137,7 +146,7 @@ export const inventoryApi = createApi({
       { preview: string },
       { format: IdFormatElement[] }
     >({
-      query: ({ format }) => ({ 
+      query: ({ format }) => ({
         url: '/preview-custom-id',
         method: 'POST',
         body: { format },
