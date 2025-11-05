@@ -1,4 +1,4 @@
-// frontend/src/components/inventory/View/InventoryCard.tsx
+// frontend/src/components/inventory/View/InventoryCards.tsx
 import type { Inventory } from '@/types'
 import { Link } from 'react-router-dom'
 

@@ -33,7 +33,6 @@ export default function InventoryBrowse() {
   const [debouncedSearch] = useDebounce(localSearch, 500)
 
   // Get URL params with defaults
-  const search = searchParams.get('search') || ''
   const sort = searchParams.get('sort') || 'newest'
   const category = searchParams.get('category') || ''
   const tag = searchParams.get('tag') || ''

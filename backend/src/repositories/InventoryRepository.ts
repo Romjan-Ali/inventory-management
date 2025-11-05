@@ -266,7 +266,7 @@ export class InventoryRepository extends BaseRepository<Inventory> {
         orderBy = { updatedAt: 'desc' }
         break
       case 'items':
-        orderBy = { updatedAt: 'desc' }
+        orderBy = { items: { _count: 'desc' } }
         break
       case 'title':
         orderBy = { title: 'asc' }
@@ -274,12 +274,6 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       case 'newest':
       default:
         orderBy = { createdAt: 'desc' }
-    }
-
-    if (sort && (sort === 'newest' || sort === 'oldest')) {
-      params.sort === 'newest'
-        ? (orderBy.createdAt = 'desc')
-        : (orderBy.createdAt = 'asc')
     }
 
     const [inventories, total] = await Promise.all([

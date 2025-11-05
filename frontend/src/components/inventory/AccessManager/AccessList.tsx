@@ -73,6 +73,7 @@ export default function AccessList({ accessList, inventory, onRevokeAccess, isRe
                 onClick={() => onRevokeAccess(access.user.id)}
                 disabled={isRevoking}
                 className="h-8 w-8 p-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                aria-label="Revoke access"
               >
                 {isRevoking ? (
                   <LoadingSpinner size="sm" />
