@@ -8,8 +8,7 @@
   "logout": "Logout",
   "language": "Language",
   "english": "English",
-  "bangla": "Bangla"
-  ,
+  "bangla": "Bangla",
   "browseInventoriesTitle": "Browse Inventories",
   "browseInventoriesSubtitle": "Discover and explore public inventories",
   "myDashboard": "My Dashboard",
@@ -21,8 +20,7 @@
   "popularTags": "Popular Tags",
   "inventoriesFound": "Inventories Found",
   "public": "Public",
-  "itemsCount": "{{count}} items"
-  ,
+  "itemsCount": "{{count}} items",
   "tabItems": "Items",
   "tabDiscussion": "Discussion",
   "tabSettings": "Settings",
@@ -55,8 +53,7 @@
   "newestFirst": "Newest First",
   "oldestFirst": "Oldest First",
   "mostPopular": "Most Popular",
-  "sortBy": "Sort by"
-  ,
+  "sortBy": "Sort by",
   "inventory": "Inventory",
   "category": "Category",
   "tags": "Tags",
@@ -69,8 +66,7 @@
   "noAdditionalUsers": "No additional users have access to this inventory.",
   "canEdit": "Can edit",
   "viewOnly": "View only",
-  "revokeAccess": "Revoke access"
-  ,
+  "revokeAccess": "Revoke access",
   "itemsHeader": "Items",
   "itemsSubtitle": "Manage items in this inventory",
   "addItem": "Add Item",
@@ -98,8 +94,7 @@
   "values": "Values:",
   "noStats": "No data available. Add some items to see statistics.",
   "true": "True",
-  "false": "False"
-  ,
+  "false": "False",
   "accessHeader": "Access Control",
   "accessSubtitle": "Manage who can view and edit this inventory",
   "publicNotice": "This inventory is public. All authenticated users can view and add items. You can still grant specific users write access below.",
@@ -161,8 +156,7 @@
   "showInTable": "Show in table",
   "hideFromTableBtn": "Hide from Table",
   "showInTableBtn": "Show in Table",
-  "deleteField": "Delete Field"
-  ,
+  "deleteField": "Delete Field",
   "typeYourMessage": "Type your message...",
   "noMessages": "No messages yet. Start the conversation!",
   "delete": "Delete",
@@ -176,12 +170,10 @@
   "noItemsFound": "No items found in this inventory.",
   "showingRangeOf": "Showing {{from}} to {{to}} of {{total}} items",
   "previous": "Previous",
-  "next": "Next"
-  ,
+  "next": "Next",
   "selected": "selected",
   "deleteSelected": "Delete Selected",
-  "editSelected": "Edit Selected"
-  ,
+  "editSelected": "Edit Selected",
   "manageYourInventory": "Manage Your Inventory",
   "withUltimateFlexibility": "With Ultimate Flexibility",
   "heroSubtitle": "Create custom inventories with your own fields, collaborate in real-time, and find anything instantly.",
@@ -303,18 +295,14 @@
   "elementDescRandom9digit": "Random 9-digit number (000000000-999999999)",
   "elementDescGuid": "Globally Unique Identifier",
   "elementDescDatetime": "Current date and time when item is created",
-  "elementDescSequence": "Auto-incrementing sequence number"
-  ,
+  "elementDescSequence": "Auto-incrementing sequence number",
   "singleLineText": "Single Line Text",
   "multiLineText": "Multi-line Text",
   "numberWord": "Number",
   "trueFalseWord": "True/False",
-  "documentImageLink": "Document/Image Link"
-  ,
+  "documentImageLink": "Document/Image Link",
   "toggleTheme": "Toggle theme",
   "light": "Light",
   "dark": "Dark",
   "system": "System"
 }
-
-

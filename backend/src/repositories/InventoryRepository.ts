@@ -263,7 +263,7 @@ export class InventoryRepository extends BaseRepository<Inventory> {
         orderBy = { createdAt: 'asc' }
         break
       case 'popular':
-        orderBy = { updatedAt: 'desc' }
+        orderBy = { items: { _count: 'desc' } }
         break
       case 'items':
         orderBy = { items: { _count: 'desc' } }

@@ -3,12 +3,15 @@ import { useTranslation } from 'react-i18next'
 export default function LanguageSwitcher() {
   const { i18n, t } = useTranslation()
 
-  const changeLanguage = (lng: 'en' | 'bn') => {
-    void i18n.changeLanguage(lng)
+  const changeLanguage = async (lng: 'en' | 'bn') => {
     try {
+      await i18n.changeLanguage(lng)
       localStorage.setItem('lang', lng)
       document.documentElement.lang = lng
-    } catch {}
+    } catch (error) {
+      // Silently fail for localStorage (e.g., private browsing mode)
+      console.warn('Failed to persist language preference:', error)
+    }
   }
 
   const current = (i18n.resolvedLanguage || 'en') as 'en' | 'bn'

@@ -8,8 +8,7 @@
   "logout": "লগআউট",
   "language": "ভাষা",
   "english": "ইংরেজি",
-  "bangla": "বাংলা"
-  ,
+  "bangla": "বাংলা",
   "browseInventoriesTitle": "ইনভেন্টরি ব্রাউজ করুন",
   "browseInventoriesSubtitle": "পাবলিক ইনভেন্টরি আবিষ্কার ও এক্সপ্লোর করুন",
   "myDashboard": "আমার ড্যাশবোর্ড",
@@ -21,8 +20,7 @@
   "popularTags": "জনপ্রিয় ট্যাগ",
   "inventoriesFound": "টি ইনভেন্টরি পাওয়া গেছে",
   "public": "পাবলিক",
-  "itemsCount": "{{count}}টি আইটেম"
-  ,
+  "itemsCount": "{{count}}টি আইটেম",
   "tabItems": "আইটেম",
   "tabDiscussion": "আলোচনা",
   "tabSettings": "সেটিংস",
@@ -55,8 +53,7 @@
   "newestFirst": "সর্বশেষ আগে",
   "oldestFirst": "প্রাচীনতম আগে",
   "mostPopular": "সবচেয়ে জনপ্রিয়",
-  "sortBy": "সাজান"
-  ,
+  "sortBy": "সাজান",
   "inventory": "ইনভেন্টরি",
   "category": "বিভাগ",
   "tags": "ট্যাগ",
@@ -69,8 +66,7 @@
   "noAdditionalUsers": "এই ইনভেন্টরিতে অতিরিক্ত কোনো ব্যবহারকারীর অ্যাক্সেস নেই।",
   "canEdit": "সম্পাদনা করতে পারে",
   "viewOnly": "শুধু দেখা যাবে",
-  "revokeAccess": "অ্যাক্সেস বাতিল করুন"
-  ,
+  "revokeAccess": "অ্যাক্সেস বাতিল করুন",
   "itemsHeader": "আইটেম",
   "itemsSubtitle": "এই ইনভেন্টরির আইটেমসমূহ পরিচালনা করুন",
   "addItem": "আইটেম যোগ করুন",
@@ -98,8 +94,7 @@
   "values": "মান:",
   "noStats": "কোনো ডেটা নেই। পরিসংখ্যান দেখতে কিছু আইটেম যোগ করুন।",
   "true": "সত্য",
-  "false": "মিথ্যা"
-  ,
+  "false": "মিথ্যা",
   "accessHeader": "অ্যাক্সেস কন্ট্রোল",
   "accessSubtitle": "কে দেখবে ও সম্পাদনা করবে তা ম্যানেজ করুন",
   "publicNotice": "এই ইনভেন্টরি পাবলিক। সব প্রমাণিত ব্যবহারকারী দেখতে ও আইটেম যোগ করতে পারবেন। তবুও আপনি নির্দিষ্ট ব্যবহারকারীদের লিখনাধিকার দিতে পারেন।",
@@ -161,8 +156,7 @@
   "showInTable": "টেবিলে দেখাও",
   "hideFromTableBtn": "টেবিল থেকে লুকান",
   "showInTableBtn": "টেবিলে দেখাও",
-  "deleteField": "ফিল্ড মুছুন"
-  ,
+  "deleteField": "ফিল্ড মুছুন",
   "typeYourMessage": "আপনার বার্তা লিখুন...",
   "noMessages": "এখনও কোনো বার্তা নেই। শুরু করুন!",
   "delete": "মুছুন",
@@ -176,12 +170,10 @@
   "noItemsFound": "এই ইনভেন্টরিতে কোনো আইটেম নেই।",
   "showingRangeOf": "{{from}} থেকে {{to}} মোট {{total}} আইটেম",
   "previous": "পূর্ববর্তী",
-  "next": "পরবর্তী"
-  ,
+  "next": "পরবর্তী",
   "selected": "নির্বাচিত",
   "deleteSelected": "নির্বাচিত মুছুন",
-  "editSelected": "নির্বাচিত সম্পাদনা"
-  ,
+  "editSelected": "নির্বাচিত সম্পাদনা",
   "manageYourInventory": "আপনার ইনভেন্টরি ম্যানেজ করুন",
   "withUltimateFlexibility": "সর্বোচ্চ নমনীয়তার সাথে",
   "heroSubtitle": "নিজস্ব ফিল্ড দিয়ে কাস্টম ইনভেন্টরি তৈরি করুন, রিয়েল-টাইমে দল নিয়ে কাজ করুন এবং দ্রুত সার্চ করুন।",
@@ -308,12 +300,9 @@
   "multiLineText": "একাধিক লাইনের টেক্সট",
   "numberWord": "সংখ্যা",
   "trueFalseWord": "সত্য/মিথ্যা",
-  "documentImageLink": "ডকুমেন্ট/ইমেজ লিংক"
-  ,
+  "documentImageLink": "ডকুমেন্ট/ইমেজ লিংক",
   "toggleTheme": "থিম পরিবর্তন করুন",
   "light": "লাইট",
   "dark": "ডার্ক",
   "system": "সিস্টেম"
 }
-
-

@@ -255,7 +255,7 @@ export default function InventoryBrowse() {
                         updateSearchParams({ page: (page - 1).toString() })
                       }
                     >
-                      Previous
+                      {t('previous')}
                     </Button>
                     <Button
                       variant="outline"
@@ -264,7 +264,7 @@ export default function InventoryBrowse() {
                         updateSearchParams({ page: (page + 1).toString() })
                       }
                     >
-                      Next
+                      {t('next')}
                     </Button>
                   </div>
                 </div>
