@@ -40,7 +40,7 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
         FIELD_TYPES.find((t) => t.value === type)?.label || type
       } Field`,
       description: '',
-      visibleInTable: false,
+      visibleInTable: true,
       order: newOrder,
     }
 

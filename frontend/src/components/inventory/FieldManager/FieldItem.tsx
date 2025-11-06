@@ -141,22 +141,24 @@ export default function FieldItem({
                     }
                     className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-mono transition-colors ${
                       field.visibleInTable
-                        ? 'text-green-700 bg-green-500/15 hover:bg-green-500/25'
-                        : 'text-muted-foreground bg-muted hover:bg-muted/70'
+                        ? 'text-muted-foreground bg-muted hover:bg-muted/70'
+                        : 'text-green-700 bg-green-500/15 hover:bg-green-500/25'
                     }`}
                     title={
-                      field.visibleInTable ? t('hideFromTable') : t('showInTable')
+                      field.visibleInTable
+                        ? t('hideFromTable')
+                        : t('showInTable')
                     }
                   >
                     {field.visibleInTable ? (
                       <>
                         {t('hideFromTableBtn')}
-                        <Eye className="h-4 w-4" />
+                        <EyeOff className="h-4 w-4" />
                       </>
                     ) : (
                       <>
                         {t('showInTableBtn')}
-                        <EyeOff className="h-4 w-4" />
+                        <Eye className="h-4 w-4" />
                       </>
                     )}
                   </Button>

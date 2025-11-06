@@ -34,6 +34,7 @@ interface ActiveField {
   index: 1 | 2 | 3
   name?: string
   visible: boolean
+  order: number
 }
 
 
@@ -68,95 +69,110 @@ export default function ItemForm({
       index: 1,
       name: inventory.string1Name,
       visible: inventory.string1Visible,
+      order: inventory.string1Order,
     },
     {
       type: 'string',
       index: 2,
       name: inventory.string2Name,
       visible: inventory.string2Visible,
+      order: inventory.string2Order,
     },
     {
       type: 'string',
       index: 3,
       name: inventory.string3Name,
       visible: inventory.string3Visible,
+      order: inventory.string3Order,
     },
     {
       type: 'text',
       index: 1,
       name: inventory.text1Name,
       visible: inventory.text1Visible,
+      order: inventory.text1Order,
     },
     {
       type: 'text',
       index: 2,
       name: inventory.text2Name,
       visible: inventory.text2Visible,
+      order: inventory.text2Order,
     },
     {
       type: 'text',
       index: 3,
       name: inventory.text3Name,
       visible: inventory.text3Visible,
+      order: inventory.text3Order,
     },
     {
       type: 'number',
       index: 1,
       name: inventory.number1Name,
       visible: inventory.number1Visible,
+      order: inventory.number1Order,
     },
     {
       type: 'number',
       index: 2,
       name: inventory.number2Name,
       visible: inventory.number2Visible,
+      order: inventory.number2Order,
     },
     {
       type: 'number',
       index: 3,
       name: inventory.number3Name,
       visible: inventory.number3Visible,
+      order: inventory.number3Order,
     },
     {
       type: 'boolean',
       index: 1,
       name: inventory.boolean1Name,
       visible: inventory.boolean1Visible,
+      order: inventory.boolean1Order,
     },
     {
       type: 'boolean',
       index: 2,
       name: inventory.boolean2Name,
       visible: inventory.boolean2Visible,
+      order: inventory.boolean2Order,
     },
     {
       type: 'boolean',
       index: 3,
       name: inventory.boolean3Name,
       visible: inventory.boolean3Visible,
+      order: inventory.boolean3Order,
     },
     {
       type: 'link',
       index: 1,
       name: inventory.link1Name,
       visible: inventory.link1Visible,
+      order: inventory.link1Order,
     },
     {
       type: 'link',
       index: 2,
       name: inventory.link2Name,
       visible: inventory.link2Visible,
+      order: inventory.link2Order,
     },
     {
       type: 'link',
       index: 3,
       name: inventory.link3Name,
       visible: inventory.link3Visible,
+      order: inventory.link3Order,
     },
   ].filter(
     (field): field is ActiveField & { name: string } =>
       !!field.name && field.visible
-  )
+  ).sort((a, b) => a.order - b.order)
 
   // Create dynamic validation schema
   const fieldValidations: Record<string, z.ZodTypeAny> = {
@@ -209,7 +225,17 @@ export default function ItemForm({
   activeFields.forEach((field) => {
     const key = `${field.type}${field.index}Value`
     const value = item?.[key as keyof Item]
-    defaultValues[key] = value !== undefined && value !== null ? value : ''
+    if (value !== undefined && value !== null) {
+      if (field.type === 'string' || field.type === 'text' || field.type === 'link') {
+        defaultValues[key] = value ? String(value) : ''
+      } else if (field.type === 'number') {
+        defaultValues[key] = value ? Number(value) : 0
+      } else if (field.type === 'boolean') {
+        defaultValues[key] = value ? Boolean(value) : false
+      } else {
+        defaultValues[key] = value
+      }
+    }
   })
 
   const {
@@ -351,7 +377,7 @@ export default function ItemForm({
             <Checkbox
               id={key}
               checked={(watchedFields[key] as boolean) || false}
-              onCheckedChange={(checked) => setValue(key, checked as boolean)}
+              onCheckedChange={(checked) => setValue(key, Boolean(checked))}
             />
             <Label htmlFor={key}>{field.name}</Label>
             {error && (
