@@ -8,12 +8,14 @@ import { Button } from '@/components/ui/button'
 import { Save, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { useTranslation } from 'react-i18next'
 
 interface CustomIdManagerProps {
   inventory: Inventory
 }
 
 export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
+  const { t } = useTranslation()
   const [updateCustomIdFormat, { isLoading }] =
     useUpdateCustomIdFormatMutation()
   const [format, setFormat] = useState<IdFormatElement[]>([])
@@ -47,7 +49,7 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
 
     if (!hasRandomOrSequence) {
       toast.error(
-        'Custom ID format must contain at least one random, GUID, or sequence element to ensure uniqueness'
+        t('customIdFormatUniqueness')
       )
       return
     }
@@ -76,9 +78,9 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold">Custom ID Format</h2>
+        <h2 className="text-2xl font-bold">{t('customIdHeader')}</h2>
         <p className="text-muted-foreground">
-          Define a custom format for generating item IDs in this inventory.
+          {t('customIdSubtitle')}
         </p>
       </div>
 
@@ -86,17 +88,17 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
       {hasChanges && (
         <div className="flex items-center justify-between p-4 border rounded-lg bg-blue-50 dark:bg-blue-950">
           <div className="text-blue-900 dark:text-blue-100">
-            You have unsaved changes to the custom ID format
+            {t('unsavedCustomId')}
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={resetChanges}>
               <RotateCcw className="h-4 w-4 mr-2" />
-              Reset
+              {t('reset')}
             </Button>
             <Button onClick={saveChanges} disabled={isLoading}>
               {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
               <Save className="h-4 w-4 mr-2" />
-              Save Changes
+              {t('saveChanges')}
             </Button>
           </div>
         </div>
@@ -121,9 +123,9 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
       {/* Current Format Info */}
       {originalFormat.length > 0 && !hasChanges && (
         <div className="rounded-lg border p-4">
-          <h4 className="font-medium mb-2">Current Format</h4>
+          <h4 className="font-medium mb-2">{t('currentFormat')}</h4>
           <p className="text-sm text-muted-foreground">
-            Your custom ID format is active. New items will use this format.
+            {t('currentFormatDesc')}
           </p>
         </div>
       )}

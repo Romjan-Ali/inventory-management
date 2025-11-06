@@ -12,14 +12,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Eye, EyeOff, Users, Package, Image as ImageIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Inventory } from '@/types'
+import { useTranslation } from 'react-i18next'
 
 interface InventoryTableProps {
   inventories: Inventory[]
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
+  const { t, i18n } = useTranslation()
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(i18n.resolvedLanguage || 'en', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -39,14 +41,14 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="border-b">Inventory</TableHead>
-          <TableHead className="border-b">Category</TableHead>
-          <TableHead className="border-b">Tags</TableHead>
-          <TableHead className="border-b">Items</TableHead>
-          <TableHead className="border-b">Visibility</TableHead>
-          <TableHead className="border-b">Creator</TableHead>
-          <TableHead className="border-b">Last Updated</TableHead>
-          <TableHead className="border-b">Version</TableHead>
+          <TableHead className="border-b">{t('inventory')}</TableHead>
+          <TableHead className="border-b">{t('category')}</TableHead>
+          <TableHead className="border-b">{t('tags')}</TableHead>
+          <TableHead className="border-b">{t('items')}</TableHead>
+          <TableHead className="border-b">{t('visibility')}</TableHead>
+          <TableHead className="border-b">{t('creator')}</TableHead>
+          <TableHead className="border-b">{t('lastUpdated')}</TableHead>
+          <TableHead className="border-b">{t('version')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -132,7 +134,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
                     className="flex items-center gap-1 w-fit"
                   >
                     <Eye className="h-3 w-3" />
-                    Public
+                    {t('public')}
                   </Badge>
                 ) : (
                   <Badge
@@ -140,7 +142,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
                     className="flex items-center gap-1 w-fit"
                   >
                     <EyeOff className="h-3 w-3" />
-                    Private
+                    {t('private')}
                   </Badge>
                 )}
               </TableCell>

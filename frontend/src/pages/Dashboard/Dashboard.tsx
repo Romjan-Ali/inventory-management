@@ -7,8 +7,10 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Plus, FolderOpen, Users, List, LayoutGrid } from 'lucide-react'
 import InventoryCards from '@/components/inventory/View/InventoryCards'
 import InventoryTable from '@/components/inventory/View/InventoryTable'
+import { useTranslation } from 'react-i18next'
 
 export default function Dashboard() {
+  const { t } = useTranslation()
   const { user } = useAppSelector((state) => state.auth)
   const [activeTab, setActiveTab] = useState<'owned' | 'accessible'>('owned')
   const [viewType, setViewType] = useState<'table' | 'card'>('table')
@@ -34,9 +36,9 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('dashboard')}</h1>
           <p className="text-muted-foreground">
-            Welcome back, {user?.name}! Manage your inventories and items.
+            {t('welcomeBack', { name: user?.name || '' })}
           </p>
         </div>
         <Link
@@ -44,7 +46,7 @@ export default function Dashboard() {
           className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-background shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           <Plus className="h-4 w-4" />
-          New Inventory
+          {t('newInventory')}
         </Link>
       </div>
 
@@ -55,7 +57,7 @@ export default function Dashboard() {
             <FolderOpen className="h-8 w-8 text-primary" />
             <div>
               <p className="text-2xl font-bold">{ownedInventories.length}</p>
-              <p className="text-sm text-muted-foreground">My Inventories</p>
+              <p className="text-sm text-muted-foreground">{t('myInventories')}</p>
             </div>
           </div>
         </div>
@@ -67,7 +69,7 @@ export default function Dashboard() {
               <p className="text-2xl font-bold">
                 {accessibleInventories.length}
               </p>
-              <p className="text-sm text-muted-foreground">Shared with Me</p>
+              <p className="text-sm text-muted-foreground">{t('sharedWithMe')}</p>
             </div>
           </div>
         </div>
@@ -81,7 +83,7 @@ export default function Dashboard() {
               <p className="text-2xl font-bold">
                 {inventoriesData?.total || 0}
               </p>
-              <p className="text-sm text-muted-foreground">Total Items</p>
+              <p className="text-sm text-muted-foreground">{t('totalItems')}</p>
             </div>
           </div>
         </div>
@@ -98,7 +100,7 @@ export default function Dashboard() {
                 : 'border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700'
             }`}
           >
-            My Inventories ({ownedInventories.length})
+            {t('myInventories')} ({ownedInventories.length})
           </button>
           <button
             onClick={() => setActiveTab('accessible')}
@@ -108,13 +110,13 @@ export default function Dashboard() {
                 : 'border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700'
             }`}
           >
-            Shared with Me ({accessibleInventories.length})
+            {t('sharedWithMe')} ({accessibleInventories.length})
           </button>
         </nav>
         <div className="flex items-center">
           <div className="flex rounded-full border overflow-hidden">
             <button
-              title="View as Table"
+              title={t('viewAsTable')}
               className={`px-4 py-1 text-accent ${
                 viewType === 'table' ? 'bg-accent-foreground' : 'text-primary'
               }`}
@@ -123,7 +125,7 @@ export default function Dashboard() {
               <List size={16} />
             </button>
             <button
-              title="View as Card"
+              title={t('viewAsCard')}
               className={`px-4 py-1 text-accent ${
                 viewType === 'card' ? 'bg-accent-foreground' : 'text-primary'
               }`}
@@ -160,12 +162,12 @@ export default function Dashboard() {
             <div className="col-span-full text-center py-12">
               <FolderOpen className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">
-                No inventories found
+                {t('noInventoriesFound')}
               </h3>
               <p className="text-muted-foreground mt-2">
                 {activeTab === 'owned'
-                  ? 'Get started by creating your first inventory.'
-                  : 'No one has shared any inventories with you yet.'}
+                  ? t('getStartedByCreating')
+                  : t('noOneHasShared')}
               </p>
               {activeTab === 'owned' && (
                 <Link
@@ -173,7 +175,7 @@ export default function Dashboard() {
                   className="mt-4 inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium shadow-sm text-background bg-primary hover:bg-primary/90"
                 >
                   <Plus className="h-4 w-4" />
-                  Create Inventory
+                  {t('createInventory')}
                 </Link>
               )}
             </div>

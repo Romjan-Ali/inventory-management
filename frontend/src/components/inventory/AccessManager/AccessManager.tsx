@@ -6,12 +6,14 @@ import UserSearch from './UserSearch'
 import AccessList from './AccessList'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 interface AccessManagerProps {
   inventory: Inventory
 }
 
 export default function AccessManager({ inventory }: AccessManagerProps) {
+  const { t } = useTranslation()
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [canWrite, setCanWrite] = useState(true)
   
@@ -53,9 +55,9 @@ export default function AccessManager({ inventory }: AccessManagerProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold">Access Control</h2>
+        <h2 className="text-2xl font-bold">{t('accessHeader')}</h2>
         <p className="text-muted-foreground">
-          Manage who can view and edit this inventory
+          {t('accessSubtitle')}
         </p>
       </div>
 
@@ -63,15 +65,14 @@ export default function AccessManager({ inventory }: AccessManagerProps) {
       {inventory.isPublic && (
         <div className="rounded-lg bg-blue-50 p-4">
           <p className="text-sm text-blue-700">
-            This inventory is public. All authenticated users can view and add items.
-            You can still grant specific users write access below.
+            {t('publicNotice')}
           </p>
         </div>
       )}
 
       {/* Grant Access Section */}
       <div className="rounded-lg border p-6">
-        <h3 className="text-lg font-medium mb-4">Grant Access</h3>
+        <h3 className="text-lg font-medium mb-4">{t('grantAccess')}</h3>
         
         <div className="space-y-4">
           <UserSearch
@@ -90,7 +91,7 @@ export default function AccessManager({ inventory }: AccessManagerProps) {
                   className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                 />
                 <label htmlFor="canWrite" className="text-sm font-medium">
-                  Allow editing and adding items
+                  {t('allowEditing')}
                 </label>
               </div>
               
@@ -99,7 +100,7 @@ export default function AccessManager({ inventory }: AccessManagerProps) {
                 disabled={isGranting}                
               >
                 {isGranting && <LoadingSpinner size="sm" />}
-                Grant Access
+                {t('grantAccess')}
               </Button>
             </div>
           )}
@@ -109,7 +110,7 @@ export default function AccessManager({ inventory }: AccessManagerProps) {
       {/* Access List */}
       <div className="rounded-lg border">
         <div className="p-6 border-b">
-          <h3 className="text-lg font-medium">Current Access</h3>
+          <h3 className="text-lg font-medium">{t('currentAccess')}</h3>
         </div>
         
         {isLoading ? (

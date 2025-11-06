@@ -8,8 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
+  const { t } = useTranslation()
   const { user } = useAppSelector((state) => state.auth)
   const { data: popularInventories, isLoading: isLoadingPopular } = useGetPopularInventoriesQuery(5)
   const { data: latestInventoriesData, isLoading: isLoadingLatest } = useGetInventoriesQuery({
@@ -23,9 +25,9 @@ export default function Home() {
 
   // Quick stats data
   const quickStats = [
-    { label: 'Total Inventories', value: '1,200+' },
-    { label: 'Items Tracked', value: '50,000+' },
-    { label: 'Active Users', value: '500+' },
+    { label: t('totalInventories'), value: '1,200+' },
+    { label: t('itemsTracked'), value: '50,000+' },
+    { label: t('activeUsers'), value: '500+' },
   ]
 
   const features = [
@@ -61,12 +63,11 @@ export default function Home() {
       <section className="text-center py-16 bg-gradient-to-b from-background to-muted/30 rounded-3xl">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-            Manage Your Inventory
-            <span className="block text-primary mt-2">With Ultimate Flexibility</span>
+            {t('manageYourInventory')}
+            <span className="block text-primary mt-2">{t('withUltimateFlexibility')}</span>
           </h1>
           <p className="mt-6 text-xl leading-8 text-muted-foreground max-w-3xl mx-auto">
-            Create custom inventories with your own fields, collaborate with your team in real-time, 
-            and find anything instantly with powerful search. Perfect for offices, libraries, stores, and more.
+            {t('heroSubtitle')}
           </p>
           
           {/* Quick Stats */}
@@ -83,19 +84,19 @@ export default function Home() {
             {user ? (
               <>
                 <Button asChild size="lg">
-                  <Link to="/dashboard">Go to Dashboard</Link>
+                  <Link to="/dashboard">{t('goToDashboard')}</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
-                  <Link to="/inventory/new">Create Inventory</Link>
+                  <Link to="/inventory/new">{t('createInventory')}</Link>
                 </Button>
               </>
             ) : (
               <>
                 <Button asChild size="lg">
-                  <Link to="/register">Get Started Free</Link>
+                  <Link to="/register">{t('getStartedFree')}</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
-                  <Link to="/inventory">Explore Public Inventories</Link>
+                  <Link to="/inventory">{t('explorePublicInventories')}</Link>
                 </Button>
               </>
             )}
@@ -106,9 +107,9 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold">Why Choose Our Inventory Manager?</h2>
+          <h2 className="text-3xl font-bold">{t('whyChoose')}</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Built for flexibility and collaboration, with features that adapt to your needs
+            {t('whyChooseSub')}
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -131,11 +132,11 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Latest Inventories</CardTitle>
-                  <CardDescription>Recently created inventories</CardDescription>
+                  <CardTitle>{t('latestInventories')}</CardTitle>
+                  <CardDescription>{t('recentlyCreatedInventories')}</CardDescription>
                 </div>
                 <Button asChild variant="outline" size="sm">
-                  <Link to="/inventory?sort=newest">View All</Link>
+                  <Link to="/inventory?sort=newest">{t('viewAll')}</Link>
                 </Button>
               </div>
             </CardHeader>
@@ -148,11 +149,11 @@ export default function Home() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Creator</TableHead>
-                      <TableHead>Items</TableHead>
+                      <TableHead>{t('nameCol')}</TableHead>
+                      <TableHead>{t('descriptionCol')}</TableHead>
+                      <TableHead>{t('categoryCol')}</TableHead>
+                      <TableHead>{t('creatorCol')}</TableHead>
+                      <TableHead>{t('itemsCol')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -165,7 +166,7 @@ export default function Home() {
                         </TableCell>
                         <TableCell>
                           <div className="max-w-[200px] truncate text-sm text-muted-foreground">
-                            {inventory.description || 'No description'}
+                            {inventory.description || t('noDescription')}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -202,8 +203,8 @@ export default function Home() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Popular Inventories</CardTitle>
-                  <CardDescription>Most items</CardDescription>
+                  <CardTitle>{t('popularInventories')}</CardTitle>
+                  <CardDescription>{t('mostItems')}</CardDescription>
                 </div>
                 <Button asChild variant="outline" size="sm">
                   <Link to="/inventory?sort=popular">View All</Link>
@@ -219,11 +220,11 @@ export default function Home() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Creator</TableHead>
-                      <TableHead>Items</TableHead>
+                      <TableHead>{t('nameCol')}</TableHead>
+                      <TableHead>{t('descriptionCol')}</TableHead>
+                      <TableHead>{t('categoryCol')}</TableHead>
+                      <TableHead>{t('creatorCol')}</TableHead>
+                      <TableHead>{t('itemsCol')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -236,7 +237,7 @@ export default function Home() {
                         </TableCell>
                         <TableCell>
                           <div className="max-w-[200px] truncate text-sm text-muted-foreground">
-                            {inventory.description || 'No description'}
+                            {inventory.description || t('noDescription')}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -271,8 +272,8 @@ export default function Home() {
       {/* Tag Cloud Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Explore by Tags</CardTitle>
-          <CardDescription>Click on a tag to find related inventories</CardDescription>
+          <CardTitle>{t('exploreByTags')}</CardTitle>
+          <CardDescription>{t('clickTagToFind')}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoadingTags ? (
@@ -304,24 +305,24 @@ export default function Home() {
 
       {/* Final CTA Section */}
       <section className="text-center py-16 bg-primary/5 rounded-3xl">
-        <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+        <h2 className="text-3xl font-bold mb-4">{t('readyToGetStarted')}</h2>
         <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Join thousands of users who are already managing their inventories with ease
+          {t('joinThousands')}
         </p>
         {!user ? (
           <div className="flex items-center justify-center gap-x-6">
             <Button asChild size="lg">
-              <Link to="/register">Create Your Account</Link>
+              <Link to="/register">{t('createYourAccount')}</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link to="/inventory">
-                Browse Public Inventories <span aria-hidden="true">→</span>
+                {t('browsePublicInventoriesArrow')} <span aria-hidden="true">→</span>
               </Link>
             </Button>
           </div>
         ) : (
           <Button asChild size="lg">
-            <Link to="/inventory/new">Create Your First Inventory</Link>
+            <Link to="/inventory/new">{t('createYourFirstInventory')}</Link>
           </Button>
         )}
       </section>

@@ -3,6 +3,7 @@ import type { Inventory } from '@/types'
 import { User, Edit, Edit2, Trash2 } from 'lucide-react'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 interface Access {
   id: string
@@ -23,10 +24,11 @@ interface AccessListProps {
 }
 
 export default function AccessList({ accessList, inventory, onRevokeAccess, isRevoking }: AccessListProps) {
+  const { t } = useTranslation()
   if (accessList.length === 0) {
     return (
       <div className="p-8 text-center text-muted-foreground">
-        No additional users have access to this inventory.
+        {t('noAdditionalUsers')}
       </div>
     )
   }
@@ -53,27 +55,27 @@ export default function AccessList({ accessList, inventory, onRevokeAccess, isRe
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {access.canWrite ? (
+            {access.canWrite ? (
                 <>
                   <Edit className="h-4 w-4" />
-                  Can edit
+                {t('canEdit')}
                 </>
               ) : (
                 <>
                   <Edit2 className="h-4 w-4" />
-                  View only
+                {t('viewOnly')}
                 </>
               )}
             </div>
 
             {access.user.id !== inventory.creatorId && (
-              <Button
+            <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onRevokeAccess(access.user.id)}
                 disabled={isRevoking}
                 className="h-8 w-8 p-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                aria-label="Revoke access"
+              aria-label={t('revokeAccess')}
               >
                 {isRevoking ? (
                   <LoadingSpinner size="sm" />

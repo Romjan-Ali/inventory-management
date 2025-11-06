@@ -1,5 +1,6 @@
 import type { Post, Inventory } from '@/types'
 import PostItem from './PostItem'
+import { useTranslation } from 'react-i18next'
 
 interface PostListProps {
   posts: Post[]
@@ -7,10 +8,11 @@ interface PostListProps {
 }
 
 export default function PostList({ posts, inventory }: PostListProps) {
+  const { t } = useTranslation()
   if (posts.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        No messages yet. Start the conversation!
+        {t('noMessages')}
       </div>
     )
   }

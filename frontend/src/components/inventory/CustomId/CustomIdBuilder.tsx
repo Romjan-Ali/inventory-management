@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 interface CustomIdBuilderProps {
   format: IdFormatElement[]
@@ -70,6 +71,7 @@ function SortableCustomIdElement({ element, onUpdate, onRemove }: {
 }
 
 export default function CustomIdBuilder({ format, onFormatChange }: CustomIdBuilderProps) {
+  const { t } = useTranslation()
   const [newElementType, setNewElementType] = useState<IdElementType>('FIXED_TEXT')
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -80,7 +82,7 @@ export default function CustomIdBuilder({ format, onFormatChange }: CustomIdBuil
 
   const addElement = () => {
     if (format.length >= 10) {
-      toast.error('Maximum 10 elements allowed')
+      toast.error(t('max10Elements'))
       return
     }
 
@@ -123,16 +125,16 @@ export default function CustomIdBuilder({ format, onFormatChange }: CustomIdBuil
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-medium">Custom ID Format Builder</h3>
+        <h3 className="text-lg font-medium">{t('builderHeader')}</h3>
         <p className="text-muted-foreground">
-          Build your custom ID format by adding and arranging elements. Drag to reorder.
+          {t('builderSubtitle')}
         </p>
       </div>
 
       {/* Add Element Controls */}
       <div className="flex gap-3 items-end">
         <div className="flex-1 space-y-2">
-          <label className="text-sm font-medium">Add New Element</label>
+          <label className="text-sm font-medium">{t('addNewElement')}</label>
           <Select value={newElementType} onValueChange={(value: IdElementType) => setNewElementType(value)}>
             <SelectTrigger>
               <SelectValue />
@@ -149,20 +151,20 @@ export default function CustomIdBuilder({ format, onFormatChange }: CustomIdBuil
         
         <Button onClick={addElement} disabled={format.length >= 10}>
           <Plus className="h-4 w-4 mr-2" />
-          Add Element
+          {t('addElement')}
         </Button>
       </div>
 
       {/* Element Counter */}
       <div className="text-sm text-muted-foreground">
-        {format.length}/10 elements used
+        {format.length}/10 {t('elementsUsed')}
       </div>
 
       {/* Elements List */}
       {format.length === 0 ? (
         <div className="text-center py-12 rounded-lg border-2 border-dashed">
           <div className="text-muted-foreground">
-            No elements added yet. Start by adding your first element above.
+            {t('noElements')}
           </div>
         </div>
       ) : (
@@ -189,14 +191,14 @@ export default function CustomIdBuilder({ format, onFormatChange }: CustomIdBuil
       {/* Help Text */}
       <div className="rounded-lg bg-blue-50 dark:bg-blue-950 p-4">
         <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-          How it works
+          {t('howItWorks')}
         </h4>
         <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-          <li>• Drag elements to reorder them</li>
-          <li>• Use fixed text to add separators like dashes or underscores</li>
-          <li>• Sequence numbers auto-increment for each new item</li>
-          <li>• Random values ensure uniqueness</li>
-          <li>• Date/Time uses the creation timestamp</li>
+          <li>• {t('dragToReorder')}</li>
+          <li>• {t('useFixedText')}</li>
+          <li>• {t('sequenceAuto')}</li>
+          <li>• {t('randomEnsure')}</li>
+          <li>• {t('datetimeUses')}</li>
         </ul>
       </div>
     </div>

@@ -5,6 +5,8 @@ import { logout } from '@/features/auth/authSlice'
 import SearchBox from './SearchBox'
 import { LogOut, User, Menu, X, Search } from 'lucide-react'
 import { ModeToggle } from './ModeToggler'
+import LanguageSwitcher from './LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 
 export default function Header() {
@@ -12,6 +14,7 @@ export default function Header() {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showMobileSearch, setShowMobileSearch] = useState(false)
+  const { t } = useTranslation()
 
   const handleLogout = () => {
     dispatch(logout())
@@ -54,7 +57,7 @@ export default function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <div className="h-8 w-8 bg-primary rounded-lg" />
-              <span className="font-bold text-xl">InventoryApp</span>
+              <span className="font-bold text-xl">{t('appName')}</span>
             </Link>
           </div>
 
@@ -83,8 +86,9 @@ export default function Header() {
                   to="/dashboard"
                   className="text-sm font-medium transition-colors hover:text-primary"
                 >
-                  Dashboard
+                  {t('dashboard')}
                 </Link>
+                <LanguageSwitcher />
                 <ModeToggle />
                 <div className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
@@ -96,7 +100,7 @@ export default function Header() {
                 <button
                   onClick={handleLogout}
                   className="p-2 hover:bg-accent rounded-md transition-colors"
-                  title="Logout"
+                  title={t('logout')}
                 >
                   <LogOut className="h-4 w-4" />
                 </button>
@@ -109,11 +113,12 @@ export default function Header() {
                 >
                   <ModeToggle />
                 </button>
+                <LanguageSwitcher />
                 <Link
                   to="/login"
                   className="text-sm font-medium transition-colors hover:text-primary"
                 >
-                  Sign In
+                  {t('signIn')}
                 </Link>
               </>
             )}
@@ -157,7 +162,7 @@ export default function Header() {
                   className="block py-2 px-3 text-sm font-medium transition-colors hover:text-primary hover:bg-accent rounded-md"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Dashboard
+                  {t('dashboard')}
                 </Link>
 
                 <Link
@@ -165,7 +170,7 @@ export default function Header() {
                   className="block py-2 px-3 text-sm font-medium transition-colors hover:text-primary hover:bg-accent rounded-md"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  My Inventories
+                  {t('myInventories')}
                 </Link>
 
                 <Link
@@ -173,13 +178,16 @@ export default function Header() {
                   className="block py-2 px-3 text-sm font-medium transition-colors hover:text-primary hover:bg-accent rounded-md"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Profile
+                  {t('profile')}
                 </Link>
 
                 {/* Theme Toggle in Mobile Menu */}
                 <div className="flex items-center justify-between py-2 px-3">
-                  <span className="text-sm font-medium">Theme</span>
-                  <ModeToggle />
+                  <span className="text-sm font-medium">{t('theme')}</span>
+                  <div className="flex items-center gap-2">
+                    <LanguageSwitcher />
+                    <ModeToggle />
+                  </div>
                 </div>
 
                 {/* Logout Button */}
@@ -188,7 +196,7 @@ export default function Header() {
                   className="w-full flex items-center space-x-2 py-2 px-3 text-sm font-medium transition-colors hover:text-primary hover:bg-accent rounded-md text-left"
                 >
                   <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
+                  <span>{t('logout')}</span>
                 </button>
               </nav>
             </div>

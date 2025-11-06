@@ -1,9 +1,11 @@
 // frontend/src/pages/Auth/Login.tsx
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
+  const { t } = useTranslation()
 
   const handleSocialLogin = (provider: 'google' | 'github') => {
     setIsLoading(true)
@@ -14,7 +16,7 @@ export default function Login() {
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-foreground">
-          Sign in to your account
+          {t('loginTitle')}
         </h2>
       </div>
 
@@ -44,7 +46,7 @@ export default function Login() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Continue with Google
+            {t('continueWithGoogle')}
           </button>
 
           {/* GitHub Login */}
@@ -71,17 +73,17 @@ export default function Login() {
                 4.57-1.534 7.86-5.855 7.86-10.948C23.5 5.648 18.352.5 12 .5z"
               />
             </svg>
-            Continue with GitHub
+            {t('continueWithGithub')}
           </button>
         </div>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Don't have an account?{' '}
+          {t('noAccount')}{' '}
           <Link
             to="/login"
             className="font-semibold leading-6 text-primary hover:text-primary/80"
           >
-            Sign up with social login
+            {t('signupWithSocial')}
           </Link>
         </p>
       </div>

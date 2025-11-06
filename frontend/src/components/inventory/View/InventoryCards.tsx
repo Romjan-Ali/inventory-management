@@ -1,12 +1,14 @@
 // frontend/src/components/inventory/View/InventoryCards.tsx
 import type { Inventory } from '@/types'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function InventoryCards({
   inventories,
 }: {
   inventories: Inventory[]
 }) {
+  const { t } = useTranslation()
   return (
     <>
       {inventories &&
@@ -23,7 +25,7 @@ export default function InventoryCards({
               </h3>
               {inventory.isPublic && (
                 <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                  Public
+                  {t('public')}
                 </span>
               )}
             </div>
@@ -34,7 +36,7 @@ export default function InventoryCards({
 
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>{inventory.category}</span>
-              <span>{inventory._count?.items || 0} items</span>
+              <span>{t('itemsCount', { count: inventory._count?.items || 0 })}</span>
             </div>
 
             {inventory.tags.length > 0 && (

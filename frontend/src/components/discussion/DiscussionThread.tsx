@@ -6,12 +6,14 @@ import PostList from './PostList'
 import PostForm from './PostForm'
 import LoadingSpinner from '../common/LoadingSpinner'
 import { useWebSocket } from '@/hooks/useWebSocket'
+import { useTranslation } from 'react-i18next'
 
 interface DiscussionThreadProps {
   inventory: Inventory
 }
 
 export default function DiscussionThread({ inventory }: DiscussionThreadProps) {
+  const { t } = useTranslation()
   const [page, setPage] = useState(1)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { lastMessage } = useWebSocket(inventory.id)
@@ -47,8 +49,8 @@ export default function DiscussionThread({ inventory }: DiscussionThreadProps) {
     <div className="flex flex-col h-[600px] border-t">
       {/* Debug info - remove in production */}
       <div className="text-xs text-gray-500 p-2 bg-gray-100">
-        Posts count: {postsData?.posts?.length || 0} | Loading:{' '}
-        {isLoading ? 'Yes' : 'No'} | Error: {error ? 'Yes' : 'No'}
+        {t('postsCountDebug')}: {postsData?.posts?.length || 0} | {t('loading')}: {' '}
+        {isLoading ? t('yes') : t('no')} | {t('error')}: {error ? t('yes') : t('no')}
       </div>
 
       {/* Messages */}

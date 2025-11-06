@@ -4,12 +4,14 @@ import { useGetInventoryItemsQuery } from '@/features/items/itemsApi'
 import { getActiveFields } from '@/utils/fieldConfig'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Package, Users, Eye, BarChart3 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface StatsTabProps {
   inventory: Inventory
 }
 
 export default function StatsTab({ inventory }: StatsTabProps) {
+  const { t } = useTranslation()
   const { data: itemsData } = useGetInventoryItemsQuery({
     inventoryId: inventory.id,
     limit: 1000, // Get all items for stats
@@ -82,9 +84,9 @@ export default function StatsTab({ inventory }: StatsTabProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Statistics</h2>
+        <h2 className="text-2xl font-bold">{t('statsHeader')}</h2>
         <p className="text-muted-foreground">
-          Analytics and insights for this inventory
+          {t('statsSubtitle')}
         </p>
       </div>
 
@@ -95,7 +97,7 @@ export default function StatsTab({ inventory }: StatsTabProps) {
             <Package className="h-8 w-8 text-blue-500" />
             <div>
               <p className="text-2xl font-bold">{totalItems}</p>
-              <p className="text-sm text-muted-foreground">Total Items</p>
+              <p className="text-sm text-muted-foreground">{t('totalItems')}</p>
             </div>
           </div>
         </div>
@@ -105,7 +107,7 @@ export default function StatsTab({ inventory }: StatsTabProps) {
             <BarChart3 className="h-8 w-8 text-green-500" />
             <div>
               <p className="text-2xl font-bold">{recentItems}</p>
-              <p className="text-sm text-muted-foreground">Last 7 Days</p>
+              <p className="text-sm text-muted-foreground">{t('last7Days')}</p>
             </div>
           </div>
         </div>
@@ -115,7 +117,7 @@ export default function StatsTab({ inventory }: StatsTabProps) {
             <Eye className="h-8 w-8 text-purple-500" />
             <div>
               <p className="text-2xl font-bold">{activeFields.length}</p>
-              <p className="text-sm text-muted-foreground">Active Fields</p>
+              <p className="text-sm text-muted-foreground">{t('activeFields')}</p>
             </div>
           </div>
         </div>
@@ -127,7 +129,7 @@ export default function StatsTab({ inventory }: StatsTabProps) {
               <p className="text-2xl font-bold">
                 {Math.round(fieldStats.reduce((acc, stat) => acc + stat.percentage, 0) / (fieldStats.length || 1))}%
               </p>
-              <p className="text-sm text-muted-foreground">Avg Completion</p>
+              <p className="text-sm text-muted-foreground">{t('avgCompletion')}</p>
             </div>
           </div>
         </div>
@@ -136,14 +138,14 @@ export default function StatsTab({ inventory }: StatsTabProps) {
       {/* Field Completion Chart */}
       {fieldStats.length > 0 && (
         <div className="rounded-lg border p-6">
-          <h3 className="text-lg font-medium mb-4">Field Completion</h3>
+          <h3 className="text-lg font-medium mb-4">{t('fieldCompletion')}</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={fieldStats}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
                 <YAxis />
-                <Tooltip formatter={(value) => [`${value}%`, 'Completion']} />
+                <Tooltip formatter={(value) => [`${value}%`, t('completion')]} />
                 <Bar dataKey="percentage" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
@@ -162,8 +164,8 @@ export default function StatsTab({ inventory }: StatsTabProps) {
                   <PieChart>
                     <Pie
                       data={[
-                        { name: 'True', value: stat.true },
-                        { name: 'False', value: stat.false },
+                        { name: t('true'), value: stat.true },
+                        { name: t('false'), value: stat.false },
                       ]}
                       cx="50%"
                       cy="50%"
@@ -188,26 +190,26 @@ export default function StatsTab({ inventory }: StatsTabProps) {
       {/* Number Field Stats */}
       {numberStats.length > 0 && (
         <div className="rounded-lg border p-6">
-          <h3 className="text-lg font-medium mb-4">Numeric Field Statistics</h3>
+          <h3 className="text-lg font-medium mb-4">{t('numericFieldStats')}</h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {numberStats.map((stat) => (
               <div key={stat.name} className="rounded-lg bg-gray-50 p-4">
                 <h4 className="font-medium mb-2">{stat.name}</h4>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span>Average:</span>
+                    <span>{t('average')}</span>
                     <span className="font-medium">{stat.average.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Min:</span>
+                    <span>{t('min')}</span>
                     <span className="font-medium">{stat.min.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Max:</span>
+                    <span>{t('max')}</span>
                     <span className="font-medium">{stat.max.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Values:</span>
+                    <span>{t('values')}</span>
                     <span className="font-medium">{stat.count}</span>
                   </div>
                 </div>
@@ -220,7 +222,7 @@ export default function StatsTab({ inventory }: StatsTabProps) {
       {items.length === 0 && (
         <div className="rounded-lg border p-8 text-center">
           <div className="text-muted-foreground">
-            No data available. Add some items to see statistics.
+            {t('noStats')}
           </div>
         </div>
       )}

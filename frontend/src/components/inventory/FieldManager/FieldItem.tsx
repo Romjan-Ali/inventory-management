@@ -8,6 +8,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Trash2, Eye, EyeOff, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 interface FieldItemProps {
   field: FieldConfig
@@ -20,6 +21,7 @@ export default function FieldItem({
   onUpdate,
   onRemove,
 }: FieldItemProps) {
+  const { t } = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
 
   const {
@@ -71,7 +73,7 @@ export default function FieldItem({
                 value={field.name}
                 onChange={(e) => onUpdate({ name: e.target.value })}
                 onClick={(e) => e.stopPropagation()}
-                placeholder="Field name"
+                placeholder={t('fieldNamePlaceholder')}
                 className="font-medium border-0 px-2.5 py-0.5 h-auto focus:ring-0 focus:border-b focus:rounded-none flex-1 min-w-0"
               />
             </div>
@@ -100,14 +102,14 @@ export default function FieldItem({
               <div>
                 <div className="flex justify-between items-end">
                   <label className="block text-sm font-medium mb-1">
-                    Description (Tooltip)
+                    {t('descriptionTooltip')}
                   </label>
                 </div>
 
                 <Textarea
                   value={field.description}
                   onChange={(e) => onUpdate({ description: e.target.value })}
-                  placeholder="Field description that will appear as a tooltip in forms"
+                  placeholder={t('fieldDescPlaceholder')}
                   rows={2}
                 />
               </div>
@@ -116,18 +118,18 @@ export default function FieldItem({
                 {/* Field Type Info */}
                 <div className="text-sm text-muted-foreground">
                   <p>
-                    <strong>Field Type:</strong> {fieldTypeLabel}
+                    <strong>{t('fieldType')}</strong> {fieldTypeLabel}
                   </p>
                   <p>
                     This field will accept{' '}
                     {field.type === 'number'
-                      ? 'numeric'
+                      ? t('numeric')
                       : field.type === 'boolean'
-                      ? 'true/false'
+                      ? t('trueFalse')
                       : field.type === 'link'
-                      ? 'URL'
-                      : 'text'}{' '}
-                    values.
+                      ? t('url')
+                      : t('text')}{' '}
+                    {t('valuesWord')}
                   </p>
                 </div>
 
@@ -143,17 +145,17 @@ export default function FieldItem({
                         : 'text-muted-foreground bg-muted hover:bg-muted/70'
                     }`}
                     title={
-                      field.visibleInTable ? 'Hide from table' : 'Show in table'
+                      field.visibleInTable ? t('hideFromTable') : t('showInTable')
                     }
                   >
                     {field.visibleInTable ? (
                       <>
-                        Hide from Table
+                        {t('hideFromTableBtn')}
                         <Eye className="h-4 w-4" />
                       </>
                     ) : (
                       <>
-                        Show in Table
+                        {t('showInTableBtn')}
                         <EyeOff className="h-4 w-4" />
                       </>
                     )}
@@ -164,7 +166,7 @@ export default function FieldItem({
                     onClick={onRemove}
                     className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-mono text-destructive bg-destructive/10 hover:bg-destructive/20 transition-colors"
                   >
-                    Delete Field
+                    {t('deleteField')}
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

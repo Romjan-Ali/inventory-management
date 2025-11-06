@@ -8,6 +8,7 @@ import FieldList from './FieldList'
 import FieldToolbar from './FieldToolbar'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Save } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface FieldManagerProps {
   inventory: Inventory
@@ -18,6 +19,7 @@ type FieldUpdate = {
 } & Record<string, string | boolean | number | null>
 
 export default function FieldManager({ inventory }: FieldManagerProps) {
+  const { t } = useTranslation()
   const [updateInventory, { isLoading }] = useUpdateInventoryMutation()
   const [fields, setFields] = useState<FieldConfig[]>(() =>
     getFieldConfigs(inventory)
@@ -134,9 +136,9 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Custom Fields</h2>
+          <h2 className="text-2xl font-bold">{t('fieldHeader')}</h2>
           <p className="text-muted-foreground">
-            Configure custom fields for items in this inventory
+            {t('fieldSubtitle')}
           </p>
         </div>
 
@@ -150,15 +152,14 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
           ) : (
             <Save className="h-4 w-4" />
           )}
-          Save Changes
+          {t('fieldSaveChanges')}
         </button>
       </div>
 
       {/* Field Limits Info */}
       <div className="rounded-lg bg-blue-700/10 dark:bg-blue-700/40 p-4">
         <p className="text-sm text-blue-700 dark:text-white">
-          You can configure up to 3 fields of each type (text, number, boolean,
-          link). Drag and drop to reorder fields.
+          {t('fieldLimits')}
         </p>
       </div>
 
@@ -175,10 +176,9 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
 
       {/* Preview Note */}
       <div className="rounded-lg border p-4">
-        <h4 className="font-medium mb-2">Field Preview</h4>
+        <h4 className="font-medium mb-2">{t('fieldPreview')}</h4>
         <p className="text-sm text-muted-foreground">
-          Fields marked as "Show in Table" will appear as columns in the items
-          table. Field descriptions will be shown as tooltips in forms.
+          {t('fieldsInTableNote')}
         </p>
       </div>
     </div>

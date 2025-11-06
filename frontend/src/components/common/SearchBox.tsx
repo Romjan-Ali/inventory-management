@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom'
 import { useSearchQuery } from '@/features/search/searchApi'
 import { useDebounce } from 'use-debounce'
 import { Search, X, Folder, FileText } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function SearchBox() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -48,7 +50,7 @@ export default function SearchBox() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search inventories and items..."
+          placeholder={t('searchPlaceholder')}
           className="w-full rounded-lg border border-gray-300 pl-10 pr-10 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
         />
         {query && (
@@ -66,7 +68,7 @@ export default function SearchBox() {
         <div className="absolute z-50 mt-1 w-full rounded-lg border bg-white shadow-lg">
           {isLoading ? (
             <div className="p-4 text-center text-sm text-gray-500">
-              Searching...
+              {t('searchingDots')}
             </div>
           ) : searchResults ? (
             <div className="max-h-96 overflow-y-auto">
@@ -74,7 +76,7 @@ export default function SearchBox() {
               {searchResults.inventories && searchResults.inventories.length > 0 && (
                 <div>
                   <div className="px-4 py-2 text-xs font-medium text-gray-500 bg-gray-50">
-                    Inventories
+                    {t('inventoriesLabel')}
                   </div>
                   {searchResults.inventories.map((inventory) => (
                     <button
@@ -98,7 +100,7 @@ export default function SearchBox() {
               {searchResults.items && searchResults.items.length > 0 && (
                 <div>
                   <div className="px-4 py-2 text-xs font-medium text-gray-500 bg-gray-50">
-                    Items
+                    {t('itemsLabel')}
                   </div>
                   {searchResults.items.map((item) => (
                     <button
@@ -122,13 +124,13 @@ export default function SearchBox() {
               {(!searchResults.inventories || searchResults.inventories.length === 0) &&
                (!searchResults.items || searchResults.items.length === 0) && (
                 <div className="p-4 text-center text-sm text-gray-500">
-                  No results found for "{debouncedQuery}"
+                  {t('noResultsFor', { q: debouncedQuery })}
                 </div>
               )}
             </div>
           ) : debouncedQuery.length < 2 ? (
             <div className="p-4 text-center text-sm text-gray-500">
-              Type at least 2 characters to search
+              {t('typeTwoChars')}
             </div>
           ) : null}
         </div>

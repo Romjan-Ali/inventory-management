@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button'
 import { RefreshCw, Copy, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { useDebounce } from 'use-debounce' 
+import { useTranslation } from 'react-i18next'
 
 interface CustomIdPreviewProps {
   format: IdFormatElement[]
 }
 
 export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
+  const { t } = useTranslation()
   const [previewCustomId, { isLoading, error }] = usePreviewCustomIdMutation()
   const [preview, setPreview] = useState<string>('')
   const [lastValidPreview, setLastValidPreview] = useState<string>('')
@@ -37,7 +39,7 @@ export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
     } catch (error) {
       console.error('Failed to generate preview:', error)
       // Keep the last valid preview if available
-      setPreview(lastValidPreview || 'Error generating preview')
+      setPreview(lastValidPreview || t('failedToGeneratePreview'))
     }
   }
 
@@ -54,9 +56,9 @@ export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
   if (format.length === 0) {
     return (
       <div className="space-y-3">
-        <Label>Preview</Label>
+        <Label>{t('preview')}</Label>
         <div className="p-4 border rounded-lg bg-muted/50 text-muted-foreground text-center">
-          Add elements to see preview
+          {t('addElementsToSeePreview')}
         </div>
       </div>
     )
@@ -65,7 +67,7 @@ export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label>Preview</Label>
+        <Label>{t('preview')}</Label>
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -74,7 +76,7 @@ export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
             disabled={isLoading}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+            {t('refresh')}
           </Button>
           <Button
             variant="outline"
@@ -83,7 +85,7 @@ export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
             disabled={!preview || preview.startsWith('Error')}
           >
             <Copy className="h-4 w-4 mr-2" />
-            Copy
+            {t('copy')}
           </Button>
         </div>
       </div>
@@ -94,20 +96,20 @@ export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
         {isLoading ? (
           <div className="flex items-center justify-center gap-2">
             <RefreshCw className="h-4 w-4 animate-spin" />
-            Generating preview...
+            {t('generatingPreview')}
           </div>
         ) : error ? (
           <div className="flex items-center justify-center gap-2 text-destructive">
             <AlertCircle className="h-4 w-4" />
-            Failed to generate preview
+            {t('failedToGeneratePreview')}
           </div>
         ) : (
-          preview || 'Start typing to see preview'
+          preview || t('startTypingToSeePreview')
         )}
       </div>
       
       <p className="text-sm text-muted-foreground">
-        Preview updates automatically as you type. Actual IDs will be generated when creating items.
+        {t('previewAutoUpdates')}
       </p>
     </div>
   )

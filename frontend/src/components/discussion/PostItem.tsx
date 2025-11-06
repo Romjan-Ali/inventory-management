@@ -5,6 +5,7 @@ import { useDeletePostMutation } from '@/features/posts/postsApi'
 import { formatDate } from '@/lib/utils'
 import { User, Trash2, MoreVertical } from 'lucide-react'
 import LoadingSpinner from '../common/LoadingSpinner'
+import { useTranslation } from 'react-i18next'
 
 interface PostItemProps {
   post: Post
@@ -12,6 +13,7 @@ interface PostItemProps {
 }
 
 export default function PostItem({ post, inventory }: PostItemProps) {
+  const { t } = useTranslation()
   const { user: currentUser } = useAppSelector((state) => state.auth)
   const [deletePost, { isLoading }] = useDeletePostMutation()
   const [showMenu, setShowMenu] = useState(false)
@@ -77,9 +79,9 @@ export default function PostItem({ post, inventory }: PostItemProps) {
                   {isLoading ? (
                     <LoadingSpinner size="sm" />
                   ) : (
-                    <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                   )}
-                  Delete
+                  {t('delete')}
                 </button>
               </div>
             )}

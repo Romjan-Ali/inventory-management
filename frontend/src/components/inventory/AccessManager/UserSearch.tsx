@@ -5,6 +5,7 @@ import type { User } from '@/types'
 import { Search, X, User as UserIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 interface UserSearchProps {
   selectedUser: User | null
@@ -15,6 +16,7 @@ export default function UserSearch({
   selectedUser,
   onUserSelect,
 }: UserSearchProps) {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -83,7 +85,7 @@ export default function UserSearch({
             type="text"
             value={searchQuery}
             onChange={handleInputChange}
-            placeholder="Search users by name or email..."
+            placeholder={t('searchUsersPlaceholder')}
             className="pl-10"
           />
         </div>
@@ -94,11 +96,11 @@ export default function UserSearch({
         <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-background py-1 shadow-lg">
           {isLoading ? (
             <div className="px-4 py-2 text-sm text-muted-foreground">
-              Searching...
+              {t('searching')}
             </div>
           ) : users.length === 0 ? (
             <div className="px-4 py-2 text-sm text-muted-foreground">
-              No users found
+              {t('noUsersFound')}
             </div>
           ) : (
             users.map((user) => (

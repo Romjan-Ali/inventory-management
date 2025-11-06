@@ -1,6 +1,7 @@
 // frontend/src/pages/Inventory/InventoryBrowse.tsx
 import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useGetInventoriesQuery } from '@/features/inventory/inventoryApi'
 import { useGetAllPublicInventoryTagsQuery } from '@/features/inventory/inventoryApi'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
@@ -27,6 +28,7 @@ import InventoryCards from '@/components/inventory/View/InventoryCards'
 import { useDebounce } from 'use-debounce'
 
 export default function InventoryBrowse() {
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [viewType, setViewType] = useState<'table' | 'card'>('table')
   const [localSearch, setLocalSearch] = useState('')
@@ -93,22 +95,22 @@ export default function InventoryBrowse() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Browse Inventories</h1>
+          <h1 className="text-3xl font-bold">{t('browseInventoriesTitle')}</h1>
           <p className="text-muted-foreground">
-            Discover and explore public inventories
+            {t('browseInventoriesSubtitle')}
           </p>
         </div>
         <Button asChild>
-          <Link to="/dashboard">My Dashboard</Link>
+          <Link to="/dashboard">{t('myDashboard')}</Link>
         </Button>
       </div>
 
       {/* Search and Filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Search & Filter</CardTitle>
+          <CardTitle>{t('searchFilter')}</CardTitle>
           <CardDescription>
-            Find inventories by name, description, or tags
+            {t('searchHelp')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -117,7 +119,7 @@ export default function InventoryBrowse() {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search inventories..."
+                placeholder={t('placeholderSearchInventories')}
                 value={localSearch}
                 onChange={(e) => setLocalSearch(e.target.value)}
                 className="pl-10"
@@ -131,8 +133,8 @@ export default function InventoryBrowse() {
                 <SelectItem value="newest">Newest First</SelectItem>
                 <SelectItem value="oldest">Oldest First</SelectItem>
                 <SelectItem value="popular">Most Popular</SelectItem>
-                <SelectItem value="items">Most Items</SelectItem>
-                <SelectItem value="title">Title A-Z</SelectItem>
+                <SelectItem value="items">{t('sortMostItems')}</SelectItem>
+                <SelectItem value="title">{t('sortTitleAZ')}</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex gap-2 border rounded-lg p-1">
@@ -158,11 +160,11 @@ export default function InventoryBrowse() {
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                Active filters:
+                {t('activeFilters')}
               </span>
               {debouncedSearch && (
                 <Badge variant="secondary" className="flex items-center gap-1">
-                  Search: "{debouncedSearch}"
+                  {t('searchLabel')} "{debouncedSearch}"
                   <button
                     onClick={() => {
                       setLocalSearch('')
@@ -176,7 +178,7 @@ export default function InventoryBrowse() {
               )}
               {tag && (
                 <Badge variant="secondary" className="flex items-center gap-1">
-                  Tag: {tag}
+                  {t('tagLabel')} {tag}
                   <button
                     onClick={() => updateSearchParams({ tag: '' })}
                     className="ml-1 hover:text-destructive"
@@ -186,7 +188,7 @@ export default function InventoryBrowse() {
                 </Badge>
               )}
               <Button variant="ghost" size="sm" onClick={clearFilters}>
-                Clear all
+                {t('clearAll')}
               </Button>
             </div>
           )}
@@ -194,7 +196,7 @@ export default function InventoryBrowse() {
           {/* Tag Cloud */}
           {tagsData && (
             <div className="space-y-2">
-              <div className="text-sm font-medium">Popular Tags</div>
+              <div className="text-sm font-medium">{t('popularTags')}</div>
               <div className="flex flex-wrap gap-2">
                 {tagsData.slice(0, 15).map((tagItem) => (
                   <Badge
@@ -218,7 +220,9 @@ export default function InventoryBrowse() {
       {/* Results */}
       <Card>
         <CardHeader>
-          <CardTitle>{inventoriesData?.total || 0} Inventories Found</CardTitle>
+          <CardTitle>
+            {(inventoriesData?.total || 0).toString()} {t('inventoriesFound')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (

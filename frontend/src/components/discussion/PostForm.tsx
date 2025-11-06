@@ -4,12 +4,14 @@ import type { Inventory } from '@/types'
 import { useCreatePostMutation } from '@/features/posts/postsApi'
 import { Send } from 'lucide-react'
 import LoadingSpinner from '../common/LoadingSpinner'
+import { useTranslation } from 'react-i18next'
 
 interface PostFormProps {
   inventory: Inventory
 }
 
 export default function PostForm({ inventory }: PostFormProps) {
+  const { t } = useTranslation()
   const [content, setContent] = useState('')
   const [createPost, { isLoading }] = useCreatePostMutation()
 
@@ -35,7 +37,7 @@ export default function PostForm({ inventory }: PostFormProps) {
         type="text"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Type your message..."
+        placeholder={t('typeYourMessage')}
         className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
         disabled={isLoading}
       />

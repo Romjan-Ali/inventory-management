@@ -5,6 +5,7 @@ import FieldManager from '../FieldManager/FieldManager'
 import CustomIdManager from '../CustomId/CustomIdManager'
 import AccessManager from '../AccessManager/AccessManager'
 import { Key, Users, Sliders } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface SettingsTabProps {
   inventory: Inventory
@@ -13,12 +14,13 @@ interface SettingsTabProps {
 type SettingsSection = 'fields' | 'customId' | 'access'
 
 export default function SettingsTab({ inventory }: SettingsTabProps) {
+  const { t } = useTranslation()
   const [activeSection, setActiveSection] = useState<SettingsSection>('fields')
 
   const sections = [
-    { id: 'fields' as const, name: 'Custom Fields', icon: Sliders },
-    { id: 'customId' as const, name: 'Custom ID Format', icon: Key },
-    { id: 'access' as const, name: 'Access Management', icon: Users },
+    { id: 'fields' as const, nameKey: 'settingsFields', icon: Sliders },
+    { id: 'customId' as const, nameKey: 'settingsCustomId', icon: Key },
+    { id: 'access' as const, nameKey: 'settingsAccess', icon: Users },
   ]
 
   const renderSectionContent = () => {
@@ -38,9 +40,9 @@ export default function SettingsTab({ inventory }: SettingsTabProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold">Settings</h2>
+        <h2 className="text-2xl font-bold">{t('settingsHeader')}</h2>
         <p className="text-muted-foreground">
-          Configure inventory settings, custom fields, and access control.
+          {t('settingsSubtitle')}
         </p>
       </div>
 
@@ -60,7 +62,7 @@ export default function SettingsTab({ inventory }: SettingsTabProps) {
                 }`}
               >
                 <Icon className="h-4 w-4" />
-                {section.name}
+                {t(section.nameKey)}
               </button>
             )
           })}

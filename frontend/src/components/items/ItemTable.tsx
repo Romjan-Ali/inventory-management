@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 interface ItemTableProps {
   inventory: Inventory
@@ -26,6 +27,7 @@ export default function ItemTable({
   onItemDelete,
   canEdit = false,
 }: ItemTableProps) {
+  const { t, i18n } = useTranslation()
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const navigate = useNavigate()
@@ -146,7 +148,7 @@ export default function ItemTable({
     const value = item[`${fieldType}${index}Value` as keyof Item]
 
     if (fieldType === 'boolean') {
-      return value ? 'Yes' : 'No'
+      return value ? t('yes') : t('no')
     }
 
     return value || '-'
@@ -178,8 +180,7 @@ export default function ItemTable({
         {selectedItems.size > 0 && (
           <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
             <span className="text-sm font-medium">
-              {selectedItems.size} item{selectedItems.size > 1 ? 's' : ''}{' '}
-              selected
+              {selectedItems.size} {selectedItems.size > 1 ? t('items') : t('items').slice(0, -1)} {t('selected')}
             </span>
             <div className="flex gap-2">
               <Button
@@ -188,7 +189,7 @@ export default function ItemTable({
                 onClick={handleBulkDelete}
                 disabled={isDeleting}
               >
-                {isDeleting ? 'Deleting...' : 'Delete Selected'}
+                {isDeleting ? 'Deleting...' : t('deleteSelected')}
               </Button>
               {canEdit && (
                 <Button
@@ -197,7 +198,7 @@ export default function ItemTable({
                   onClick={() => navigate(`/items/${[...selectedItems][0]}/edit`)}
                   disabled={selectedItems.size > 1}
                 >
-                  Edit Selected
+                  {t('editSelected')}
                 </Button>
               )}
             </div>
@@ -220,7 +221,7 @@ export default function ItemTable({
                   </th>
                   <th className="px-4 py-3 text-left font-medium">
                     <div className="flex items-center gap-1">
-                      Custom ID
+                      {t('customIdHeaderCol')}
                       <ChevronsUpDown className="h-4 w-4" />
                     </div>
                   </th>
@@ -232,7 +233,7 @@ export default function ItemTable({
                       {field.name}
                     </th>
                   ))}
-                  <th className="px-4 py-3 text-left font-medium">Created</th>
+                  <th className="px-4 py-3 text-left font-medium">{t('createdCol')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -257,7 +258,7 @@ export default function ItemTable({
                       </td>
                     ))}
                     <td className="px-4 py-3 text-muted-foreground">
-                      {new Date(item.createdAt).toLocaleDateString()}
+                      {new Date(item.createdAt).toLocaleDateString(i18n.resolvedLanguage || 'en')}
                     </td>                    
                   </tr>
                 ))}
@@ -269,7 +270,7 @@ export default function ItemTable({
           {items.length === 0 && (
             <div className="text-center py-12">
               <div className="text-muted-foreground">
-                No items found in this inventory.
+                {t('noItemsFound')}
               </div>
             </div>
           )}
@@ -278,8 +279,7 @@ export default function ItemTable({
           {totalItems > 0 && (
             <div className="flex items-center justify-between border-t px-4 py-3">
               <div className="text-sm text-muted-foreground">
-                Showing {(page - 1) * 50 + 1} to {Math.min(page * 50, totalItems)}{' '}
-                of {totalItems} items
+                {t('showingRangeOf', { from: (page - 1) * 50 + 1, to: Math.min(page * 50, totalItems), total: totalItems })}
               </div>
               <div className="flex gap-2">
                 <Button
@@ -288,7 +288,7 @@ export default function ItemTable({
                   onClick={() => onPageChange(page - 1)}
                   disabled={page === 1}
                 >
-                  Previous
+                  {t('previous')}
                 </Button>
                 <Button
                   variant="outline"
@@ -296,7 +296,7 @@ export default function ItemTable({
                   onClick={() => onPageChange(page + 1)}
                   disabled={page * 50 >= totalItems}
                 >
-                  Next
+                  {t('next')}
                 </Button>
               </div>
             </div>

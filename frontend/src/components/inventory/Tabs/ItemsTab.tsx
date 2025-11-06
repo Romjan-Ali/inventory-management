@@ -10,12 +10,14 @@ import {
   useDeleteItemMutation,
 } from '@/features/items/itemsApi'
 import { useAppSelector } from '@/app/hooks'
+import { useTranslation } from 'react-i18next'
 
 interface ItemsTabProps {
   inventory: Inventory
 }
 
 export default function ItemsTab({ inventory }: ItemsTabProps) {
+  const { t } = useTranslation()
   const [page, setPage] = useState(1)
   const {
     data: itemsData,
@@ -54,7 +56,7 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="text-muted-foreground">Loading items...</div>
+        <div className="text-muted-foreground">{t('loadingItems')}</div>
       </div>
     )
   }
@@ -63,7 +65,7 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
     return (
       <div className="text-center py-12">
         <div className="text-destructive">
-          Failed to load items. Please try again.
+          {t('failedLoadItems')}
         </div>
       </div>
     )
@@ -74,16 +76,16 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
       {/* Header with Add Item button */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Items</h2>
+          <h2 className="text-2xl font-bold">{t('itemsHeader')}</h2>
           <p className="text-muted-foreground">
-            Manage items in this inventory
+            {t('itemsSubtitle')}
           </p>
         </div>
         {canEdit && (
           <Link to={`/inventory/${inventory.id}/items/new`}>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add Item
+              {t('addItem')}
             </Button>
           </Link>
         )}

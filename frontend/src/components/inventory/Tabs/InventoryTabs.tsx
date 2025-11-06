@@ -10,36 +10,38 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../../ui/button'
 import { useDeleteInventoryMutation } from '@/features/inventory/inventoryApi'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 
 interface InventoryTabsProps {
   inventory: Inventory
 }
 
 const tabs = [
-  { id: 'items', name: 'Items' },
-  { id: 'discussion', name: 'Discussion' },
-  { id: 'settings', name: 'Settings' },
-  { id: 'stats', name: 'Statistics' },
+  { id: 'items', nameKey: 'tabItems' },
+  { id: 'discussion', nameKey: 'tabDiscussion' },
+  { id: 'settings', nameKey: 'tabSettings' },
+  { id: 'stats', nameKey: 'tabStats' },
 ] as const
 
 type TabId = (typeof tabs)[number]['id']
 
 export default function InventoryTabs({ inventory }: InventoryTabsProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<TabId>('items')
   const [deleteInventory, { isLoading }] = useDeleteInventoryMutation()
 
   // ✅ Handle delete logic
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this inventory?')) return
+    if (!confirm(t('confirmDeleteInventory'))) return
 
     try {
       await deleteInventory(inventory.id).unwrap()
-      toast.success('Inventory deleted successfully')
+      toast.success(t('inventoryDeleted'))
       navigate('/dashboard')
     } catch (error) {
       console.error(error)
-      toast.error('Failed to delete inventory')
+      toast.error(t('inventoryDeleteFailed'))
     }
   }
 
@@ -73,7 +75,7 @@ export default function InventoryTabs({ inventory }: InventoryTabsProps) {
                   : 'border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700'
               }`}
             >
-              {tab.name}
+              {t(tab.nameKey)}
             </button>
           ))}
         </nav>
@@ -83,7 +85,7 @@ export default function InventoryTabs({ inventory }: InventoryTabsProps) {
           <Button asChild>
             <Link to={`/inventory/${inventory.id}/edit`}>
               <Pencil size={16} />
-              Edit Inventory
+              {t('editInventory')}
             </Link>
           </Button>
 
@@ -94,7 +96,7 @@ export default function InventoryTabs({ inventory }: InventoryTabsProps) {
             disabled={isLoading}
           >
             <Trash2 size={16} />
-            {isLoading ? 'Deleting...' : 'Delete Inventory'}
+            {isLoading ? t('deleting') : t('deleteInventory')}
           </Button>
         </div>
       </div>
