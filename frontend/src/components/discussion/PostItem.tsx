@@ -6,6 +6,7 @@ import { formatDate } from '@/lib/utils'
 import { User, Trash2, MoreVertical } from 'lucide-react'
 import LoadingSpinner from '../common/LoadingSpinner'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 interface PostItemProps {
   post: Post
@@ -26,8 +27,10 @@ export default function PostItem({ post, inventory }: PostItemProps) {
   const handleDelete = async () => {
     try {
       await deletePost(post.id).unwrap()
+      toast.success(t('postDeleted'))
     } catch (error) {
       console.error('Failed to delete post:', error)
+      toast.error(t('failedToDeletePost'))
     }
     setShowMenu(false)
   }

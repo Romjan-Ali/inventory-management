@@ -46,10 +46,10 @@ export default function CustomIdPreview({ format }: CustomIdPreviewProps) {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(preview)
-      toast.success('Copied to clipboard')
+      toast.success(t('copiedToClipboard'))
     } catch (error) {
       console.error('Failed to copy:', error)
-      toast.error('Failed to copy to clipboard')
+      toast.error(t('failedToCopy'))
     }
   }
 

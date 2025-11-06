@@ -6,8 +6,10 @@ import { ArrowLeft } from 'lucide-react'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import ItemForm from '@/components/items/ItemForm'
 import { useAppSelector } from '@/app/hooks'
+import { useTranslation } from 'react-i18next'
 
 export default function EditItem() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id?: string }>()
   const navigate = useNavigate()
 
@@ -45,16 +47,16 @@ export default function EditItem() {
   if (itemError || !item) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-destructive">Item Not Found</h2>
+        <h2 className="text-2xl font-bold text-destructive">{t('itemNotFound')}</h2>
         <p className="text-muted-foreground mt-2">
-          The item you're trying to edit doesn't exist.
+          {t('itemNotFoundDescription')}
         </p>
         <Link
           to="/dashboard"
           className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Dashboard
+          {t('backToDashboard')}
         </Link>
       </div>
     )
@@ -64,17 +66,17 @@ export default function EditItem() {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold text-destructive">
-          Inventory Not Found
+          {t('inventoryNotFound')}
         </h2>
         <p className="text-muted-foreground mt-2">
-          The inventory for this item doesn't exist.
+          {t('inventoryNotFoundDescription')}
         </p>
         <Link
           to="/dashboard"
           className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Dashboard
+          {t('backToDashboard')}
         </Link>
       </div>
     )
@@ -86,16 +88,16 @@ export default function EditItem() {
   if (!canEdit) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-destructive">Access Denied</h2>
+        <h2 className="text-2xl font-bold text-destructive">{t('accessDenied')}</h2>
         <p className="text-muted-foreground mt-2">
-          You don't have permission to edit this item.
+          {t('noPermissionEdit')}
         </p>
         <Link
           to={`/inventory/${item.inventoryId}`}
           className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Inventory
+          {t('backToInventory')}
         </Link>
       </div>
     )
@@ -111,11 +113,11 @@ export default function EditItem() {
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Inventory
+            {t('backToInventory')}
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Edit Item</h1>
-            <p className="text-muted-foreground">Update the item details</p>
+            <h1 className="text-3xl font-bold">{t('editItem')}</h1>
+            <p className="text-muted-foreground">{t('updateItemDetails')}</p>
           </div>
         </div>
 

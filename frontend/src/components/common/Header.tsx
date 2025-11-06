@@ -109,7 +109,7 @@ export default function Header() {
               <>
                 <button
                   className="hover:bg-accent rounded-md transition-colors"
-                  title="Toggle theme"
+                  title={t('toggleTheme')}
                 >
                   <ModeToggle />
                 </button>
@@ -128,7 +128,7 @@ export default function Header() {
           {!isAuthenticated && (
             <button
               className="lg:hidden hover:bg-accent rounded-md transition-colors"
-              title="Toggle theme"
+              title={t('toggleTheme')}
             >
               <ModeToggle />
             </button>

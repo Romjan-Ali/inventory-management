@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { RefreshCw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 interface ItemFormProps {
   inventory: Inventory
@@ -276,10 +277,11 @@ export default function ItemForm({
       }
 
       onSuccess?.()
+      toast.success(item ? t('itemUpdated') : t('itemSaved'))
       navigate(`/inventory/${inventory.id}`)
     } catch (error) {
       console.error('Failed to save item:', error)
-      alert('Failed to save item. Please try again.')
+      toast.error(t('failedToSaveItem'))
     }
   }
 
@@ -296,7 +298,7 @@ export default function ItemForm({
               {...register(key)}
               type="text"
               id={key}
-              placeholder={`Enter ${field.name?.toLowerCase()}...`}
+              placeholder={t('enterFieldValue', { fieldName: field.name?.toLowerCase() || '' })}
             />
             {error && (
               <p className="text-sm text-destructive">
@@ -314,7 +316,7 @@ export default function ItemForm({
               {...register(key)}
               id={key}
               rows={3}
-              placeholder={`Enter ${field.name?.toLowerCase()}...`}
+              placeholder={t('enterFieldValue', { fieldName: field.name?.toLowerCase() || '' })}
             />
             {error && (
               <p className="text-sm text-destructive">
@@ -333,7 +335,7 @@ export default function ItemForm({
               type="number"
               id={key}
               step="any"
-              placeholder={`Enter ${field.name?.toLowerCase()}...`}
+              placeholder={t('enterFieldValue', { fieldName: field.name?.toLowerCase() || '' })}
             />
             {error && (
               <p className="text-sm text-destructive">

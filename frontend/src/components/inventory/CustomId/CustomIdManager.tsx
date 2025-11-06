@@ -62,10 +62,10 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
 
       setOriginalFormat(format)
       setHasChanges(false)
-      toast.success('Custom ID format updated successfully')
+      toast.success(t('customIdFormatUpdated'))
     } catch (error) {
       console.error('Failed to update custom ID format:', error)
-      toast.error('Failed to update custom ID format')
+      toast.error(t('failedUpdateCustomIdFormat'))
     }
   }
 

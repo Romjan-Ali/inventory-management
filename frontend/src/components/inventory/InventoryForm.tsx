@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { X, Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   useCreateInventoryMutation,
   useUpdateInventoryMutation,
@@ -35,17 +36,14 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 
-// Updated schema to match Inventory type
-const inventorySchema = z.object({
-  title: z.string().min(1, 'Title is required').max(100),
-  description: z.string().min(1, 'Description is required').max(500),
-  category: z.string().min(1, 'Category is required'), // Changed from enum to string
-  tags: z.array(z.string().min(1)).max(10, 'Maximum 10 tags allowed'),
-  isPublic: z.boolean(),
-  imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-})
-
-type InventoryFormData = z.infer<typeof inventorySchema>
+type InventoryFormData = {
+  title: string
+  description: string
+  category: string
+  tags: string[]
+  isPublic: boolean
+  imageUrl?: string
+}
 
 interface Props {
   inventory?: Inventory
@@ -56,12 +54,23 @@ interface Props {
 }
 
 export default function InventoryForm({ inventory, onSuccess }: Props) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [tagInput, setTagInput] = useState('')
   const [createInventory, { isLoading: creating }] = useCreateInventoryMutation()
   const [updateInventory, { isLoading: updating }] = useUpdateInventoryMutation()
 
   const isLoading = creating || updating
+
+  // Create schema with translations
+  const inventorySchema = z.object({
+    title: z.string().min(1, t('titleRequired')).max(100),
+    description: z.string().min(1, t('descriptionRequired')).max(500),
+    category: z.string().min(1, t('categoryRequired')),
+    tags: z.array(z.string().min(1)).max(10, t('maxTagsAllowed')),
+    isPublic: z.boolean(),
+    imageUrl: z.string().url(t('mustBeValidUrl')).optional().or(z.literal('')),
+  })
 
   const form = useForm<InventoryFormData>({
     resolver: zodResolver(inventorySchema),
@@ -141,10 +150,10 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Inventory Title</FormLabel>
+                      <FormLabel>{t('inventoryTitle')}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="e.g., Office Equipment"
+                          placeholder={t('inventoryTitlePlaceholder')}
                           {...field}
                         />
                       </FormControl>
@@ -158,11 +167,11 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>{t('description')}</FormLabel>
                       <FormControl>
                         <Textarea
                           rows={4}
-                          placeholder="Describe what this inventory will be used for..."
+                          placeholder={t('descriptionPlaceholder')}
                           className="resize-none"
                           {...field}
                         />
@@ -177,14 +186,14 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>{t('category')}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
+                            <SelectValue placeholder={t('selectCategory')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -206,7 +215,7 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                 name="tags"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Tag your inventory</FormLabel>
+                    <FormLabel>{t('tagYourInventory')}</FormLabel>
                     <FormControl>
                       <div className="space-y-3">
                         <div className="flex gap-2">
@@ -214,7 +223,7 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                             value={tagInput}
                             onChange={(e) => setTagInput(e.target.value)}
                             onKeyDown={handleTagKeyDown}
-                            placeholder="Add a tag and press Enter"
+                            placeholder={t('addTagPlaceholder')}
                           />
                           <Button
                             type="button"
@@ -224,7 +233,7 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                             disabled={tags.length >= 10}
                           >
                             <Plus className="h-4 w-4 mr-1" />
-                            Add
+                            {t('add')}
                           </Button>
                         </div>
 
@@ -251,7 +260,7 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Add up to 10 relevant tags.
+                      {t('addUpTo10Tags')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -264,15 +273,15 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                 name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Image URL (optional)</FormLabel>
+                    <FormLabel>{t('imageUrl')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="https://example.com/image.jpg"
+                        placeholder={t('imageUrlPlaceholder')}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Provide a public URL that represents this inventory
+                      {t('imageUrlDescription')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -292,11 +301,11 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>Make this inventory public</FormLabel>
+                      <FormLabel>{t('makePublic')}</FormLabel>
                       <FormDescription>
                         {isPublic
-                          ? 'All authenticated users can add items to this inventory.'
-                          : 'Only invited users can add items.'}
+                          ? t('publicDescription')
+                          : t('privateDescription')}
                       </FormDescription>
                     </div>
                   </FormItem>
@@ -311,11 +320,11 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                   onClick={() => navigate('/dashboard')}
                   disabled={isLoading}
                 >
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button type="submit" disabled={isLoading}>
                   {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
-                  {inventory ? 'Update Inventory' : 'Create Inventory'}
+                  {inventory ? t('updateInventory') : t('createInventory')}
                 </Button>
               </div>
             </form>

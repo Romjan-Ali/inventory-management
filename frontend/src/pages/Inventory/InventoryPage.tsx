@@ -5,8 +5,10 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import InventoryTabs from '@/components/inventory/Tabs/InventoryTabs'
 import { ArrowLeft} from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function InventoryPage() {  
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const { data: inventory, isLoading, error } = useGetInventoryQuery(id!)
 
@@ -22,18 +24,17 @@ export default function InventoryPage() {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold text-destructive">
-          Inventory Not Found
+          {t('inventoryNotFound')}
         </h2>
         <p className="text-muted-foreground mt-2">
-          The inventory you're looking for doesn't exist or you don't have
-          access to it.
+          {t('inventoryNotFoundPage')}
         </p>
         <Link
           to="/dashboard"
           className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Dashboard
+          {t('backToDashboard')}
         </Link>
       </div>
     )
@@ -49,7 +50,7 @@ export default function InventoryPage() {
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
+            {t('backToDashboard')}
           </Link>
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold tracking-tight">
@@ -57,7 +58,7 @@ export default function InventoryPage() {
             </h1>
             {inventory.isPublic && (
               <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
-                Public
+                {t('public')}
               </span>
             )}
           </div>
@@ -65,9 +66,9 @@ export default function InventoryPage() {
             {inventory.description}
           </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span>Category: {inventory.category}</span>
+            <span>{t('categoryLabel')} {inventory.category}</span>
             <span>•</span>
-            <span>Items: {inventory._count?.items || 0}</span>
+            <span>{t('itemsLabelPage')} {inventory._count?.items || 0}</span>
           </div>
         </div>
       </div>

@@ -32,23 +32,23 @@ export default function Home() {
 
   const features = [
     {
-      title: 'Custom Fields',
-      description: 'Define exactly what data you need to track with flexible field types',
+      title: t('featureCustomFields'),
+      description: t('featureCustomFieldsDesc'),
       icon: '📊'
     },
     {
-      title: 'Real-time Collaboration',
-      description: 'Work with your team with live updates and discussions',
+      title: t('featureRealTime'),
+      description: t('featureRealTimeDesc'),
       icon: '👥'
     },
     {
-      title: 'Smart Search',
-      description: 'Find anything instantly with powerful full-text search',
+      title: t('featureSmartSearch'),
+      description: t('featureSmartSearchDesc'),
       icon: '🔍'
     },
     {
-      title: 'Custom IDs',
-      description: 'Create your own inventory numbering system',
+      title: t('featureCustomIds'),
+      description: t('featureCustomIdsDesc'),
       icon: '🏷️'
     },
   ]

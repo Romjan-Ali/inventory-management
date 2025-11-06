@@ -6,6 +6,7 @@ import { ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 interface ItemTableProps {
   inventory: Inventory
@@ -155,7 +156,7 @@ export default function ItemTable({
   }  
 
   const handleBulkDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${selectedItems.size} items? This action cannot be undone.`)) {
+    if (!confirm(t('confirmDeleteItems', { count: selectedItems.size }))) {
       return
     }
 
@@ -165,9 +166,10 @@ export default function ItemTable({
       const deletePromises = Array.from(selectedItems).map(itemId => onItemDelete(itemId))
       await Promise.all(deletePromises)
       setSelectedItems(new Set())
+      toast.success(t('itemDeleted'))
     } catch (error) {
       console.error('Failed to delete items:', error)
-      alert('Failed to delete some items. Please try again.')
+      toast.error(t('failedDeleteItems'))
     } finally {
       setIsDeleting(false)
     }
@@ -189,7 +191,7 @@ export default function ItemTable({
                 onClick={handleBulkDelete}
                 disabled={isDeleting}
               >
-                {isDeleting ? 'Deleting...' : t('deleteSelected')}
+                {isDeleting ? t('deletingItems') : t('deleteSelected')}
               </Button>
               {canEdit && (
                 <Button

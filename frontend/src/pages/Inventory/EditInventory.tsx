@@ -5,8 +5,10 @@ import { Link } from 'react-router-dom'
 import { useGetInventoryQuery } from '@/features/inventory/inventoryApi'
 import InventoryForm from '@/components/inventory/InventoryForm'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import { useTranslation } from 'react-i18next'
 
 export default function EditInventory() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const { data: inventory, isLoading, error } = useGetInventoryQuery(id!)
 
@@ -27,16 +29,16 @@ export default function EditInventory() {
   if (!canEdit) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-destructive">Access Denied</h2>
+        <h2 className="text-2xl font-bold text-destructive">{t('accessDenied')}</h2>
         <p className="text-muted-foreground mt-2">
-          You don't have permission to edit this inventory.
+          {t('noPermissionEdit')}
         </p>
         <Link
           to={`/inventory/${inventory.id}`}
           className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Inventory
+          {t('backToInventory')}
         </Link>
       </div>
     )
@@ -51,11 +53,11 @@ export default function EditInventory() {
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Inventory
+          {t('backToInventory')}
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight">Edit Inventory</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('editInventory')}</h1>
         <p className="text-muted-foreground">
-          Update inventory settings and configuration.
+          {t('settingsSubtitle')}
         </p>
       </div>
 

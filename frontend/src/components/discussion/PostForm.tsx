@@ -5,6 +5,7 @@ import { useCreatePostMutation } from '@/features/posts/postsApi'
 import { Send } from 'lucide-react'
 import LoadingSpinner from '../common/LoadingSpinner'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 interface PostFormProps {
   inventory: Inventory
@@ -26,8 +27,10 @@ export default function PostForm({ inventory }: PostFormProps) {
         content: content.trim(),
       }).unwrap()
       setContent('')
+      toast.success(t('postCreated'))
     } catch (error) {
       console.error('Failed to create post:', error)
+      toast.error(t('failedToCreatePost'))
     }
   }
 

@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useTranslation } from 'react-i18next'
 import type {
   DraggableAttributes,
   DraggableSyntheticListeners,
@@ -38,24 +39,26 @@ export default function CustomIdElement({
   onRemove,
   dragHandleProps,
 }: CustomIdElementProps) {
+  const { t } = useTranslation()
+  
   const getElementDescription = (type: IdElementType): string => {
     switch (type) {
       case 'FIXED_TEXT':
-        return 'Static text that appears exactly as entered'
+        return t('elementDescFixedText')
       case 'RANDOM_20BIT':
-        return 'Random number up to 1,048,575'
+        return t('elementDescRandom20bit')
       case 'RANDOM_32BIT':
-        return 'Random number up to 4,294,967,295'
+        return t('elementDescRandom32bit')
       case 'RANDOM_6DIGIT':
-        return 'Random 6-digit number (000000-999999)'
+        return t('elementDescRandom6digit')
       case 'RANDOM_9DIGIT':
-        return 'Random 9-digit number (000000000-999999999)'
+        return t('elementDescRandom9digit')
       case 'GUID':
-        return 'Globally Unique Identifier'
+        return t('elementDescGuid')
       case 'DATETIME':
-        return 'Current date and time when item is created'
+        return t('elementDescDatetime')
       case 'SEQUENCE':
-        return 'Auto-incrementing sequence number'
+        return t('elementDescSequence')
       default:
         return ''
     }
@@ -80,7 +83,7 @@ export default function CustomIdElement({
       <div className="flex-1 space-y-4">
         {/* Element Type */}
         {<div className="space-y-2">
-          <Label htmlFor={`type-${element.id}`}>Element Type</Label>
+          <Label htmlFor={`type-${element.id}`}>{t('elementType')}</Label>
           <Select
             value={element.type}
             onValueChange={(value: IdElementType) => onUpdate({ type: value })}
@@ -108,12 +111,12 @@ export default function CustomIdElement({
           {/* Value Field (for FIXED_TEXT) */}
           {showValueField(element.type) && (
             <div className="space-y-2">
-              <Label htmlFor={`value-${element.id}`}>Text Value</Label>
+              <Label htmlFor={`value-${element.id}`}>{t('textValue')}</Label>
               <Input
                 id={`value-${element.id}`}
                 value={element.value || ''}
                 onChange={(e) => onUpdate({ value: e.target.value })}
-                placeholder="Enter fixed text..."
+                placeholder={t('enterFixedText')}
               />
             </div>
           )}
@@ -122,14 +125,14 @@ export default function CustomIdElement({
           {showFormatField(element.type) && (
             <div className="space-y-2">
               <Label htmlFor={`format-${element.id}`}>
-                {element.type === 'DATETIME' ? 'Date Format' : 'Number Format'}
+                {element.type === 'DATETIME' ? t('dateFormat') : t('numberFormat')}
               </Label>
               <Select
                 value={element.format || ''}
                 onValueChange={(value) => onUpdate({ format: value })}
               >
                 <SelectTrigger id={`format-${element.id}`}>
-                  <SelectValue placeholder="Select format" />
+                  <SelectValue placeholder={t('selectFormat')} />
                 </SelectTrigger>
                 <SelectContent>
                   {(element.type === 'DATETIME' ? DATETIME_FORMATS : NUMBER_FORMATS).map((format) => (
