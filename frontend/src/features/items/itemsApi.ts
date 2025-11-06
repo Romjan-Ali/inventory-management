@@ -1,11 +1,12 @@
 // frontend/src/features/items/itemsApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { API_BASE_URL } from '@/lib/constants'
 import type { Item, CreateItemRequest } from '@/types'
 
 export const itemsApi = createApi({
   reducerPath: 'itemsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/items',
+    baseUrl: `${API_BASE_URL}/api/items`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

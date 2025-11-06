@@ -1,5 +1,6 @@
 // frontend/src/features/inventory/inventoryApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { API_BASE_URL } from '@/lib/constants'
 import type {
   Inventory,
   CreateInventoryRequest,
@@ -11,7 +12,7 @@ import type {
 export const inventoryApi = createApi({
   reducerPath: 'inventoryApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/inventories',
+    baseUrl: `${API_BASE_URL}/api/inventories`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

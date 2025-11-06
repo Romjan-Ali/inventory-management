@@ -1,5 +1,6 @@
 // frontend/src/features/search/searchApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { API_BASE_URL } from '@/lib/constants'
 import type { Inventory, Item } from '@/types'
 
 interface SearchResponse {
@@ -15,7 +16,7 @@ interface TagResponse {
 export const searchApi = createApi({
   reducerPath: 'searchApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/search',
+    baseUrl: `${API_BASE_URL}/api/search`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

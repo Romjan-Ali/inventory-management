@@ -1,11 +1,12 @@
 // frontend/src/features/posts/postsApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { API_BASE_URL } from '@/lib/constants'
 import type { Post, PaginationInfo, PostsResponse } from '@/types'
 
 export const postsApi = createApi({
   reducerPath: 'postsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/posts',
+    baseUrl: `${API_BASE_URL}/api/posts`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

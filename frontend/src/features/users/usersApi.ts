@@ -1,11 +1,12 @@
 // frontend/src/features/users/usersApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { API_BASE_URL } from '@/lib/constants'
 import type { User } from '@/types'
 
 export const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/users',
+    baseUrl: `${API_BASE_URL}/api/users`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {
