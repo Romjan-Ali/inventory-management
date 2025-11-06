@@ -14,8 +14,7 @@ interface DiscussionThreadProps {
 
 export default function DiscussionThread({ inventory }: DiscussionThreadProps) {
   const { t } = useTranslation()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [page, setPage] = useState(1)
+  const [page] = useState(1)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { lastMessage } = useWebSocket(inventory.id)
 

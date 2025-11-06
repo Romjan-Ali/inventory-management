@@ -24,7 +24,7 @@ export const postsApi = createApi({
         url: `/inventory/${inventoryId}`,
         params: { page, limit },
       }),
-      providesTags: (result, error, { inventoryId }) => [
+      providesTags: (_result, _error, { inventoryId }) => [
         { type: 'Post', id: `INVENTORY-${inventoryId}` },
       ],
     }),
@@ -38,7 +38,7 @@ export const postsApi = createApi({
         method: 'POST',
         body: { content },
       }),
-      invalidatesTags: (result, error, { inventoryId }) => [
+      invalidatesTags: (_result, _error, { inventoryId }) => [
         { type: 'Post', id: `INVENTORY-${inventoryId}` },
       ],
     }),
@@ -48,7 +48,7 @@ export const postsApi = createApi({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Post', id }],
+      invalidatesTags: (_result, _error, id) => [{ type: 'Post', id }],
     }),
   }),
 })
