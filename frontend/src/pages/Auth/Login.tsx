@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { API_BASE_URL } from '@/lib/constants'
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
@@ -9,7 +10,7 @@ export default function Login() {
 
   const handleSocialLogin = (provider: 'google' | 'github') => {
     setIsLoading(true)
-    window.location.href = `/api/auth/social/${provider}`
+    window.location.href = `${API_BASE_URL}/api/auth/social/${provider}`
   }
 
   return (

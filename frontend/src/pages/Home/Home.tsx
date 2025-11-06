@@ -93,7 +93,7 @@ export default function Home() {
             ) : (
               <>
                 <Button asChild size="lg">
-                  <Link to="/register">{t('getStartedFree')}</Link>
+                  <Link to="/login">{t('getStartedFree')}</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link to="/inventory">{t('explorePublicInventories')}</Link>
