@@ -16,7 +16,7 @@ interface TagResponse {
 export const searchApi = createApi({
   reducerPath: 'searchApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/api/search`,
+    baseUrl: `${API_BASE_URL}/search`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

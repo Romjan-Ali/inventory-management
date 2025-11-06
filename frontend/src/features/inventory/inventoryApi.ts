@@ -12,7 +12,7 @@ import type {
 export const inventoryApi = createApi({
   reducerPath: 'inventoryApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/api/inventories`,
+    baseUrl: `${API_BASE_URL}/inventories`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

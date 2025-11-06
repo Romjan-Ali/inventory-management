@@ -6,7 +6,7 @@ import type { User } from '@/types'
 export const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/api/users`,
+    baseUrl: `${API_BASE_URL}/users`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

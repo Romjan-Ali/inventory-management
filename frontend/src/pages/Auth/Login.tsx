@@ -10,7 +10,7 @@ export default function Login() {
 
   const handleSocialLogin = (provider: 'google' | 'github') => {
     setIsLoading(true)
-    window.location.href = `${API_BASE_URL}/api/auth/social/${provider}`
+    window.location.href = `${API_BASE_URL}/auth/social/${provider}`
   }
 
   return (

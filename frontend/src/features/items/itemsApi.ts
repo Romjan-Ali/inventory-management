@@ -6,7 +6,7 @@ import type { Item, CreateItemRequest } from '@/types'
 export const itemsApi = createApi({
   reducerPath: 'itemsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/api/items`,
+    baseUrl: `${API_BASE_URL}/items`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

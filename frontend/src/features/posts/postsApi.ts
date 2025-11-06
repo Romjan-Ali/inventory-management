@@ -6,7 +6,7 @@ import type { Post, PaginationInfo, PostsResponse } from '@/types'
 export const postsApi = createApi({
   reducerPath: 'postsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/api/posts`,
+    baseUrl: `${API_BASE_URL}/posts`,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token')
       if (token) {

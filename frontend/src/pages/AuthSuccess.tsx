@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/hooks";
 import { setCredentials, setLoading } from "@/features/auth/authSlice";
+import { API_BASE_URL } from "@/lib/constants";
 
 const AuthSuccess = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const AuthSuccess = () => {
 
         // Fetch the authenticated user's profile
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/me`,
+          `${API_BASE_URL}/auth/me`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
