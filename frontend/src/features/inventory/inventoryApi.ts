@@ -42,7 +42,7 @@ export const inventoryApi = createApi({
 
     getInventory: builder.query<Inventory, string>({
       query: (id) => `/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Inventory', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Inventory', id }],
     }),
 
     getAllPublicInventoryTags: builder.query<
@@ -71,7 +71,7 @@ export const inventoryApi = createApi({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Inventory', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Inventory', id }],
     }),
 
     deleteInventory: builder.mutation<void, string>({
@@ -93,7 +93,7 @@ export const inventoryApi = createApi({
 
     getAccessList: builder.query<InventoryAccess[], string>({
       query: (id) => `/${id}/access`,
-      providesTags: (result, error, id) => [{ type: 'Inventory', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Inventory', id }],
     }),
 
     grantAccess: builder.mutation<
@@ -105,7 +105,7 @@ export const inventoryApi = createApi({
         method: 'POST',
         body: { userId, canWrite },
       }),
-      invalidatesTags: (result, error, { inventoryId }) => [
+      invalidatesTags: (_result, _error, { inventoryId }) => [
         { type: 'Inventory', id: inventoryId },
       ],
     }),
@@ -118,7 +118,7 @@ export const inventoryApi = createApi({
         url: `/${inventoryId}/access/${userId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, { inventoryId }) => [
+      invalidatesTags: (_result, _error, { inventoryId }) => [
         { type: 'Inventory', id: inventoryId },
       ],
     }),
@@ -133,7 +133,7 @@ export const inventoryApi = createApi({
         method: 'PUT',
         body: { format },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Inventory', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Inventory', id }],
     }),
 
     generateCustomId: builder.query<{ customId: string }, string>({

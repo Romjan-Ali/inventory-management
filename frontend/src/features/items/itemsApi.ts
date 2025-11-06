@@ -21,14 +21,14 @@ export const itemsApi = createApi({
         url: `/inventory/${inventoryId}/items`,
         params: { page, limit },
       }),
-      providesTags: (result, error, { inventoryId }) => [
+      providesTags: (_result, _error, { inventoryId }) => [
         { type: 'Item', id: `INVENTORY-${inventoryId}` },
       ],
     }),
 
     getItem: builder.query<Item, string>({
       query: (id) => `/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Item', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Item', id }],
     }),
 
     createItem: builder.mutation<Item, CreateItemRequest>({
@@ -37,7 +37,7 @@ export const itemsApi = createApi({
         method: 'POST',
         body: itemData,
       }),
-      invalidatesTags: (result, error, { inventoryId }) => [
+      invalidatesTags: (_result, _error, { inventoryId }) => [
         { type: 'Item', id: `INVENTORY-${inventoryId}` },
       ],
     }),
@@ -48,7 +48,7 @@ export const itemsApi = createApi({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Item', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'Item', id }],
     }),
 
     deleteItem: builder.mutation<void, string>({
@@ -56,7 +56,7 @@ export const itemsApi = createApi({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Item', id }],
+      invalidatesTags: (_result, _error, id) => [{ type: 'Item', id }],
     }),
 
     likeItem: builder.mutation<{ liked: boolean; likeCount: number }, string>({
@@ -64,7 +64,7 @@ export const itemsApi = createApi({
         url: `/${id}/like`,
         method: 'POST',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Item', id }],
+      invalidatesTags: (_result, _error, id) => [{ type: 'Item', id }],
     }),
   }),
 })

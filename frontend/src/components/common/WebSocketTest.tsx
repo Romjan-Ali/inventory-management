@@ -1,11 +1,12 @@
 // frontend/src/components/common/WebSocketTest.tsx
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useWebSocket } from '@/hooks/useWebSocket'
 import { useParams } from 'react-router-dom'
 
 export function WebSocketTest() {
   const { id } = useParams()
-  const { lastMessage } = useWebSocket(id)
+  const { lastMessage } = useWebSocket(id as string)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [messageHistory, setMessageHistory] = useState<any[]>([])
 
   useEffect(() => {

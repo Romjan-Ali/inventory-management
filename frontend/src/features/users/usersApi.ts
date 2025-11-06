@@ -26,7 +26,7 @@ export const usersApi = createApi({
 
     getUser: builder.query<User, string>({
       query: (id) => `/${id}`,
-      providesTags: (result, error, id) => [{ type: 'User', id }],
+      providesTags: (_result, _error, id) => [{ type: 'User', id }],
     }),
 
     blockUser: builder.mutation<User, { id: string; isBlocked: boolean }>({
@@ -35,7 +35,7 @@ export const usersApi = createApi({
         method: 'POST',
         body: { isBlocked },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'User', id }],
     }),
 
     makeAdmin: builder.mutation<User, { id: string; isAdmin: boolean }>({
@@ -44,7 +44,7 @@ export const usersApi = createApi({
         method: 'POST',
         body: { isAdmin },
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'User', id }],
     }),
   }),
 })
