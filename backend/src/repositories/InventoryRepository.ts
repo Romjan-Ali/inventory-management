@@ -1,5 +1,5 @@
 // backend/src/repositories/InventoryRepository.ts
-import { Prisma, type Inventory } from '@prisma/client'
+import { Prisma, type Inventory, type User } from '@prisma/client'
 import { BaseRepository } from './BaseRepository'
 
 export class InventoryRepository extends BaseRepository<Inventory> {
@@ -83,7 +83,7 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       },
     })
   }
- 
+
   async updateWithLock(
     id: string,
     version: number,
@@ -166,142 +166,113 @@ export class InventoryRepository extends BaseRepository<Inventory> {
     return { owned, accessible }
   }
 
-  async findAll(params: {
-    page?: number
-    limit?: number
-    search?: string
-    category?: string
-    tags?: string[]
-  }): Promise<{ inventories: Inventory[]; total: number }> {
-    const { page = 1, limit = 20, search, category, tags } = params
-    const skip = (page - 1) * limit
-
-    const where: any = {}
-
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-      ]
-    }
-
-    if (category) {
-      where.category = category
-    }
-
-    if (tags && tags.length > 0) {
-      where.tags = { hasSome: tags }
-    }
-
-    const [inventories, total] = await Promise.all([
-      this.prisma.inventory.findMany({
-        where,
-        include: {
-          creator: {
-            select: {
-              id: true,
-              name: true,
-              avatar: true,
-            },
-          },
-          _count: {
-            select: {
-              items: true,
-              accesses: true,
-            },
-          },
-        },
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.inventory.count({ where }),
-    ])
-
-    return { inventories, total }
-  }
-
   async find(
     params: {
-      page?: number
-      limit?: number
+      page: number
+      limit: number
       search?: string
       category?: string
       tags?: string[]
       sort?: string
     },
-    isPublic?: boolean
+    isPublic?: boolean,
+    user?: User
   ): Promise<{ inventories: Inventory[]; total: number }> {
-    const { page = 1, limit = 20, search, category, tags, sort } = params
+    const { page, limit, search, category, tags, sort } = params
     const skip = (page - 1) * limit
 
     const where: any = {}
+    const andConditions: any[] = []
 
-    let orderBy: any = {}
-
+    // Build access conditions
     if (isPublic) {
-      where.isPublic = true
+      andConditions.push({ isPublic: true })
+    } else if (user?.isAdmin) {
+      // Admin sees everything - no conditions needed
+    } else if (user?.id) {
+      andConditions.push({
+        OR: [
+          { creatorId: user.id },
+          { accesses: { some: { userId: user.id } } },
+        ],
+      })
+    } else {
+      // No user and not public - return empty
+      return { inventories: [], total: 0 }
     }
 
+    // Build search conditions
     if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-      ]
+      andConditions.push({
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ],
+      })
     }
 
+    // Add other conditions
     if (category) {
-      where.category = category
+      andConditions.push({ category })
     }
 
     if (tags && tags.length > 0) {
-      where.tags = { hasSome: tags }
+      andConditions.push({ tags: { hasSome: tags } })
     }
+
+    // Apply all AND conditions
+    if (andConditions.length > 0) {
+      where.AND = andConditions
+    }
+
+    // Build orderBy
+    let orderBy: any = { createdAt: 'desc' }
 
     switch (sort) {
       case 'oldest':
         orderBy = { createdAt: 'asc' }
         break
       case 'popular':
-        orderBy = { items: { _count: 'desc' } }
-        break
       case 'items':
         orderBy = { items: { _count: 'desc' } }
         break
       case 'title':
         orderBy = { title: 'asc' }
         break
-      case 'newest':
-      default:
-        orderBy = { createdAt: 'desc' }
+      // 'newest' is default
     }
 
-    const [inventories, total] = await Promise.all([
-      this.prisma.inventory.findMany({
-        where,
-        include: {
-          creator: {
-            select: {
-              id: true,
-              name: true,
-              avatar: true,
+    try {
+      const [inventories, total] = await Promise.all([
+        this.prisma.inventory.findMany({
+          where,
+          include: {
+            creator: {
+              select: {
+                id: true,
+                name: true,
+                avatar: true,
+              },
+            },
+            _count: {
+              select: {
+                items: true,
+                accesses: true,
+              },
             },
           },
-          _count: {
-            select: {
-              items: true,
-              accesses: true,
-            },
-          },
-        },
-        skip,
-        take: limit,
-        orderBy,
-      }),
-      this.prisma.inventory.count({ where }),
-    ])
+          skip,
+          take: limit,
+          orderBy,
+        }),
+        this.prisma.inventory.count({ where }),
+      ])
 
-    return { inventories, total }
+      return { inventories, total }
+    } catch (error) {
+      console.error('Error fetching inventories:', error)
+      throw new Error('Failed to fetch inventories')
+    }
   }
 
   async getPopular(limit: number = 5): Promise<Inventory[]> {

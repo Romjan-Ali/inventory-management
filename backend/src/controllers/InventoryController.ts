@@ -118,7 +118,7 @@ export class InventoryController {
       console.error('Get user inventories error:', error)
       res.status(500).json({ error: 'Failed to fetch inventories' })
     }
-  }  
+  }
 
   getInventories = async (req: AuthRequest, res: Response) => {
     try {
@@ -127,25 +127,28 @@ export class InventoryController {
       const user = (req.user as User | undefined) || undefined
 
       const params = {
-        page: page ? parseInt(page as string) : undefined,
-        limit: limit ? parseInt(limit as string) : undefined,
-        search: search as string,
-        category: category as string,
+        page: page ? Math.max(1, parseInt(page as string)) : 1,
+        limit: limit
+          ? Math.min(Math.max(1, parseInt(limit as string)), 100)
+          : 20,
+        search: search ? (search as string).trim() : undefined,
+        category: category ? (category as string).trim() : undefined,
         tags: tags
           ? Array.isArray(tags)
-            ? (tags as string[])
-            : [tags as string]
+            ? (tags as string[]).map((t) => t.trim()).filter((t) => t)
+            : [(tags as string).trim()].filter((t) => t)
           : undefined,
-        sort: sort as string,
+        sort:
+          sort &&
+          ['newest', 'oldest', 'popular', 'items', 'title'].includes(
+            sort as string
+          )
+            ? (sort as string)
+            : undefined,
       }
 
-      if(user?.isAdmin) {
-        const inventories = await this.inventoryService.getAllInventories(params)
-        return res.json(inventories)
-      }
-
-      const inventories = user?.id
-        ? await this.inventoryService.getInventories(params, user.id)
+      const inventories = user
+        ? await this.inventoryService.getInventories(params, user)
         : await this.inventoryService.getInventories(params)
 
       return res.json(inventories)
@@ -310,8 +313,8 @@ export class InventoryController {
       }
 
       const customId = await this.inventoryService.generateItemCustomId(id)
-      
-      res.json( customId )
+
+      res.json(customId)
     } catch (error: any) {
       console.error('Generate custom ID error:', error)
       res.status(500).json({ error: 'Failed to generate custom ID' })

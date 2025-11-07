@@ -14,6 +14,7 @@ import type {
   IdFormatElement,
 } from '../types'
 import { prisma } from '../lib/prisma'
+import type { User } from '@prisma/client'
 
 export class InventoryService {
   constructor(
@@ -108,35 +109,25 @@ export class InventoryService {
     return this.inventoryRepository.findByUser(userId)
   }
 
-  async getAllInventories(params: {
-    page?: number
-    limit?: number
-    search?: string
-    category?: string
-    tags?: string[]
-  }) {
-    return this.inventoryRepository.findAll(params)
-  }
-
   async getPopularInventories(limit: number = 5) {
     return this.inventoryRepository.getPopular(limit)
   }
 
   async getInventories(
     params: {
-      page?: number
-      limit?: number
+      page: number
+      limit: number
       search?: string
       category?: string
       tags?: string[]
       sort?: string
     },
-    userId?: string
+    user?: User
   ) {
-    const isPublic = !userId
+    const isPublic = !user?.id
     const result = isPublic
       ? this.inventoryRepository.find(params, isPublic)
-      : this.inventoryRepository.find(params)
+      : this.inventoryRepository.find(params, undefined, user)
     return result
   }
 
