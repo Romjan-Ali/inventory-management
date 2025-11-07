@@ -1,6 +1,7 @@
 // backend/src/repositories/InventoryRepository.ts
 import { Prisma, type Inventory, type User } from '@prisma/client'
 import { BaseRepository } from './BaseRepository'
+import { access } from 'node:fs'
 
 export class InventoryRepository extends BaseRepository<Inventory> {
   async findById(id: string): Promise<Inventory | null> {
@@ -174,28 +175,60 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       category?: string
       tags?: string[]
       sort?: string
+      inventoryType?: 'owned' | 'shared' | 'all'
     },
     isPublic?: boolean,
     user?: User
-  ): Promise<{ inventories: Inventory[]; total: number }> {
-    const { page, limit, search, category, tags, sort } = params
+  ): Promise<{
+    inventories: Inventory[]
+    total: number
+  }> {
+    const { page, limit, search, category, tags, sort, inventoryType } = params
     const skip = (page - 1) * limit
 
     const where: any = {}
     const andConditions: any[] = []
 
-    // Build access conditions
+    // Handle public access first - if public, only show public inventories
     if (isPublic) {
       andConditions.push({ isPublic: true })
-    } else if (user?.isAdmin) {
-      // Admin sees everything - no conditions needed
-    } else if (user?.id) {
-      andConditions.push({
-        OR: [
-          { creatorId: user.id },
-          { accesses: { some: { userId: user.id } } },
-        ],
-      })
+    }
+    // Handle authenticated user access
+    else if (user?.id) {
+      if (user.isAdmin) {
+        // Admin sees everything - no additional conditions needed for access
+        // But we still need to apply inventoryType filters if specified
+        if (inventoryType === 'owned') {
+          andConditions.push({ creatorId: user.id })
+        } else if (inventoryType === 'shared') {
+          andConditions.push({
+            AND: [
+              { creatorId: { not: user.id } },
+            ],
+          })
+        }
+        // For 'all' or undefined, no creator/access restrictions for admin
+      } else {
+        // Regular user with specific inventory type
+        if (inventoryType === 'owned') {
+          andConditions.push({ creatorId: user.id })
+        } else if (inventoryType === 'shared') {
+          andConditions.push({
+            AND: [
+              { accesses: { some: { userId: user.id } } },
+              { creatorId: { not: user.id } },
+            ],
+          })
+        } else {
+          // 'all' or undefined - show both owned and shared
+          andConditions.push({
+            OR: [
+              { creatorId: user.id },
+              { accesses: { some: { userId: user.id } } },
+            ],
+          })
+        }
+      }
     } else {
       // No user and not public - return empty
       return { inventories: [], total: 0 }
@@ -242,25 +275,28 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       // 'newest' is default
     }
 
+    // Include configuration
+    const includeConfig = {
+      creator: {
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
+        },
+      },
+      _count: {
+        select: {
+          items: true,
+          accesses: true,
+        },
+      },
+    }
+
     try {
       const [inventories, total] = await Promise.all([
         this.prisma.inventory.findMany({
           where,
-          include: {
-            creator: {
-              select: {
-                id: true,
-                name: true,
-                avatar: true,
-              },
-            },
-            _count: {
-              select: {
-                items: true,
-                accesses: true,
-              },
-            },
-          },
+          include: includeConfig,
           skip,
           take: limit,
           orderBy,

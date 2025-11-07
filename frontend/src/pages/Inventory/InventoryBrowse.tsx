@@ -26,6 +26,7 @@ import {
 import { Search, Filter, Grid, List, X } from 'lucide-react'
 import InventoryCards from '@/components/inventory/View/InventoryCards'
 import { useDebounce } from 'use-debounce'
+import SmartPagination from '@/components/common/SmartPagination'
 
 export default function InventoryBrowse() {
   const { t } = useTranslation()
@@ -40,7 +41,6 @@ export default function InventoryBrowse() {
   const tag = searchParams.get('tag') || ''
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
-
 
   // Fetch inventories with filters
   const { data: inventoriesData, isLoading } = useGetInventoriesQuery(
@@ -68,6 +68,13 @@ export default function InventoryBrowse() {
       }
     })
     newParams.set('page', '1') // Reset to page 1 when filters change
+    setSearchParams(newParams)
+  }
+
+  const updatePage = (page: number) => {
+    console.log('Updating page to:', page)
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('page', page.toString())
     setSearchParams(newParams)
   }
 
@@ -109,9 +116,7 @@ export default function InventoryBrowse() {
       <Card>
         <CardHeader>
           <CardTitle>{t('searchFilter')}</CardTitle>
-          <CardDescription>
-            {t('searchHelp')}
-          </CardDescription>
+          <CardDescription>{t('searchHelp')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Search Input */}
@@ -243,36 +248,16 @@ export default function InventoryBrowse() {
                   />
                 </div>
               )}
-
-              {/* Pagination */}
-              {inventoriesData && inventoriesData.total > limit && (
-                <div className="flex justify-center mt-6">
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      disabled={page <= 1}
-                      onClick={() =>
-                        updateSearchParams({ page: (page - 1).toString() })
-                      }
-                    >
-                      {t('previous')}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      disabled={page * limit >= inventoriesData.total}
-                      onClick={() =>
-                        updateSearchParams({ page: (page + 1).toString() })
-                      }
-                    >
-                      {t('next')}
-                    </Button>
-                  </div>
-                </div>
-              )}
             </>
           )}
         </CardContent>
       </Card>
+      {/* Pagination */}
+      <SmartPagination
+        currentPage={page}
+        onPageChange={(newPage) => updatePage(newPage)}
+        totalPages={inventoriesData?.pagination.totalPages || 0}
+      />
     </div>
   )
 }

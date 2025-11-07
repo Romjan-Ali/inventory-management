@@ -7,6 +7,7 @@ import type {
   UpdateInventoryRequest,
   IdFormatElement,
   InventoryAccess,
+  Paginaiton,
 } from '@/types'
 
 export const inventoryApi = createApi({
@@ -24,8 +25,13 @@ export const inventoryApi = createApi({
   tagTypes: ['Inventory'],
   endpoints: (builder) => ({
     getInventories: builder.query<
-      { inventories: Inventory[]; total: number },
       {
+        inventories: Inventory[]
+        total: number
+        pagination: Paginaiton
+      },
+      {
+        type?: 'owned' | 'shared' | 'all'
         page?: number
         limit?: number
         search?: string

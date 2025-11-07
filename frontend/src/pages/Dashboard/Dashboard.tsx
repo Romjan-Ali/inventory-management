@@ -8,25 +8,35 @@ import { Plus, FolderOpen, Users, List, LayoutGrid } from 'lucide-react'
 import InventoryCards from '@/components/inventory/View/InventoryCards'
 import InventoryTable from '@/components/inventory/View/InventoryTable'
 import { useTranslation } from 'react-i18next'
+import SmartPagination from '@/components/common/SmartPagination'
 
 export default function Dashboard() {
   const { t } = useTranslation()
   const { user } = useAppSelector((state) => state.auth)
   const [activeTab, setActiveTab] = useState<'owned' | 'accessible'>('owned')
   const [viewType, setViewType] = useState<'table' | 'card'>('table')
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [limit] = useState<number>(20)
 
-  const { data: inventoriesData, isLoading } = useGetInventoriesQuery({
-    page: 1,
-    limit: 50,
-  })
+  const { data: ownedInventoriesData, isLoading: isLoadingOwnedInventories } =
+    useGetInventoriesQuery({
+      type: 'owned',
+      page: currentPage,
+      limit,
+    })
 
-  const ownedInventories =
-    inventoriesData?.inventories.filter((inv) => inv.creatorId === user?.id) ||
-    []
+  const { data: sharedInventoriesData, isLoading: isLoadingSharedInventories } =
+    useGetInventoriesQuery({
+      type: 'shared',
+      page: currentPage,
+      limit,
+    })
 
-  const accessibleInventories =
-    inventoriesData?.inventories.filter((inv) => inv.creatorId !== user?.id) ||
-    []
+  const isLoading = isLoadingOwnedInventories || isLoadingSharedInventories
+
+  const ownedInventories = user ? ownedInventoriesData?.inventories || [] : []
+
+  const accessibleInventories = sharedInventoriesData?.inventories || []
 
   const displayInventories =
     activeTab === 'owned' ? ownedInventories : accessibleInventories
@@ -36,7 +46,9 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('dashboard')}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t('dashboard')}
+          </h1>
           <p className="text-muted-foreground">
             {t('welcomeBack', { name: user?.name || '' })}
           </p>
@@ -56,8 +68,12 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             <FolderOpen className="h-8 w-8 text-primary" />
             <div>
-              <p className="text-2xl font-bold">{ownedInventories.length}</p>
-              <p className="text-sm text-muted-foreground">{t('myInventories')}</p>
+              <p className="text-2xl font-bold">
+                {ownedInventoriesData?.total || 0}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {t('myInventories')}
+              </p>
             </div>
           </div>
         </div>
@@ -67,9 +83,11 @@ export default function Dashboard() {
             <Users className="h-8 w-8 text-primary" />
             <div>
               <p className="text-2xl font-bold">
-                {accessibleInventories.length}
+                {sharedInventoriesData?.total || 0}
               </p>
-              <p className="text-sm text-muted-foreground">{t('sharedWithMe')}</p>
+              <p className="text-sm text-muted-foreground">
+                {t('sharedWithMe')}
+              </p>
             </div>
           </div>
         </div>
@@ -81,7 +99,8 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="text-2xl font-bold">
-                {inventoriesData?.total || 0}
+                {(user ? ownedInventoriesData?.total || 0 : 0) +
+                  (sharedInventoriesData?.total || 0)}
               </p>
               <p className="text-sm text-muted-foreground">{t('totalItems')}</p>
             </div>
@@ -100,7 +119,7 @@ export default function Dashboard() {
                 : 'border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700'
             }`}
           >
-            {t('myInventories')} ({ownedInventories.length})
+            {t('myInventories')} ({ownedInventoriesData?.total || 0})
           </button>
           <button
             onClick={() => setActiveTab('accessible')}
@@ -110,7 +129,7 @@ export default function Dashboard() {
                 : 'border-transparent text-muted-foreground hover:border-gray-300 hover:text-gray-700'
             }`}
           >
-            {t('sharedWithMe')} ({accessibleInventories.length})
+            {t('sharedWithMe')} ({sharedInventoriesData?.total || 0})
           </button>
         </nav>
         <div className="flex items-center">
@@ -157,6 +176,16 @@ export default function Dashboard() {
           {viewType === 'table' && (
             <InventoryTable inventories={displayInventories} />
           )}
+
+          <SmartPagination
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            totalPages={
+              activeTab === 'owned'
+                ? ownedInventoriesData?.pagination.totalPages || 0
+                : sharedInventoriesData?.pagination.totalPages || 0
+            }
+          />
 
           {displayInventories.length === 0 && (
             <div className="col-span-full text-center py-12">

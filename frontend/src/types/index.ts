@@ -102,6 +102,17 @@ export interface Inventory {
   updatedAt: string
 }
 
+export interface Paginaiton {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+  hasNext: boolean
+  hasPrev: boolean
+  startIndex: number
+  endIndex: number
+}
+
 export interface Item {
   id: string
   customId: string

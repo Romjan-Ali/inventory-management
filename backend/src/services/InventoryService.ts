@@ -125,10 +125,30 @@ export class InventoryService {
     user?: User
   ) {
     const isPublic = !user?.id
-    const result = isPublic
+    const result = await (isPublic
       ? this.inventoryRepository.find(params, isPublic)
-      : this.inventoryRepository.find(params, undefined, user)
-    return result
+      : this.inventoryRepository.find(params, undefined, user))
+
+    const { page, limit } = params
+    const total = result.total
+    const totalPages = Math.ceil(total / limit) || 1
+    const hasNext = page < totalPages
+    const hasPrev = page > 1
+    const startIndex = (page - 1) * limit + 1
+    const endIndex = Math.min(page * limit, total)
+
+    const pagination = {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNext,
+      hasPrev,
+      startIndex,
+      endIndex,
+    }
+
+    return { ...result, pagination }
   }
 
   async getInventoryStatistics(inventoryId: string) {
@@ -351,7 +371,7 @@ export class InventoryService {
     inventoryId: string
   ): Promise<{ customId: string; sequenceNumber?: number }> {
     const inventory = await this.inventoryRepository.findById(inventoryId)
-    console.log({inventoryId})
+    console.log({ inventoryId })
     if (!inventory?.customIdFormat) {
       return { customId: `item-${Date.now()}` }
     }
@@ -375,24 +395,24 @@ export class InventoryService {
   async getAllInventoryTags() {
     const tagsData = await this.inventoryRepository.getAllInventoryTags()
     const tagsSet = new Set<string>()
-    tagsData.flatMap(entry => entry.tags).forEach(tag => tagsSet.add(tag));
+    tagsData.flatMap((entry) => entry.tags).forEach((tag) => tagsSet.add(tag))
     return Array.from(tagsSet)
   }
 
   async getAllPublicInventoryTags() {
     const tagsData = await this.inventoryRepository.getAllPublicInventoryTags()
 
-    const tagMap: Record<string, number> = {};
+    const tagMap: Record<string, number> = {}
 
     tagsData
-      .flatMap(entry => entry.tags)
-      .forEach(tag => {
-        tagMap[tag] = (tagMap[tag] || 0) + 1;
-      });
+      .flatMap((entry) => entry.tags)
+      .forEach((tag) => {
+        tagMap[tag] = (tagMap[tag] || 0) + 1
+      })
 
     const tags: { name: string; count: number }[] = Object.entries(tagMap).map(
       ([name, count]) => ({ name, count })
-    );
+    )
 
     return Array.from(tags)
   }

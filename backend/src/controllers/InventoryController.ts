@@ -122,7 +122,7 @@ export class InventoryController {
 
   getInventories = async (req: AuthRequest, res: Response) => {
     try {
-      const { page, limit, search, category, tags, sort } = req.query
+      const { page, limit, search, category, tags, sort, type } = req.query
 
       const user = (req.user as User | undefined) || undefined
 
@@ -145,6 +145,7 @@ export class InventoryController {
           )
             ? (sort as string)
             : undefined,
+        inventoryType: type === 'owned' || type === 'shared' ? (type as 'owned' | 'shared') : 'all',
       }
 
       const inventories = user

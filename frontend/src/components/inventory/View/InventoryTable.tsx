@@ -21,11 +21,14 @@ interface InventoryTableProps {
 const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
   const { t, i18n } = useTranslation()
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(i18n.resolvedLanguage || 'en', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+    return new Date(dateString).toLocaleDateString(
+      i18n.resolvedLanguage || 'en',
+      {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }
+    )
   }
 
   const getInitials = (name: string) => {
@@ -117,7 +120,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
                 <div className="flex items-center gap-1">
                   <Package className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">{inventory._count?.items}</span>
-                  {inventory._count?.accesses && inventory._count?.accesses > 0 && (
+                  {Number(inventory._count?.accesses) > 0 && (
                     <div className="flex items-center gap-1 ml-2">
                       <Users className="h-3 w-3 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground">
@@ -154,7 +157,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
                       alt={inventory.creator?.name}
                     />
                     <AvatarFallback className="text-xs">
-                      {inventory.creator?.name && getInitials(inventory.creator?.name)}
+                      {inventory.creator?.name &&
+                        getInitials(inventory.creator?.name)}
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-sm">{inventory.creator?.name}</span>

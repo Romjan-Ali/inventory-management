@@ -193,7 +193,7 @@ export default function StatsTab({ inventory }: StatsTabProps) {
           <h3 className="text-lg font-medium mb-4">{t('numericFieldStats')}</h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {numberStats.map((stat) => (
-              <div key={stat.name} className="rounded-lg bg-gray-50 p-4">
+              <div key={stat.name} className="rounded-lg bg-primary/10 p-4">
                 <h4 className="font-medium mb-2">{stat.name}</h4>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
