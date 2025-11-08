@@ -25,8 +25,9 @@ const inventoryController = new InventoryController(
 )
 
 // Tags route
-// router.get('/tags', inventoryController.getAllInventoryTags)
-router.get('/tags/public', inventoryController.getAllPublicInventoryTags)
+router.get('/tags', inventoryController.getAllInventoryTags)
+router.get('/tags/public', inventoryController.getPublicInventoryTags)
+router.get('/tags/popular', inventoryController.getPopularTags)
 
 // Public routes
 router.get('/', optionalAuthMiddleware, inventoryController.getInventories)

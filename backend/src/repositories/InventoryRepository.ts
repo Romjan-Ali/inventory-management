@@ -175,9 +175,8 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       category?: string
       tags?: string[]
       sort?: string
-      inventoryType?: 'owned' | 'shared' | 'all'
+      inventoryType?: 'owned' | 'shared' | 'public' | 'public_and_accessible'
     },
-    isPublic?: boolean,
     user?: User
   ): Promise<{
     inventories: Inventory[]
@@ -190,7 +189,7 @@ export class InventoryRepository extends BaseRepository<Inventory> {
     const andConditions: any[] = []
 
     // Handle public access first - if public, only show public inventories
-    if (isPublic) {
+    if (inventoryType === 'public') {
       andConditions.push({ isPublic: true })
     }
     // Handle authenticated user access
@@ -202,12 +201,10 @@ export class InventoryRepository extends BaseRepository<Inventory> {
           andConditions.push({ creatorId: user.id })
         } else if (inventoryType === 'shared') {
           andConditions.push({
-            AND: [
-              { creatorId: { not: user.id } },
-            ],
+            AND: [{ creatorId: { not: user.id } }],
           })
         }
-        // For 'all' or undefined, no creator/access restrictions for admin
+        // For 'public_and_accessible' or undefined, no creator/access restrictions for admin
       } else {
         // Regular user with specific inventory type
         if (inventoryType === 'owned') {
@@ -220,11 +217,12 @@ export class InventoryRepository extends BaseRepository<Inventory> {
             ],
           })
         } else {
-          // 'all' or undefined - show both owned and shared
           andConditions.push({
+            // Show public and accessible inventories, for 'public_and_accessible' value of 'type' param and authenticated user with undefined 'type' param
             OR: [
-              { creatorId: user.id },
+              { isPublic: true },
               { accesses: { some: { userId: user.id } } },
+              { creatorId: user.id },
             ],
           })
         }
@@ -366,7 +364,7 @@ export class InventoryRepository extends BaseRepository<Inventory> {
     })
   }
 
-  async getAllPublicInventoryTags() {
+  async getPublicInventoryTags() {
     return this.prisma.inventory.findMany({
       where: {
         isPublic: true,

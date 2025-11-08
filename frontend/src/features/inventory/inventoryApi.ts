@@ -31,7 +31,7 @@ export const inventoryApi = createApi({
         pagination: Paginaiton
       },
       {
-        type?: 'owned' | 'shared' | 'all'
+        type: 'owned' | 'shared' | 'public_and_accessable' | 'public'
         page?: number
         limit?: number
         search?: string
@@ -57,6 +57,17 @@ export const inventoryApi = createApi({
       void
     >({
       query: () => '/tags/public',
+      providesTags: ['Inventory'],
+    }),
+
+    getPopularTags: builder.query<
+      { name: string; count: number }[],
+      { limit?: number } | void
+    >({
+      query: (params) => ({
+        url: '/tags/popular',
+        params: params ?? {},
+      }),
       providesTags: ['Inventory'],
     }),
 
@@ -166,6 +177,7 @@ export const {
   useGetInventoriesQuery,
   useGetInventoryQuery,
   useGetAllPublicInventoryTagsQuery,
+  useGetPopularTagsQuery,
   useCreateInventoryMutation,
   useUpdateInventoryMutation,
   useDeleteInventoryMutation,

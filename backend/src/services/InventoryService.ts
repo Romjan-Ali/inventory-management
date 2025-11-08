@@ -124,10 +124,9 @@ export class InventoryService {
     },
     user?: User
   ) {
-    const isPublic = !user?.id
-    const result = await (isPublic
-      ? this.inventoryRepository.find(params, isPublic)
-      : this.inventoryRepository.find(params, undefined, user))
+    const result = await (user?.id
+      ? this.inventoryRepository.find(params, user)
+      : this.inventoryRepository.find(params))
 
     const { page, limit } = params
     const total = result.total
@@ -394,13 +393,6 @@ export class InventoryService {
 
   async getAllInventoryTags() {
     const tagsData = await this.inventoryRepository.getAllInventoryTags()
-    const tagsSet = new Set<string>()
-    tagsData.flatMap((entry) => entry.tags).forEach((tag) => tagsSet.add(tag))
-    return Array.from(tagsSet)
-  }
-
-  async getAllPublicInventoryTags() {
-    const tagsData = await this.inventoryRepository.getAllPublicInventoryTags()
 
     const tagMap: Record<string, number> = {}
 
@@ -414,6 +406,29 @@ export class InventoryService {
       ([name, count]) => ({ name, count })
     )
 
-    return Array.from(tags)
+    return Array.from(tags).sort((a, b) => b.count - a.count)
+  }
+
+  async getPublicInventoryTags() {
+    const tagsData = await this.inventoryRepository.getPublicInventoryTags()
+
+    const tagMap: Record<string, number> = {}
+
+    tagsData
+      .flatMap((entry) => entry.tags)
+      .forEach((tag) => {
+        tagMap[tag] = (tagMap[tag] || 0) + 1
+      })
+
+    const tags: { name: string; count: number }[] = Object.entries(tagMap).map(
+      ([name, count]) => ({ name, count })
+    )
+
+    return Array.from(tags).sort((a, b) => b.count - a.count)
+  }
+
+  async getPopularTags(limit: number = 10) {
+    const tags = await this.getPublicInventoryTags()
+    return tags.slice(0, limit)
   }
 }

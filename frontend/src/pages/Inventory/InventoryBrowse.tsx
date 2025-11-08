@@ -2,8 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useGetInventoriesQuery } from '@/features/inventory/inventoryApi'
-import { useGetAllPublicInventoryTagsQuery } from '@/features/inventory/inventoryApi'
+import { useGetInventoriesQuery, useGetPopularTagsQuery } from '@/features/inventory/inventoryApi'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import InventoryTable from '@/components/inventory/View/InventoryTable'
 import { Button } from '@/components/ui/button'
@@ -45,6 +44,7 @@ export default function InventoryBrowse() {
   // Fetch inventories with filters
   const { data: inventoriesData, isLoading } = useGetInventoriesQuery(
     {
+      type: 'public',
       search: debouncedSearch,
       sort,
       category,
@@ -55,7 +55,7 @@ export default function InventoryBrowse() {
     { refetchOnMountOrArgChange: true }
   )
 
-  const { data: tagsData } = useGetAllPublicInventoryTagsQuery()
+  const { data: tagsData } = useGetPopularTagsQuery()
 
   // Update URL params
   const updateSearchParams = (updates: Record<string, string>) => {

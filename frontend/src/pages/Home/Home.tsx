@@ -1,11 +1,28 @@
 // frontend/src/pages/Home/Home.tsx
 import { Link } from 'react-router-dom'
-import { useGetPopularInventoriesQuery, useGetInventoriesQuery, useGetAllPublicInventoryTagsQuery } from '@/features/inventory/inventoryApi'
+import {
+  useGetPopularInventoriesQuery,
+  useGetInventoriesQuery,
+  useGetAllPublicInventoryTagsQuery,
+} from '@/features/inventory/inventoryApi'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useAppSelector } from '@/app/hooks'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTranslation } from 'react-i18next'
@@ -13,12 +30,16 @@ import { useTranslation } from 'react-i18next'
 export default function Home() {
   const { t } = useTranslation()
   const { user } = useAppSelector((state) => state.auth)
-  const { data: popularInventories, isLoading: isLoadingPopular } = useGetPopularInventoriesQuery(5)
-  const { data: latestInventoriesData, isLoading: isLoadingLatest } = useGetInventoriesQuery({
-    limit: 10,
-    page: 1,
-  })
-  const { data: tagsData, isLoading: isLoadingTags } = useGetAllPublicInventoryTagsQuery()
+  const { data: popularInventories, isLoading: isLoadingPopular } =
+    useGetPopularInventoriesQuery(5)
+  const { data: latestInventoriesData, isLoading: isLoadingLatest } =
+    useGetInventoriesQuery({
+      type: 'public',
+      limit: 10,
+      page: 1,
+    })
+  const { data: tagsData, isLoading: isLoadingTags } =
+    useGetAllPublicInventoryTagsQuery()
 
   const latestInventories = latestInventoriesData?.inventories || []
   const tags = tagsData || []
@@ -34,48 +55,58 @@ export default function Home() {
     {
       title: t('featureCustomFields'),
       description: t('featureCustomFieldsDesc'),
-      icon: '📊'
+      icon: '📊',
     },
     {
       title: t('featureRealTime'),
       description: t('featureRealTimeDesc'),
-      icon: '👥'
+      icon: '👥',
     },
     {
       title: t('featureSmartSearch'),
       description: t('featureSmartSearchDesc'),
-      icon: '🔍'
+      icon: '🔍',
     },
     {
       title: t('featureCustomIds'),
       description: t('featureCustomIdsDesc'),
-      icon: '🏷️'
+      icon: '🏷️',
     },
   ]
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase()
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
   }
 
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <section className="text-center py-16 bg-gradient-to-b from-background to-muted/30 rounded-3xl">
+      <section className="text-center py-16 bg-linear-to-b from-background to-muted/30 rounded-3xl">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
             {t('manageYourInventory')}
-            <span className="block text-primary mt-2">{t('withUltimateFlexibility')}</span>
+            <span className="block text-primary mt-2">
+              {t('withUltimateFlexibility')}
+            </span>
           </h1>
           <p className="mt-6 text-xl leading-8 text-muted-foreground max-w-3xl mx-auto">
             {t('heroSubtitle')}
           </p>
-          
+
           {/* Quick Stats */}
           <div className="mt-12 flex justify-center gap-8">
             {quickStats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-2xl font-bold text-primary">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
+                <div className="text-2xl font-bold text-primary">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>
@@ -114,11 +145,16 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="text-center hover:shadow-lg transition-all duration-300">
+            <Card
+              key={index}
+              className="text-center hover:shadow-lg transition-all duration-300"
+            >
               <CardContent className="pt-6">
                 <div className="text-4xl mb-4">{feature.icon}</div>
                 <h3 className="font-semibold text-lg mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground text-sm">{feature.description}</p>
+                <p className="text-muted-foreground text-sm">
+                  {feature.description}
+                </p>
               </CardContent>
             </Card>
           ))}
@@ -133,7 +169,9 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>{t('latestInventories')}</CardTitle>
-                  <CardDescription>{t('recentlyCreatedInventories')}</CardDescription>
+                  <CardDescription>
+                    {t('recentlyCreatedInventories')}
+                  </CardDescription>
                 </div>
                 <Button asChild variant="outline" size="sm">
                   <Link to="/inventory?sort=newest">{t('viewAll')}</Link>
@@ -158,9 +196,15 @@ export default function Home() {
                   </TableHeader>
                   <TableBody>
                     {latestInventories.slice(0, 5).map((inventory) => (
-                      <TableRow key={inventory.id} className="cursor-pointer hover:bg-muted/50">
+                      <TableRow
+                        key={inventory.id}
+                        className="cursor-pointer hover:bg-muted/50"
+                      >
                         <TableCell>
-                          <Link to={`/inventory/${inventory.id}`} className="font-medium hover:text-primary">
+                          <Link
+                            to={`/inventory/${inventory.id}`}
+                            className="font-medium hover:text-primary"
+                          >
                             {inventory.title}
                           </Link>
                         </TableCell>
@@ -180,7 +224,9 @@ export default function Home() {
                                 {getInitials(inventory.creator?.name || 'UU')}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="text-sm">{inventory.creator?.name}</span>
+                            <span className="text-sm">
+                              {inventory.creator?.name}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -197,7 +243,7 @@ export default function Home() {
           </Card>
         </div>
 
- {/* Popular Inventories Table */}
+        {/* Popular Inventories Table */}
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
@@ -229,9 +275,15 @@ export default function Home() {
                   </TableHeader>
                   <TableBody>
                     {popularInventories?.map((inventory) => (
-                      <TableRow key={inventory.id} className="cursor-pointer hover:bg-muted/50">
+                      <TableRow
+                        key={inventory.id}
+                        className="cursor-pointer hover:bg-muted/50"
+                      >
                         <TableCell>
-                          <Link to={`/inventory/${inventory.id}`} className="font-medium hover:text-primary">
+                          <Link
+                            to={`/inventory/${inventory.id}`}
+                            className="font-medium hover:text-primary"
+                          >
                             {inventory.title}
                           </Link>
                         </TableCell>
@@ -251,7 +303,9 @@ export default function Home() {
                                 {getInitials(inventory.creator?.name || 'UU')}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="text-sm">{inventory.creator?.name}</span>
+                            <span className="text-sm">
+                              {inventory.creator?.name}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -316,7 +370,8 @@ export default function Home() {
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link to="/inventory">
-                {t('browsePublicInventoriesArrow')} <span aria-hidden="true">→</span>
+                {t('browsePublicInventoriesArrow')}{' '}
+                <span aria-hidden="true">→</span>
               </Link>
             </Button>
           </div>

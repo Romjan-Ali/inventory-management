@@ -145,7 +145,12 @@ export class InventoryController {
           )
             ? (sort as string)
             : undefined,
-        inventoryType: type === 'owned' || type === 'shared' ? (type as 'owned' | 'shared') : 'all',
+        inventoryType:
+          type === 'owned' ||
+          type === 'shared' ||
+          type === 'public_and_accessable'
+            ? (type as 'owned' | 'shared' | 'public_and_accessable')
+            : 'public',
       }
 
       const inventories = user
@@ -362,9 +367,21 @@ export class InventoryController {
     }
   }
 
-  getAllPublicInventoryTags = async (req: Request, res: Response) => {
+  getPublicInventoryTags = async (req: Request, res: Response) => {
     try {
-      const tags = await this.inventoryService.getAllPublicInventoryTags()
+      const { limit } = req.params
+      const tags = await this.inventoryService.getPublicInventoryTags()
+      res.json(tags)
+    } catch (error: any) {
+      console.error('Get all public inventory tags error:', error)
+      res.status(500).json({ error: 'Failed to fetch public inventory tags' })
+    }
+  }
+
+  getPopularTags = async (req: Request, res: Response) => {
+    try {
+      const { limit } = req.query
+      const tags = await this.inventoryService.getPopularTags(limit ? parseInt(limit as string) : 10)
       res.json(tags)
     } catch (error: any) {
       console.error('Get all public inventory tags error:', error)
