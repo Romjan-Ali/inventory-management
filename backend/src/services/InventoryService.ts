@@ -161,210 +161,237 @@ export class InventoryService {
     return { ...result, pagination }
   }
 
-  async getInventoryStatistics(inventoryId: string) {
-    // Get inventory with all items using the repository
-    const inventory = await this.inventoryRepository.findById(inventoryId)
-
-    if (!inventory) {
-      throw new Error('Inventory not found')
-    }
-
-    const items = await this.inventoryRepository.findItemsByInventoryId(
-      inventoryId
-    )
-    const totalItems = items.length
-
-    // Initialize statistics object
-    const stats: any = {
-      totalItems,
-      calculatedAt: new Date().toISOString(),
-    }
-
-    // Calculate statistics for numeric fields if they exist and are visible
-    const numericFields = [
-      {
-        field: 'number1Value',
-        name: inventory.number1Name,
-        visible: inventory.number1Visible,
-      },
-      {
-        field: 'number2Value',
-        name: inventory.number2Name,
-        visible: inventory.number2Visible,
-      },
-      {
-        field: 'number3Value',
-        name: inventory.number3Name,
-        visible: inventory.number3Visible,
-      },
-    ]
-
-    numericFields.forEach(({ field, name, visible }) => {
-      if (name && visible) {
-        const values = items
-          .map((item) => item[field as keyof (typeof items)[0]])
-          .filter((val) => val !== null && val !== undefined) as number[]
-
-        if (values.length > 0) {
-          const sum = values.reduce((a, b) => a + b, 0)
-          stats[name] = {
-            count: values.length,
-            sum,
-            average: Number((sum / values.length).toFixed(2)),
-            min: Math.min(...values),
-            max: Math.max(...values),
-          }
-        } else {
-          stats[name] = { count: 0, message: 'No data available' }
-        }
-      }
-    })
-
-    // Calculate statistics for string fields if they exist and are visible
-    const stringFields = [
-      {
-        field: 'string1Value',
-        name: inventory.string1Name,
-        visible: inventory.string1Visible,
-      },
-      {
-        field: 'string2Value',
-        name: inventory.string2Name,
-        visible: inventory.string2Visible,
-      },
-      {
-        field: 'string3Value',
-        name: inventory.string3Name,
-        visible: inventory.string3Visible,
-      },
-    ]
-
-    stringFields.forEach(({ field, name, visible }) => {
-      if (name && visible) {
-        const values = items
-          .map((item) => item[field as keyof (typeof items)[0]])
-          .filter(
-            (val) => val !== null && val !== undefined && val !== ''
-          ) as string[]
-
-        if (values.length > 0) {
-          const frequency: Record<string, number> = {}
-          values.forEach((value) => {
-            frequency[value] = (frequency[value] || 0) + 1
-          })
-
-          const sortedFrequency = Object.entries(frequency)
-            .sort(([, a], [, b]) => b - a)
-            .slice(0, 5) // Top 5 most frequent values
-
-          stats[name] = {
-            uniqueValues: Object.keys(frequency).length,
-            totalValues: values.length,
-            mostFrequent: sortedFrequency.map(([value, count]) => ({
-              value,
-              count,
-            })),
-          }
-        } else {
-          stats[name] = {
-            uniqueValues: 0,
-            totalValues: 0,
-            message: 'No data available',
-          }
-        }
-      }
-    })
-
-    // Calculate statistics for text fields if they exist and are visible
-    const textFields = [
-      {
-        field: 'text1Value',
-        name: inventory.text1Name,
-        visible: inventory.text1Visible,
-      },
-      {
-        field: 'text2Value',
-        name: inventory.text2Name,
-        visible: inventory.text2Visible,
-      },
-      {
-        field: 'text3Value',
-        name: inventory.text3Name,
-        visible: inventory.text3Visible,
-      },
-    ]
-
-    textFields.forEach(({ field, name, visible }) => {
-      if (name && visible) {
-        const values = items
-          .map((item) => item[field as keyof (typeof items)[0]])
-          .filter(
-            (val) => val !== null && val !== undefined && val !== ''
-          ) as string[]
-
-        if (values.length > 0) {
-          stats[name] = {
-            totalEntries: values.length,
-            averageLength: Number(
-              (
-                values.reduce((sum, val) => sum + val.length, 0) / values.length
-              ).toFixed(2)
-            ),
-          }
-        } else {
-          stats[name] = { totalEntries: 0, message: 'No data available' }
-        }
-      }
-    })
-
-    // Calculate statistics for boolean fields if they exist and are visible
-    const booleanFields = [
-      {
-        field: 'boolean1Value',
-        name: inventory.boolean1Name,
-        visible: inventory.boolean1Visible,
-      },
-      {
-        field: 'boolean2Value',
-        name: inventory.boolean2Name,
-        visible: inventory.boolean2Visible,
-      },
-      {
-        field: 'boolean3Value',
-        name: inventory.boolean3Name,
-        visible: inventory.boolean3Visible,
-      },
-    ]
-
-    booleanFields.forEach(({ field, name, visible }) => {
-      if (name && visible) {
-        const values = items
-          .map((item) => item[field as keyof (typeof items)[0]])
-          .filter((val) => val !== null && val !== undefined) as boolean[]
-
-        if (values.length > 0) {
-          const trueCount = values.filter((val) => val === true).length
-          const falseCount = values.filter((val) => val === false).length
-
-          stats[name] = {
-            total: values.length,
-            trueCount,
-            falseCount,
-            truePercentage: Number(
-              ((trueCount / values.length) * 100).toFixed(1)
-            ),
-            falsePercentage: Number(
-              ((falseCount / values.length) * 100).toFixed(1)
-            ),
-          }
-        } else {
-          stats[name] = { total: 0, message: 'No data available' }
-        }
-      }
-    })
-
-    return stats
+async getInventoryStatistics(inventoryId: string) {
+  const inventory = await this.inventoryRepository.findById(inventoryId)
+  
+  if (!inventory) {
+    throw new Error('Inventory not found')
   }
+
+  const items = await this.inventoryRepository.findItemsByInventoryId(inventoryId)
+  const totalItems = items.length
+
+  // Get active fields
+  const activeFields = this.getActiveFields(inventory)
+  
+  // Field completion statistics
+  const fieldCompletion = activeFields.map(field => {
+    const values = items.map(item => {
+      const fieldKey = `${field.type}${field.index}Value` as keyof typeof item
+      return item[fieldKey]
+    }).filter(value => value !== null && value !== undefined && value !== '')
+    
+    return {
+      fieldName: field.name,
+      fieldType: field.type,
+      completed: values.length,
+      total: items.length,
+      completionRate: items.length > 0 ? (values.length / items.length) * 100 : 0
+    }
+  })
+
+  // Numeric field statistics
+  const numericStats = activeFields
+    .filter(field => field.type === 'number')
+    .map(field => {
+      const values = items
+        .map(item => {
+          const fieldKey = `${field.type}${field.index}Value` as keyof typeof item
+          const value = item[fieldKey]
+          return typeof value === 'number' ? value : null
+        })
+        .filter((value): value is number => value !== null && !isNaN(value))
+
+      if (values.length === 0) {
+        return {
+          fieldName: field.name,
+          count: 0,
+          average: 0,
+          min: 0,
+          max: 0,
+          sum: 0
+        }
+      }
+
+      const sum = values.reduce((a, b) => a + b, 0)
+      const average = sum / values.length
+
+      return {
+        fieldName: field.name,
+        count: values.length,
+        average: Number(average.toFixed(2)),
+        min: Number(Math.min(...values).toFixed(2)),
+        max: Number(Math.max(...values).toFixed(2)),
+        sum: Number(sum.toFixed(2))
+      }
+    })
+
+  // String field statistics (most frequent values)
+  const stringStats = activeFields
+    .filter(field => field.type === 'string')
+    .map(field => {
+      const values = items
+        .map(item => {
+          const fieldKey = `${field.type}${field.index}Value` as keyof typeof item
+          return item[fieldKey] as string | null
+        })
+        .filter((value): value is string => 
+          value !== null && value !== undefined && value.trim() !== ''
+        )
+
+      if (values.length === 0) {
+        return {
+          fieldName: field.name,
+          uniqueValues: 0,
+          totalValues: 0,
+          mostFrequent: []
+        }
+      }
+
+      // Calculate frequency
+      const frequency: Record<string, number> = {}
+      values.forEach(value => {
+        frequency[value] = (frequency[value] || 0) + 1
+      })
+
+      const sortedFrequency = Object.entries(frequency)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5) // Top 5 most frequent values
+
+      return {
+        fieldName: field.name,
+        uniqueValues: Object.keys(frequency).length,
+        totalValues: values.length,
+        mostFrequent: sortedFrequency.map(([value, count]) => ({
+          value,
+          count,
+          percentage: Number(((count / values.length) * 100).toFixed(1))
+        }))
+      }
+    })
+
+  // Boolean field statistics
+  const booleanStats = activeFields
+    .filter(field => field.type === 'boolean')
+    .map(field => {
+      const values = items
+        .map(item => {
+          const fieldKey = `${field.type}${field.index}Value` as keyof typeof item
+          return item[fieldKey] as boolean | null
+        })
+        .filter((value): value is boolean => value !== null)
+
+      if (values.length === 0) {
+        return {
+          fieldName: field.name,
+          total: 0,
+          trueCount: 0,
+          falseCount: 0,
+          truePercentage: 0,
+          falsePercentage: 0
+        }
+      }
+
+      const trueCount = values.filter(value => value === true).length
+      const falseCount = values.filter(value => value === false).length
+
+      return {
+        fieldName: field.name,
+        total: values.length,
+        trueCount,
+        falseCount,
+        truePercentage: Number(((trueCount / values.length) * 100).toFixed(1)),
+        falsePercentage: Number(((falseCount / values.length) * 100).toFixed(1))
+      }
+    })
+
+  // Text field statistics (length analysis)
+  const textStats = activeFields
+    .filter(field => field.type === 'text')
+    .map(field => {
+      const values = items
+        .map(item => {
+          const fieldKey = `${field.type}${field.index}Value` as keyof typeof item
+          return item[fieldKey] as string | null
+        })
+        .filter((value): value is string => 
+          value !== null && value !== undefined && value.trim() !== ''
+        )
+
+      if (values.length === 0) {
+        return {
+          fieldName: field.name,
+          totalEntries: 0,
+          averageLength: 0,
+          maxLength: 0,
+          minLength: 0
+        }
+      }
+
+      const lengths = values.map(text => text.length)
+      const totalLength = lengths.reduce((a, b) => a + b, 0)
+
+      return {
+        fieldName: field.name,
+        totalEntries: values.length,
+        averageLength: Number((totalLength / values.length).toFixed(1)),
+        maxLength: Math.max(...lengths),
+        minLength: Math.min(...lengths)
+      }
+    })
+
+  // Recent activity (last 7 days)
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const recentItems = items.filter(item => 
+    new Date(item.createdAt) > oneWeekAgo
+  ).length
+
+  // Overall completion rate
+  const overallCompletionRate = fieldCompletion.length > 0 
+    ? fieldCompletion.reduce((sum, field) => sum + field.completionRate, 0) / fieldCompletion.length
+    : 0
+
+  return {
+    overview: {
+      totalItems,
+      recentItems,
+      activeFields: activeFields.length,
+      overallCompletionRate: Number(overallCompletionRate.toFixed(1)),
+      calculatedAt: new Date().toISOString()
+    },
+    fieldCompletion,
+    numericFields: numericStats,
+    stringFields: stringStats,
+    booleanFields: booleanStats,
+    textFields: textStats
+  }
+}
+
+// Helper method to get active fields
+private getActiveFields(inventory: any) {
+  const fields: Array<{name: string, type: string, index: number}> = []
+  
+  // Check all field types
+  const fieldTypes = ['string', 'text', 'number', 'boolean', 'link'] as const
+  const counts = [1, 2, 3] as const
+
+  fieldTypes.forEach(type => {
+    counts.forEach(index => {
+      const nameKey = `${type}${index}Name` as keyof typeof inventory
+      const visibleKey = `${type}${index}Visible` as keyof typeof inventory
+      
+      if (inventory[nameKey] && inventory[visibleKey]) {
+        fields.push({
+          name: inventory[nameKey] as string,
+          type,
+          index
+        })
+      }
+    })
+  })
+
+  return fields
+}
 
   async updateCustomIdFormat(inventoryId: string, format: any[]) {
     if (format.length > 10) {

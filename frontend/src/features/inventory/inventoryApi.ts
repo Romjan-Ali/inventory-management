@@ -171,6 +171,13 @@ export const inventoryApi = createApi({
         body: { format },
       }),
     }),
+
+    getInventoryStatistics: builder.query<unknown, { inventoryId: string }>({
+      query: ({ inventoryId }) => `/${inventoryId}/statistics`,
+      providesTags: (_result, _error, { inventoryId }) => [
+        { type: 'Inventory', id: inventoryId },
+      ],
+    })
   }),
 })
 
@@ -191,4 +198,5 @@ export const {
   useUpdateCustomIdFormatMutation,
   useGenerateCustomIdQuery,
   usePreviewCustomIdMutation,
+  useGetInventoryStatisticsQuery,
 } = inventoryApi
