@@ -122,9 +122,21 @@ export class InventoryController {
 
   getInventories = async (req: AuthRequest, res: Response) => {
     try {
-      const { page, limit, search, category, tags, sort, type } = req.query
+      const { page, limit, search, category, tags, sort, type, isPublic } =
+        req.query
 
       const user = (req.user as User | undefined) || undefined
+
+      const validInventoryTypes = [
+        'owned',
+        'shared',
+        'public',
+        'public_and_accessible',
+      ] as const
+
+      const inventoryType = validInventoryTypes.includes(type as any)
+        ? (type as (typeof validInventoryTypes)[number])
+        : 'public'
 
       const params = {
         page: page ? Math.max(1, parseInt(page as string)) : 1,
@@ -132,7 +144,9 @@ export class InventoryController {
           ? Math.min(Math.max(1, parseInt(limit as string)), 100)
           : 20,
         search: search ? (search as string).trim() : undefined,
-        category: category ? (category as string).trim() : undefined,
+        category: category && ['equipment', 'furniture', 'book', 'electronics', 'tools', 'other'].includes((category as string).toLowerCase())
+          ? (category as string).trim()
+          : undefined,
         tags: tags
           ? Array.isArray(tags)
             ? (tags as string[]).map((t) => t.trim()).filter((t) => t)
@@ -145,12 +159,9 @@ export class InventoryController {
           )
             ? (sort as string)
             : undefined,
-        inventoryType:
-          type === 'owned' ||
-          type === 'shared' ||
-          type === 'public_and_accessable'
-            ? (type as 'owned' | 'shared' | 'public_and_accessable')
-            : 'public',
+        inventoryType,
+        isPublic:
+          isPublic === 'true' ? true : isPublic === 'false' ? false : undefined,
       }
 
       const inventories = user
@@ -381,7 +392,9 @@ export class InventoryController {
   getPopularTags = async (req: Request, res: Response) => {
     try {
       const { limit } = req.query
-      const tags = await this.inventoryService.getPopularTags(limit ? parseInt(limit as string) : 10)
+      const tags = await this.inventoryService.getPopularTags(
+        limit ? parseInt(limit as string) : 10
+      )
       res.json(tags)
     } catch (error: any) {
       console.error('Get all public inventory tags error:', error)

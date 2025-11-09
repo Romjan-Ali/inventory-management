@@ -48,6 +48,15 @@ export class InventoryService {
       throw new NotFoundError('Inventory')
     }
 
+    const canReadInventory = await this.accessService.canReadInventory(
+      id,
+      userId
+    )
+
+    if (!canReadInventory) {
+      throw new PermissionError('No access to this inventory')
+    }
+
     const canWrite = userId
       ? await this.accessService.canWriteInventory(id, userId)
       : false
@@ -121,6 +130,8 @@ export class InventoryService {
       category?: string
       tags?: string[]
       sort?: string
+      inventoryType: 'owned' | 'shared' | 'public' | 'public_and_accessible'
+      isPublic?: boolean
     },
     user?: User
   ) {

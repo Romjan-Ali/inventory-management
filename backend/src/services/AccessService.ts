@@ -7,8 +7,39 @@ export class AccessService {
     inventoryId: string,
     userId?: string
   ): Promise<boolean> {
-    // All inventories are readable by everyone (based on requirements)
-    return true
+    const inventory = await prisma.inventory.findUnique({
+      where: { id: inventoryId },
+      include: {
+        accesses: userId
+          ? {
+              where: { userId },
+            }
+          : false,
+      },
+    })
+
+    if (!inventory) {
+      throw new NotFoundError('Inventory')
+    }
+
+    // Public inventory
+    if (inventory.isPublic) return true
+
+    // If no userId provided, cannot access private inventory
+    if (!userId) return false
+
+    // Creator always has read access
+    if (inventory.creatorId === userId) return true
+
+    // Check if user is admin
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { isAdmin: true },
+    })
+
+    if (user?.isAdmin) return true
+
+    return false
   }
 
   async canWriteInventory(
@@ -40,9 +71,6 @@ export class AccessService {
     })
 
     if (user?.isAdmin) return true
-
-    // Check if inventory is public
-    if (inventory.isPublic) return true
 
     // Check explicit access
     const access = await prisma.inventoryAccess.findUnique({

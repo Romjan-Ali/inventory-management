@@ -176,13 +176,14 @@ export class InventoryRepository extends BaseRepository<Inventory> {
       tags?: string[]
       sort?: string
       inventoryType?: 'owned' | 'shared' | 'public' | 'public_and_accessible'
+      isPublic?: boolean
     },
     user?: User
   ): Promise<{
     inventories: Inventory[]
     total: number
   }> {
-    const { page, limit, search, category, tags, sort, inventoryType } = params
+    const { page, limit, search, category, tags, sort, inventoryType, isPublic } = params
     const skip = (page - 1) * limit
 
     const where: any = {}
@@ -243,12 +244,17 @@ export class InventoryRepository extends BaseRepository<Inventory> {
     }
 
     // Add other conditions
+
     if (category) {
       andConditions.push({ category })
     }
 
     if (tags && tags.length > 0) {
       andConditions.push({ tags: { hasSome: tags } })
+    }
+
+    if(isPublic !== undefined) {
+      andConditions.push({ isPublic})
     }
 
     // Apply all AND conditions

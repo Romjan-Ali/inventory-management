@@ -31,13 +31,14 @@ export const inventoryApi = createApi({
         pagination: Paginaiton
       },
       {
-        type: 'owned' | 'shared' | 'public_and_accessable' | 'public'
+        type: 'owned' | 'shared' | 'public_and_accessible' | 'public'
         page?: number
         limit?: number
         search?: string
         category?: string
         tags?: string[]
         sort?: string
+        isPublic?: string
       }
     >({
       query: (params) => ({
