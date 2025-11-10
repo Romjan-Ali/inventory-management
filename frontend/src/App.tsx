@@ -13,6 +13,7 @@ import CreateItem from './pages/Item/CreateItem'
 import EditItem from './pages/Item/EditItem'
 import InventoryBrowse from './pages/Inventory/InventoryBrowse'
 import { Toaster } from 'sonner'
+import UserManagement from './pages/Admin/UserManagement'
 
 function App() {
   return (
@@ -54,6 +55,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreateItem />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <UserManagement />
               </ProtectedRoute>
             }
           />

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from '@/app/hooks'
 import { logout } from '@/features/auth/authSlice'
 import SearchBox from './SearchBox'
-import { LogOut, User, Menu, X, Search } from 'lucide-react'
+import { LogOut, User, Menu, X, Search, Shield } from 'lucide-react'
 import { ModeToggle } from './ModeToggler'
 import LanguageSwitcher from './LanguageSwitcher'
 import { useTranslation } from 'react-i18next'
@@ -66,6 +66,16 @@ export default function Header() {
             <div className="hidden md:flex flex-1 max-w-md mx-8">
               <SearchBox />
             </div>
+          )}
+
+          {isAuthenticated && user?.isAdmin && (
+            <Link
+              to="/admin/users"
+              className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1"
+            >
+              <Shield className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('admin')}</span>
+            </Link>
           )}
 
           {/* Mobile Search Button */}
@@ -141,6 +151,17 @@ export default function Header() {
             <SearchBox />
           </div>
         )}
+
+{/*         {user?.isAdmin && (
+          <Link
+            to="/admin/users"
+            className="block py-2 px-3 text-sm font-medium transition-colors hover:text-primary hover:bg-accent rounded-md flex items-center gap-2"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <Shield className="h-4 w-4" />
+            {t('admin')}
+          </Link>
+        )} */}
 
         {/* Mobile Menu */}
         {isAuthenticated && isMobileMenuOpen && (

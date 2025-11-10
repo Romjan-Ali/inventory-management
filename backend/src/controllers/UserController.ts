@@ -114,6 +114,18 @@ export class UserController {
       const { id } = req.params
       const { isAdmin } = req.body
 
+      // Prevent switching to normal user for last admin
+      if (!isAdmin) {
+        const adminCount = await prisma.user.count({
+          where: { isAdmin: true },
+        })
+        if (adminCount <= 1) {
+          return res.status(400).json({
+            error: 'Cannot remove the last admin',
+          })
+        }
+      }
+
       if (!id) {
         return res.status(400).json({ error: 'User ID is required' })
       }
