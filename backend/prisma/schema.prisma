@@ -209,9 +209,10 @@ model Post {
 }
 
 model Like {
-  id     String @id @default(uuid())
-  itemId String
-  userId String
+  id        String   @id @default(uuid())
+  itemId    String
+  userId    String
+  createdAt DateTime @default(now())
 
   // SINGLE relation definitions
   item Item @relation("ItemLikes", fields: [itemId], references: [id], onDelete: Cascade)

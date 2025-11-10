@@ -113,6 +113,14 @@ export interface Paginaiton {
   endIndex: number
 }
 
+export interface Like {
+  createdAt: string | number | Date
+  id: string
+  itemId: string
+  userId: string
+  user: User
+}
+
 export interface Item {
   id: string
   customId: string
@@ -137,6 +145,45 @@ export interface Item {
   link2Value?: string
   link3Value?: string
 
+  createdAt: string
+  updatedAt: string
+}
+
+
+export interface Item {
+  id: string
+  customId: string
+  version: number
+  sequenceNumber?: number
+  inventoryId: string
+  creatorId: string
+  
+  // Custom field values
+  string1Value?: string
+  string2Value?: string
+  string3Value?: string
+  text1Value?: string 
+  text2Value?: string
+  text3Value?: string
+  number1Value?: number
+  number2Value?: number
+  number3Value?: number 
+  boolean1Value?: boolean 
+  boolean2Value?: boolean
+  boolean3Value?: boolean
+  link1Value?: string 
+  link3Value?: string 
+  
+  // Relations
+  inventory: Inventory
+  creator: User
+  likes: Like[]
+  
+  // Counts
+  _count?: {
+    likes: number
+  }
+  
   createdAt: string
   updatedAt: string
 }

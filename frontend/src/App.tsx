@@ -14,6 +14,7 @@ import EditItem from './pages/Item/EditItem'
 import InventoryBrowse from './pages/Inventory/InventoryBrowse'
 import { Toaster } from 'sonner'
 import UserManagement from './pages/Admin/UserManagement'
+import ItemDetail from './pages/Item/ItemDetail'
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/items/:id" element={<ItemDetail />} />
           <Route
             path="/inventory/:id/items/new"
             element={
