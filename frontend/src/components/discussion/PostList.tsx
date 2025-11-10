@@ -1,3 +1,4 @@
+// frontend/src/components/discussion/PostList.tsx
 import type { Post, Inventory } from '@/types'
 import PostItem from './PostItem'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +19,7 @@ export default function PostList({ posts, inventory }: PostListProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {posts.map((post) => (
         <PostItem
           key={post.id}

@@ -3,9 +3,13 @@ import { useState } from 'react'
 import type { Inventory } from '@/types'
 import { useCreatePostMutation } from '@/features/posts/postsApi'
 import { Send } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card'
 import LoadingSpinner from '../common/LoadingSpinner'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { useAppSelector } from '@/app/hooks'
 
 interface PostFormProps {
   inventory: Inventory
@@ -13,13 +17,17 @@ interface PostFormProps {
 
 export default function PostForm({ inventory }: PostFormProps) {
   const { t } = useTranslation()
+  const { user: currentUser } = useAppSelector((state) => state.auth)
   const [content, setContent] = useState('')
   const [createPost, { isLoading }] = useCreatePostMutation()
+
+  // Check if user can post (authenticated users only)
+  const canPost = !!currentUser
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!content.trim() || isLoading) return
+    if (!content.trim() || isLoading || !canPost) return
 
     try {
       await createPost({
@@ -34,27 +42,37 @@ export default function PostForm({ inventory }: PostFormProps) {
     }
   }
 
+  if (!canPost) {
+    return (
+      <Card>
+        <CardContent className="p-4 text-center text-muted-foreground">
+          {t('loginToParticipate')}
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex gap-2">
-      <input
+      <Input
         type="text"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder={t('typeYourMessage')}
-        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
         disabled={isLoading}
+        className="flex-1"
       />
-      <button
+      <Button
         type="submit"
         disabled={!content.trim() || isLoading}
-        className="inline-flex items-center gap-2 rounded-lg px-4 py-2 bg-primary dark:bg-secondary dark:hover:bg-secondary/80 text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50"
+        size="sm"
       >
         {isLoading ? (
           <LoadingSpinner size="sm" />
         ) : (
           <Send className="h-4 w-4" />
         )}
-      </button>
+      </Button>
     </form>
   )
 }

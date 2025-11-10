@@ -1,9 +1,12 @@
+// frontend/src/hooks/useWebSocket.ts
 import { useEffect, useRef, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 
 export function useWebSocket(inventoryId: string) {
   const socketRef = useRef<Socket | null>(null)
-  const [lastMessage, setLastMessage] = useState<any>(null)
+  const [lastMessage, setLastMessage] = useState<unknown>(null)
+
+  console.log('lastMessage:', lastMessage)
 
   useEffect(() => {
     socketRef.current = io(
@@ -13,7 +16,7 @@ export function useWebSocket(inventoryId: string) {
     // Join the specific inventory room
     socketRef.current.emit('join:inventory', inventoryId)
 
-    const messageHandler = (data: any) => {
+    const messageHandler = (data: unknown) => {
       setLastMessage(data)
     }
 

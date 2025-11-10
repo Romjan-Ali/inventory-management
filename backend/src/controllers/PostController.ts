@@ -1,3 +1,4 @@
+// backend/src/controllers/PostController.ts
 import type { Request, Response } from 'express'
 import type { AuthRequest } from '../middleware/auth'
 import { prisma } from '../lib/prisma'
@@ -128,7 +129,10 @@ export class PostController {
 
       // Emit real-time event
       const io = getIO()
-      io.to(`inventory:${post.inventoryId}`).emit('post:deleted', { id })
+      io.to(`inventory:${post.inventoryId}`).emit('post:deleted', {
+        id: post.id,
+        type: 'post:deleted',
+      })
 
       res.json({ message: 'Post deleted successfully' })
     } catch (error) {

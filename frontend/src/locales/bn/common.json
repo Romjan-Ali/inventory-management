@@ -312,5 +312,19 @@
   "noMatchingInventories": "আপনার ফিল্টারের সাথে কোনো ইনভেন্টরি মেলেনি",
   "tryAdjustingFilters": "আরও ফলাফল দেখতে আপনার ফিল্টারগুলি পরিবর্তন করার চেষ্টা করুন",
   "showingAllInventories": "মোট {{count}} টি ইনভেন্টরি প্রদর্শিত হচ্ছে",
-  "showingFilteredInventories": "{{total}} ইনভেন্টরির মধ্যে {{filtered}} টি প্রদর্শিত হচ্ছে"
+  "showingFilteredInventories": "{{total}} ইনভেন্টরির মধ্যে {{filtered}} টি প্রদর্শিত হচ্ছে",
+  "discussion": "আলোচনা",
+  "discussionDescription": "অন্যান্য ব্যবহারকারীদের সাথে এই ইনভেন্টরি নিয়ে আলোচনা করুন",
+  "loginToParticipate": "আলোচনায় অংশগ্রহণ করতে দয়া করে লগইন করুন",
+  "failedToLoadMessages": "বার্তা লোড করতে ব্যর্থ",
+  "userNotFound": "ব্যবহারকারী খুঁজে পাওয়া যায়নি",
+  "joined": "যোগদান করেছেন",
+  "admin": "অ্যাডমিন",
+  "ownedInventories": "নিজের ইনভেন্টরি",
+  "sharedInventories": "শেয়ারকৃত ইনভেন্টরি",
+  "inventoriesCreated": "তৈরি করা ইনভেন্টরি",
+  "inventoriesWithAccess": "অ্যাক্সেস আছে এমন ইনভেন্টরি",
+  "userActivity": "ব্যবহারকারীর কার্যকলাপ",
+  "activityDescription": "সাম্প্রতিক কার্যকলাপ এবং অবদান",
+  "activityComingSoon": "ব্যবহারকারীর কার্যকলাপ ট্র্যাকিং শীঘ্রই আসছে"
 }

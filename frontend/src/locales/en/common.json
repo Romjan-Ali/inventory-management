@@ -312,5 +312,19 @@
   "noMatchingInventories": "No inventories match your filters",
   "tryAdjustingFilters": "Try adjusting your filters to see more results",
   "showingAllInventories": "Showing all {{count}} inventories",
-  "showingFilteredInventories": "Showing {{filtered}} of {{total}} inventories"
+  "showingFilteredInventories": "Showing {{filtered}} of {{total}} inventories",
+    "discussion": "Discussion",
+  "discussionDescription": "Discuss this inventory with other users",
+  "loginToParticipate": "Please log in to participate in the discussion",
+  "failedToLoadMessages": "Failed to load messages",
+  "userNotFound": "User not found",
+  "joined": "Joined",
+  "admin": "Admin",
+  "ownedInventories": "Owned Inventories",
+  "sharedInventories": "Shared Inventories",
+  "inventoriesCreated": "Inventories created",
+  "inventoriesWithAccess": "Inventories with access",
+  "userActivity": "User Activity",
+  "activityDescription": "Recent activity and contributions",
+  "activityComingSoon": "User activity tracking coming soon"
 }
