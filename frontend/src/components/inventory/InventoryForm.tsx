@@ -35,6 +35,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import AutoSaveStatus from './AutoSaveStatus'
+import { useAutoSave } from '@/hooks/useAutoSave'
 
 type InventoryFormData = {
   title: string
@@ -57,10 +59,15 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [tagInput, setTagInput] = useState('')
-  const [createInventory, { isLoading: creating }] = useCreateInventoryMutation()
-  const [updateInventory, { isLoading: updating }] = useUpdateInventoryMutation()
+  const [createInventory, { isLoading: creating }] =
+    useCreateInventoryMutation()
+  const [updateInventory, { isLoading: updating }] =
+    useUpdateInventoryMutation()
 
   const isLoading = creating || updating
+
+  const [isUpdateError, setUpdateError] = useState(false)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   // Create schema with translations
   const inventorySchema = z.object({
@@ -126,16 +133,31 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
             version: inventory.version || 1,
           },
         }).unwrap()
+        setUpdateError(false)
+        setLastUpdated(new Date())
+
+        form.reset(data) // Reset form state after successful save
       } else {
         await createInventory(body).unwrap()
       }
 
       onSuccess?.()
-      navigate('/dashboard')
     } catch (err) {
       console.error('Failed to save inventory:', err)
+      if (inventory) setUpdateError(true)
     }
   }
+
+  useAutoSave({
+    hasChanges: inventory ? form.formState.isDirty : false, // Conditionally set hasChanges
+    onSave: () => {
+      if (inventory) {
+        return form.handleSubmit(onSubmit)()
+      }
+      return Promise.resolve() // Return empty promise for create mode
+    },
+    enabled: !!inventory, // Only enable auto-save for existing inventories
+  })
 
   return (
     <div className="max-w-2xl mx-auto py-2">
@@ -259,9 +281,7 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
                         )}
                       </div>
                     </FormControl>
-                    <FormDescription>
-                      {t('addUpTo10Tags')}
-                    </FormDescription>
+                    <FormDescription>{t('addUpTo10Tags')}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -314,6 +334,12 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
 
               {/* ---------- ACTION BUTTONS ---------- */}
               <div className="flex justify-end gap-3 border-t pt-6">
+                <AutoSaveStatus
+                  isSaving={isLoading}
+                  lastSaved={lastUpdated}
+                  isError={isUpdateError}
+                  hasUnsavedChanges={form.formState.isDirty}
+                />
                 <Button
                   type="button"
                   variant="outline"

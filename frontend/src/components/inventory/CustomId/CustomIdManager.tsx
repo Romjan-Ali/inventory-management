@@ -9,6 +9,8 @@ import { Save, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { useTranslation } from 'react-i18next'
+import AutoSaveStatus from '../AutoSaveStatus'
+import { useAutoSave } from '@/hooks/useAutoSave'
 
 interface CustomIdManagerProps {
   inventory: Inventory
@@ -21,6 +23,8 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
   const [format, setFormat] = useState<IdFormatElement[]>([])
   const [hasChanges, setHasChanges] = useState(false)
   const [originalFormat, setOriginalFormat] = useState<IdFormatElement[]>([])
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [isError, setIsError] = useState<boolean>(false)
 
   // Initialize format from inventory
   useEffect(() => {
@@ -48,9 +52,7 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
     )
 
     if (!hasRandomOrSequence) {
-      toast.error(
-        t('customIdFormatUniqueness')
-      )
+      toast.error(t('customIdFormatUniqueness'))
       return
     }
 
@@ -62,10 +64,13 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
 
       setOriginalFormat(format)
       setHasChanges(false)
+      setLastSaved(new Date())
       toast.success(t('customIdFormatUpdated'))
+      setIsError(false)
     } catch (error) {
       console.error('Failed to update custom ID format:', error)
       toast.error(t('failedUpdateCustomIdFormat'))
+      setIsError(true)
     }
   }
 
@@ -74,23 +79,33 @@ export default function CustomIdManager({ inventory }: CustomIdManagerProps) {
     setHasChanges(false)
   }
 
+  useAutoSave({
+    hasChanges,
+    onSave: saveChanges,    
+  })
+
   return (
     <div className="space-y-8">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold">{t('customIdHeader')}</h2>
-        <p className="text-muted-foreground">
-          {t('customIdSubtitle')}
-        </p>
+        <p className="text-muted-foreground">{t('customIdSubtitle')}</p>
       </div>
 
       {/* Save Bar */}
       {hasChanges && (
-        <div className="flex items-center justify-between p-4 border rounded-lg bg-blue-50 dark:bg-blue-950">
+        <div className="flex max-lg:flex-col max-lg:items-start max-lg:gap-4 items-center justify-between p-4 border rounded-lg bg-blue-50 dark:bg-blue-950">
           <div className="text-blue-900 dark:text-blue-100">
             {t('unsavedCustomId')}
           </div>
           <div className="flex gap-2">
+            <AutoSaveStatus
+              isSaving={isLoading}
+              lastSaved={lastSaved}
+              isError={isError}
+              hasUnsavedChanges={hasChanges}
+              onRetry={saveChanges}
+            />
             <Button variant="outline" onClick={resetChanges}>
               <RotateCcw className="h-4 w-4 mr-2" />
               {t('reset')}

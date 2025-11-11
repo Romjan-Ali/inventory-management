@@ -379,5 +379,10 @@
   "createFirstItem": "Create First Item",
   "viewLink": "View Link",
   "noItemDetails": "No additional details available for this item",
-  "openLink": "Open Link"
+  "openLink": "Open Link",
+  "saving": "Saving...",
+  "saveFailed": "Save failed",
+  "unsavedChanges": "Unsaved changes",
+  "lastSavedAt": "Last saved at",
+  "autoSaveEnabled": "Auto-save enabled (every 8 seconds)"
 }

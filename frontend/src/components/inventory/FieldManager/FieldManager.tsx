@@ -9,6 +9,8 @@ import FieldToolbar from './FieldToolbar'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import { Save } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import AutoSaveStatus from '../AutoSaveStatus'
+import { useAutoSave } from '@/hooks/useAutoSave'
 
 interface FieldManagerProps {
   inventory: Inventory
@@ -24,6 +26,8 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
   const [fields, setFields] = useState<FieldConfig[]>(() =>
     getFieldConfigs(inventory)
   )
+  const [isError, setIsError] = useState<boolean>(false)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
 
   const addField = (type: FieldType) => {
     // Find the next available slot for this field type
@@ -123,13 +127,24 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
         id: inventory.id,
         data: updates,
       }).unwrap()
+
+      setIsError(false)
+      setLastSaved(new Date())
     } catch (error) {
       console.error('Failed to update field configuration:', error)
+      setIsError(true)
     }
   }
 
   const hasChanges =
     JSON.stringify(fields) !== JSON.stringify(getFieldConfigs(inventory))
+
+  useAutoSave({
+    hasChanges,
+    onSave: saveChanges,
+    interval: 8000,
+    enabled: true,
+  })
 
   return (
     <div className="space-y-6">
@@ -137,23 +152,30 @@ export default function FieldManager({ inventory }: FieldManagerProps) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">{t('fieldHeader')}</h2>
-          <p className="text-muted-foreground">
-            {t('fieldSubtitle')}
-          </p>
+          <p className="text-muted-foreground">{t('fieldSubtitle')}</p>
         </div>
 
-        <button
-          onClick={saveChanges}
-          disabled={!hasChanges || isLoading}
-          className="inline-flex items-center gap-2 rounded-md bg-primary dark:bg-secondary dark:hover:bg-secondary/80 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50"
-        >
-          {isLoading ? (
-            <LoadingSpinner size="sm" />
-          ) : (
-            <Save className="h-4 w-4" />
-          )}
-          {t('fieldSaveChanges')}
-        </button>
+        <div className="flex gap-4 max-lg:flex-col">
+          <AutoSaveStatus
+            isSaving={isLoading}
+            lastSaved={lastSaved}
+            isError={isError}
+            hasUnsavedChanges={hasChanges}
+            onRetry={saveChanges}
+          />
+          <button
+            onClick={saveChanges}
+            disabled={!hasChanges || isLoading}
+            className="inline-flex items-center gap-2 rounded-md bg-primary dark:bg-secondary dark:hover:bg-secondary/80 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50"
+          >
+            {isLoading ? (
+              <LoadingSpinner size="sm" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            {t('fieldSaveChanges')}
+          </button>
+        </div>
       </div>
 
       {/* Field Limits Info */}

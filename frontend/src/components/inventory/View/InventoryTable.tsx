@@ -51,7 +51,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
           <TableHead className="border-b">{t('visibility')}</TableHead>
           <TableHead className="border-b">{t('creator')}</TableHead>
           <TableHead className="border-b">{t('lastUpdated')}</TableHead>
-          <TableHead className="border-b">{t('version')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -168,11 +167,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ inventories }) => {
                 <span className="text-sm text-muted-foreground">
                   {formatDate(inventory.updatedAt)}
                 </span>
-              </TableCell>
-              <TableCell className="py-4">
-                <Badge variant="outline" className="font-mono text-xs">
-                  v{inventory.version}
-                </Badge>
               </TableCell>
             </TableRow>
           </Link>
