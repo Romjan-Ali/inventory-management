@@ -31,15 +31,9 @@ export default function DiscussionThread({ inventory }: DiscussionThreadProps) {
     limit: 50,
   })
 
-  // Debug: Log WebSocket messages
-  useEffect(() => {
-    console.log('WebSocket message received:', lastMessage)
-  }, [lastMessage])
-
   // Improved real-time updates for both create and delete
   useEffect(() => {
     if (lastMessage) {
-      console.log('Refetching posts due to WebSocket event:', lastMessage.type)
       refetchPostsData()
     }
   }, [lastMessage, refetchPostsData])
@@ -64,13 +58,6 @@ export default function DiscussionThread({ inventory }: DiscussionThreadProps) {
       </CardHeader>
 
       <CardContent className="flex-1 flex flex-col p-0">
-        {/* Debug info */}
-        {/* <div className="text-xs text-muted-foreground p-2 bg-muted/50 border-b">
-          Posts: {postsData?.posts?.length || 0} | 
-          Last WS: {lastMessage?.type || 'none'} | 
-          Loading: {isLoading ? 'Yes' : 'No'}
-        </div> */}
-
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {isLoading ? (
