@@ -51,7 +51,7 @@ export default function ItemDetail() {
     )
   }
 
-  const canEdit = user?.id === item.creatorId || user?.isAdmin
+  const canEdit = user && item?.canWrite
 
   // Get all configured fields from inventory
   const configuredFields = [

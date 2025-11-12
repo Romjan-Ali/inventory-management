@@ -83,7 +83,7 @@ export default function EditItem() {
   }
 
   // Check if user can edit this item
-  const canEdit = user?.id === item.creatorId || user?.isAdmin
+  const canEdit = user && item?.canWrite
 
   if (!canEdit) {
     return (

@@ -3,6 +3,7 @@ import type { Request, Response } from 'express'
 import { ItemService } from '../services/ItemService'
 import type { AuthRequest } from '../middleware/auth'
 import { ValidationError } from '../errors'
+import type { User } from '@prisma/client'
 
 export class ItemController {
   constructor(private itemService: ItemService) {}
@@ -40,14 +41,17 @@ export class ItemController {
     try {
       const { id } = req.params
 
+      const user = (req.user as User | undefined) || undefined
+
       // Check if id is provided
       if (!id) {
         return res.status(400).json({ error: 'Item ID is required' })
       }
 
-      const item = await this.itemService.getItem(id)
+      const item = await this.itemService.getItem(id, user?.id)
       res.json(item)
     } catch (error: any) {
+      console.log('Error fetching item:', error)
       if (error.statusCode === 404) {
         res.status(404).json({ error: error.message })
       } else if (error instanceof ValidationError) {

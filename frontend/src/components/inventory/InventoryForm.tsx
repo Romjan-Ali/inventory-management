@@ -37,6 +37,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import AutoSaveStatus from './AutoSaveStatus'
 import { useAutoSave } from '@/hooks/useAutoSave'
+import { toast } from 'sonner'
 
 type InventoryFormData = {
   title: string
@@ -121,8 +122,6 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
       const body = {
         ...data,
         imageUrl: data.imageUrl || undefined,
-        // Note: customIdFormat and field configurations would need to be handled separately
-        // if you want to edit them in this form
       }
 
       if (inventory) {
@@ -139,6 +138,8 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
         form.reset(data) // Reset form state after successful save
       } else {
         await createInventory(body).unwrap()
+        toast.success(t('inventoryCreatedSuccessfully'))
+        navigate('/dashboard')
       }
 
       onSuccess?.()
@@ -334,12 +335,14 @@ export default function InventoryForm({ inventory, onSuccess }: Props) {
 
               {/* ---------- ACTION BUTTONS ---------- */}
               <div className="flex justify-end gap-3 border-t pt-6">
-                <AutoSaveStatus
+                {
+                 inventory && <AutoSaveStatus
                   isSaving={isLoading}
                   lastSaved={lastUpdated}
                   isError={isUpdateError}
                   hasUnsavedChanges={form.formState.isDirty}
                 />
+                }                
                 <Button
                   type="button"
                   variant="outline"

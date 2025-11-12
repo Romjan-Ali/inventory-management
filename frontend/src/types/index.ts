@@ -127,6 +127,7 @@ export interface Item {
   version: number
   inventoryId: string
   creatorId: string
+  canWrite?: boolean
 
   // Custom field values
   string1Value?: string

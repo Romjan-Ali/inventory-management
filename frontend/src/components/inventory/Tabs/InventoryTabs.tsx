@@ -5,31 +5,42 @@ import ItemsTab from './ItemsTab'
 import DiscussionTab from './DiscussionTab'
 import SettingsTab from './SettingsTab'
 import StatsTab from './StatsTab'
+import { useDeleteInventoryMutation } from '@/features/inventory/inventoryApi'
 import { Pencil, Trash2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../../ui/button'
-import { useDeleteInventoryMutation } from '@/features/inventory/inventoryApi'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { useAppSelector } from '@/app/hooks'
 
 interface InventoryTabsProps {
   inventory: Inventory
 }
 
-const tabs = [
-  { id: 'items', nameKey: 'tabItems' },
-  { id: 'discussion', nameKey: 'tabDiscussion' },
-  { id: 'settings', nameKey: 'tabSettings' },
-  { id: 'stats', nameKey: 'tabStats' },
-] as const
-
-type TabId = (typeof tabs)[number]['id']
-
 export default function InventoryTabs({ inventory }: InventoryTabsProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<TabId>('items')
+  const { user } = useAppSelector((state) => state.auth)
   const [deleteInventory, { isLoading }] = useDeleteInventoryMutation()
+
+  const isCreator = user?.id === inventory.creatorId
+  const isAdmin = user?.isAdmin  
+
+  const tabs = (isCreator || isAdmin) ?
+      [
+    { id: 'items', nameKey: 'tabItems' },
+    { id: 'discussion', nameKey: 'tabDiscussion' },
+    { id: 'settings', nameKey: 'tabSettings' },
+    { id: 'stats', nameKey: 'tabStats' },
+  ] :
+      [
+    { id: 'items', nameKey: 'tabItems' },
+    { id: 'discussion', nameKey: 'tabDiscussion' },
+  ]
+
+  type TabId = (typeof tabs)[number]['id']
+
+  const [activeTab, setActiveTab] = useState<TabId>('items')
 
   // ✅ Handle delete logic
   const handleDelete = async () => {
@@ -46,17 +57,28 @@ export default function InventoryTabs({ inventory }: InventoryTabsProps) {
   }
 
   const renderTabContent = () => {
-    switch (activeTab) {
-      case 'items':
-        return <ItemsTab inventory={inventory} />
-      case 'discussion':
-        return <DiscussionTab inventory={inventory} />
-      case 'settings':
-        return <SettingsTab inventory={inventory} />
-      case 'stats':
-        return <StatsTab inventory={inventory} />
-      default:
-        return null
+    if (isCreator || isAdmin) {
+      switch (activeTab) {
+        case 'items':
+          return <ItemsTab inventory={inventory} />
+        case 'discussion':
+          return <DiscussionTab inventory={inventory} />
+        case 'settings':
+          return <SettingsTab inventory={inventory} />
+        case 'stats':
+          return <StatsTab inventory={inventory} />
+        default:
+          return null
+      }
+    } else {
+      switch (activeTab) {
+        case 'items':
+          return <ItemsTab inventory={inventory} />
+        case 'discussion':
+          return <DiscussionTab inventory={inventory} />
+        default:
+          return null
+      }
     }
   }
 

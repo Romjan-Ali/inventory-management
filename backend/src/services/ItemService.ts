@@ -19,7 +19,7 @@ export class ItemService {
 
   async createItem(data: CreateItemRequest, userId: string) {
     // Check write access
-    const canWrite = await this.accessService.canWriteInventory(
+    const canWrite = await this.accessService.canWriteItem(
       data.inventoryId,
       userId
     )
@@ -44,14 +44,23 @@ export class ItemService {
     return item
   }
 
-  async getItem(id: string) {
+  async getItem(id: string, userId?: string) {
     const item = await this.itemRepository.findById(id)
 
     if (!item) {
       throw new NotFoundError('Item')
     }
 
-    return item
+    const canWrite = await this.accessService.canWriteItem(
+      item?.inventoryId || '',
+      userId || ''
+    )
+
+    if (!canWrite) {
+      throw new PermissionError('No read/write access to this item')
+    }
+
+    return { ...item, canWrite }
   }
 
   async updateItem(id: string, data: any, userId: string) {
@@ -62,12 +71,12 @@ export class ItemService {
     }
 
     // Check write access
-    const canWrite = await this.accessService.canWriteInventory(
+    const canWrite = await this.accessService.canWriteItem(
       item.inventoryId,
       userId
     )
     if (!canWrite) {
-      throw new PermissionError('No write access to this inventory')
+      throw new PermissionError('No write access to this item')
     }
 
     try {
@@ -93,12 +102,12 @@ export class ItemService {
     }
 
     // Check write access
-    const canWrite = await this.accessService.canWriteInventory(
+    const canWrite = await this.accessService.canWriteItem(
       item.inventoryId,
       userId
     )
     if (!canWrite) {
-      throw new PermissionError('No write access to this inventory')
+      throw new PermissionError('No write access to this item')
     }
 
     await this.itemRepository.delete(id)

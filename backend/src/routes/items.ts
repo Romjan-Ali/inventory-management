@@ -3,7 +3,7 @@ import { ItemController } from '../controllers/ItemController'
 import { ItemService } from '../services/ItemService'
 import { AccessService } from '../services/AccessService'
 import { ItemRepository } from '../repositories/ItemRepository'
-import { authMiddleware } from '../middleware/auth'
+import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth'
 import { prisma } from '../lib/prisma'
 
 const router = express.Router()
@@ -15,7 +15,7 @@ const itemService = new ItemService(itemRepository, accessService)
 const itemController = new ItemController(itemService)
 
 // Public routes
-router.get('/:id', itemController.getItem)
+router.get('/:id', optionalAuthMiddleware, itemController.getItem)
 router.get('/inventory/:inventoryId/items', itemController.getInventoryItems)
 
 // Protected routes

@@ -385,5 +385,6 @@
   "saveFailed": "সংরক্ষণ ব্যর্থ",
   "unsavedChanges": "অসংরক্ষিত পরিবর্তনগুলি",
   "lastSavedAt": "সর্বশেষ সংরক্ষিত",
-  "autoSaveEnabled": "স্বয়ংক্রিয় সংরক্ষণ সক্রিয় (প্রতি ৮ সেকেন্ডে)"
+  "autoSaveEnabled": "স্বয়ংক্রিয় সংরক্ষণ সক্রিয় (প্রতি ৮ সেকেন্ডে)",
+  "inventoryCreatedSuccessfully": "ইনভেন্টরি সফলভাবে তৈরি হয়েছে"
 }

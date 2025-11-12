@@ -384,5 +384,6 @@
   "saveFailed": "Save failed",
   "unsavedChanges": "Unsaved changes",
   "lastSavedAt": "Last saved at",
-  "autoSaveEnabled": "Auto-save enabled (every 8 seconds)"
+  "autoSaveEnabled": "Auto-save enabled (every 8 seconds)",
+  "inventoryCreatedSuccessfully": "Inventory created successfully"
 }
