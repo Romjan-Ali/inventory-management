@@ -39,6 +39,18 @@ export class AccessService {
 
     if (user?.isAdmin) return true
 
+    // Check if user has write access by creator or admin
+    const access = await prisma.inventoryAccess.findUnique({
+      where: {
+        inventoryId_userId: {
+          inventoryId,
+          userId,
+        },
+      },
+    })
+
+    if (access?.canWrite) return true
+
     return false
   }
 
@@ -89,7 +101,7 @@ export class AccessService {
 
   async canWriteItem(inventoryId: string, userId: string): Promise<boolean> {
     // Items in an inventory can be modified by the creator (and admins), and any users with write access (or by all authenticated users if the inventory is public).
-    
+
     if (!userId) return false
 
     const inventory = await prisma.inventory.findUnique({

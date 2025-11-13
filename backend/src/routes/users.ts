@@ -15,7 +15,7 @@ router.get('/me', authMiddleware, userController.getCurrentUser)
 router.get('/:id', userController.getUserProfile)
 
 // Admin routes
-router.get('/', authMiddleware, adminMiddleware, userController.getAllUsers)
+router.get('/', authMiddleware, userController.getAllUsers)
 router.post(
   '/:id/block',
   authMiddleware,

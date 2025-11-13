@@ -104,7 +104,7 @@ passport.use(
   )
 )
 
-// ✅ Serialization
+// Serialization
 passport.serializeUser((user: any, done) => {
   done(null, user.id)
 })

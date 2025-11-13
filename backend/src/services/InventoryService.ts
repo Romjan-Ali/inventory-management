@@ -53,6 +53,8 @@ export class InventoryService {
       userId
     )
 
+    console.log({canReadInventory})
+
     if (!canReadInventory) {
       throw new PermissionError('No access to this inventory')
     }
@@ -60,6 +62,8 @@ export class InventoryService {
     const canWrite = userId
       ? await this.accessService.canWriteInventory(id, userId)
       : false
+
+    console.log({canWrite})
 
     return { ...inventory, canWrite }
   }

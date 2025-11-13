@@ -1,14 +1,48 @@
 // frontend/src/pages/Admin/UserManagement.tsx
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAppSelector } from '@/app/hooks'
-import { useGetAllUsersQuery, useBlockUserMutation, useMakeAdminMutation } from '@/features/users/usersApi'
-import { Shield, Ban, UserCheck, Search, Users, UserX, UserCog } from 'lucide-react'
+import {
+  useGetAllUsersQuery,
+  useBlockUserMutation,
+  useMakeAdminMutation,
+} from '@/features/users/usersApi'
+import {
+  Shield,
+  Ban,
+  UserCheck,
+  Search,
+  Users,
+  UserX,
+  UserCog,
+  MoreHorizontal,
+} from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import SmartPagination from '@/components/common/SmartPagination'
 import { useTranslation } from 'react-i18next'
@@ -19,9 +53,15 @@ export default function UserManagement() {
   const { user: currentUser } = useAppSelector((state) => state.auth)
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [limit] = useState(2)
+  const [limit] = useState(20)
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([])
 
-  const { data: usersData, isLoading, error, refetch } = useGetAllUsersQuery({
+  const {
+    data: usersData,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAllUsersQuery({
     page: currentPage,
     limit,
     search: searchTerm || undefined,
@@ -30,7 +70,8 @@ export default function UserManagement() {
   const [blockUser] = useBlockUserMutation()
   const [makeAdmin] = useMakeAdminMutation()
 
-  const users = usersData?.users || []
+  const users = useMemo(() => usersData?.users || [], [usersData?.users])
+
   const totalUsers = usersData?.total || 0
   const totalPages = Math.ceil(totalUsers / limit)
 
@@ -39,32 +80,73 @@ export default function UserManagement() {
     setCurrentPage(1)
   }, [searchTerm])
 
-  const handleBlockUser = async (userId: string, isBlocked: boolean) => {
-    if (userId === currentUser?.id) {
+  // Reset selection when users change
+  useEffect(() => {
+    setSelectedUsers([])
+  }, [users])
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedUsers(users.map((user) => user.id))
+    } else {
+      setSelectedUsers([])
+    }
+  }
+
+  const handleSelectUser = (userId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedUsers((prev) => [...prev, userId])
+    } else {
+      setSelectedUsers((prev) => prev.filter((id) => id !== userId))
+    }
+  }
+
+  const handleBlockUsers = async (isBlocked: boolean) => {
+    const selectedCurrentUser = selectedUsers.find(
+      (id) => id === currentUser?.id
+    )
+    if (selectedCurrentUser && isBlocked) {
       toast.error(t('cannotBlockYourself'))
       return
     }
 
     try {
-      await blockUser({ id: userId, isBlocked }).unwrap()
-      toast.success(isBlocked ? t('userBlocked') : t('userUnblocked'))
-      // Refetch to get updated data
+      const promises = selectedUsers.map((userId) =>
+        blockUser({ id: userId, isBlocked }).unwrap()
+      )
+      await Promise.all(promises)
+      toast.success(
+        isBlocked
+          ? t('usersBlocked', { count: selectedUsers.length })
+          : t('usersUnblocked', { count: selectedUsers.length })
+      )
+      setSelectedUsers([])
       refetch()
     } catch (error) {
-      console.error('Failed to block user:', error)
+      console.error('Failed to block users:', error)
       toast.error(t('operationFailed'))
     }
   }
 
-  const handleMakeAdmin = async (userId: string, isAdmin: boolean) => {
-    if (userId === currentUser?.id && !isAdmin) {
+  const handleMakeAdmins = async (isAdmin: boolean) => {
+    const selectedCurrentUser = selectedUsers.find(
+      (id) => id === currentUser?.id
+    )
+    if (selectedCurrentUser && !isAdmin) {
       if (!confirm(t('confirmRemoveSelfAdmin'))) return
     }
 
     try {
-      await makeAdmin({ id: userId, isAdmin }).unwrap()
-      toast.success(isAdmin ? t('adminGranted') : t('adminRemoved'))
-      // Refetch to get updated data
+      const promises = selectedUsers.map((userId) =>
+        makeAdmin({ id: userId, isAdmin }).unwrap()
+      )
+      await Promise.all(promises)
+      toast.success(
+        isAdmin
+          ? t('adminsGranted', { count: selectedUsers.length })
+          : t('adminsRemoved', { count: selectedUsers.length })
+      )
+      setSelectedUsers([])
       refetch()
     } catch (error) {
       console.error('Failed to update admin status:', error)
@@ -81,7 +163,6 @@ export default function UserManagement() {
       .slice(0, 2)
   }
 
-  // Debounced search handler
   const handleSearchChange = (value: string) => {
     setSearchTerm(value)
   }
@@ -106,10 +187,10 @@ export default function UserManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('userManagement')}</h1>
-          <p className="text-muted-foreground">
-            {t('manageUsersDescription')}
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t('userManagement')}
+          </h1>
+          <p className="text-muted-foreground">{t('manageUsersDescription')}</p>
         </div>
       </div>
 
@@ -117,7 +198,9 @@ export default function UserManagement() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('totalUsers')}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('totalUsers')}
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -132,46 +215,50 @@ export default function UserManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.isAdmin).length}
+              {users.filter((u) => u.isAdmin).length}
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('activeUsers')}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('activeUsers')}
+            </CardTitle>
             <UserCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => !u.isBlocked).length}
+              {users.filter((u) => !u.isBlocked).length}
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('blockedUsers')}</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('blockedUsers')}
+            </CardTitle>
             <UserX className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.isBlocked).length}
+              {users.filter((u) => u.isBlocked).length}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Search and Filters */}
+      {/* Search and Users Table */}
       <Card>
         <CardHeader>
           <CardTitle>{t('users')}</CardTitle>
           <CardDescription>
-            {t('userPaginationStatus', { 
-              count: users.length, 
+            {t('usersPaginationStatus', {
+              count: users.length,
               total: totalUsers,
               page: currentPage,
-              pages: totalPages 
+              pages: totalPages,
             })}
           </CardDescription>
         </CardHeader>
@@ -186,6 +273,51 @@ export default function UserManagement() {
                 className="pl-10"
               />
             </div>
+
+            {/* Actions Toolbar */}
+            {selectedUsers.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {t('selectedCount', { count: selectedUsers.length })}
+                </span>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <MoreHorizontal className="h-4 w-4 mr-2" />
+                      {t('actions')}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleBlockUsers(true)}>
+                      <Ban className="h-4 w-4 mr-2" />
+                      {t('blockSelected')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBlockUsers(false)}>
+                      <UserCheck className="h-4 w-4 mr-2" />
+                      {t('unblockSelected')}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleMakeAdmins(true)}>
+                      <Shield className="h-4 w-4 mr-2" />
+                      {t('makeAdminSelected')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleMakeAdmins(false)}>
+                      <UserCog className="h-4 w-4 mr-2" />
+                      {t('removeAdminSelected')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedUsers([])}
+                >
+                  {t('clear')}
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Users Table */}
@@ -198,17 +330,35 @@ export default function UserManagement() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={
+                          selectedUsers.length === users.length &&
+                          users.length > 0
+                        }
+                        onCheckedChange={handleSelectAll}
+                        aria-label="Select all"
+                      />
+                    </TableHead>
                     <TableHead>{t('user')}</TableHead>
                     <TableHead>{t('email')}</TableHead>
                     <TableHead>{t('status')}</TableHead>
                     <TableHead>{t('role')}</TableHead>
                     <TableHead>{t('joined')}</TableHead>
-                    <TableHead className="text-right">{t('actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
                     <TableRow key={user.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedUsers.includes(user.id)}
+                          onCheckedChange={(checked) =>
+                            handleSelectUser(user.id, checked as boolean)
+                          }
+                          aria-label={`Select ${user.name}`}
+                        />
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
@@ -235,7 +385,10 @@ export default function UserManagement() {
                       </TableCell>
                       <TableCell>
                         {user.isAdmin ? (
-                          <Badge variant="secondary" className="flex items-center gap-1 w-fit">
+                          <Badge
+                            variant="secondary"
+                            className="flex items-center gap-1 w-fit"
+                          >
                             <Shield className="h-3 w-3" />
                             {t('admin')}
                           </Badge>
@@ -245,36 +398,6 @@ export default function UserManagement() {
                       </TableCell>
                       <TableCell>
                         {new Date(user.createdAt).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          {/* Block/Unblock Button */}
-                          <Button
-                            variant={user.isBlocked ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleBlockUser(user.id, !user.isBlocked)}
-                            disabled={user.id === currentUser?.id}
-                            title={user.id === currentUser?.id ? t('cannotBlockYourself') : ''}
-                          >
-                            {user.isBlocked ? (
-                              <UserCheck className="h-4 w-4 mr-1" />
-                            ) : (
-                              <Ban className="h-4 w-4 mr-1" />
-                            )}
-                            {user.isBlocked ? t('unblock') : t('block')}
-                          </Button>
-
-                          {/* Make Admin/Remove Admin Button */}
-                          <Button
-                            variant={user.isAdmin ? "outline" : "secondary"}
-                            size="sm"
-                            onClick={() => handleMakeAdmin(user.id, !user.isAdmin)}
-                            title={user.id === currentUser?.id && !user.isAdmin ? t('selfAdminWarning') : ''}
-                          >
-                            <UserCog className="h-4 w-4 mr-1" />
-                            {user.isAdmin ? t('removeAdmin') : t('makeAdmin')}
-                          </Button>
-                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -288,7 +411,6 @@ export default function UserManagement() {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={setCurrentPage}
-                    maxVisiblePages={5}
                   />
                 </div>
               )}
@@ -303,7 +425,9 @@ export default function UserManagement() {
                 {searchTerm ? t('noUsersFound') : t('noUsers')}
               </h3>
               <p className="text-muted-foreground mt-2">
-                {searchTerm ? t('tryDifferentSearch') : t('usersWillAppearHere')}
+                {searchTerm
+                  ? t('tryDifferentSearch')
+                  : t('usersWillAppearHere')}
               </p>
             </div>
           )}
