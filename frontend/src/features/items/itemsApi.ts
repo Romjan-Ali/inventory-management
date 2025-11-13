@@ -24,6 +24,7 @@ export const itemsApi = createApi({
       }),
       providesTags: (_result, _error, { inventoryId }) => [
         { type: 'Item', id: `INVENTORY-${inventoryId}` },
+        { type: 'Item', id: 'LIST' },
       ],
     }),
 
@@ -57,7 +58,7 @@ export const itemsApi = createApi({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_result, _error, id) => [{ type: 'Item', id }],
+      invalidatesTags: (_result, _error, id) => [{ type: 'Item', id }, { type: 'Item', id: 'LIST' }],
     }),
 
     likeItem: builder.mutation<{ liked: boolean; likeCount: number }, string>({
