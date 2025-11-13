@@ -1,7 +1,6 @@
 // backend/src/repositories/InventoryRepository.ts
 import { Prisma, type Inventory, type User } from '@prisma/client'
 import { BaseRepository } from './BaseRepository'
-import { access } from 'node:fs'
 
 export class InventoryRepository extends BaseRepository<Inventory> {
   async findById(id: string): Promise<Inventory | null> {

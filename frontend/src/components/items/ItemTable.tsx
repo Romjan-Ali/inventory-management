@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import type { Inventory, Item } from '@/types'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ChevronsUpDown, Edit, Trash2, Eye } from 'lucide-react'
+import { ChevronsUpDown, Edit, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -15,13 +15,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 
 interface ItemTableProps {
@@ -375,9 +368,6 @@ export default function ItemTable({
                   <th className="px-4 py-3 text-left font-medium">
                     {t('created')}
                   </th>
-                  <th className="w-12 px-4 py-3 text-left font-medium">
-                    {t('actions')}
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -443,56 +433,7 @@ export default function ItemTable({
                     {/* Created Date */}
                     <td className="px-4 py-3 text-muted-foreground text-xs">
                       {formatDate(item.createdAt)}
-                    </td>
-
-                    {/* Actions */}
-                    <td
-                      className="px-4 py-3"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <span className="sr-only">{t('openMenu')}</span>
-                            <ChevronsUpDown className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => handleItemAction('view', item.id)}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            {t('view')}
-                          </DropdownMenuItem>
-                          {canEdit && (
-                            <>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleItemAction('edit', item.id)
-                                }
-                              >
-                                <Edit className="h-4 w-4 mr-2" />
-                                {t('edit')}
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleItemAction('delete', item.id)
-                                }
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {t('delete')}
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
+                    </td>                    
                   </tr>
                 ))}
               </tbody>

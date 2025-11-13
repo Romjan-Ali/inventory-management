@@ -412,7 +412,7 @@ private getActiveFields(inventory: any) {
     inventoryId: string
   ): Promise<{ customId: string; sequenceNumber?: number }> {
     const inventory = await this.inventoryRepository.findById(inventoryId)
-    console.log({ inventoryId })
+    
     if (!inventory?.customIdFormat) {
       return { customId: `item-${Date.now()}` }
     }

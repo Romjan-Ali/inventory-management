@@ -9,7 +9,6 @@ import {
   useGetInventoryItemsQuery,
   useDeleteItemMutation,
 } from '@/features/items/itemsApi'
-import { useAppSelector } from '@/app/hooks'
 import { useTranslation } from 'react-i18next'
 
 interface ItemsTabProps {
@@ -30,18 +29,12 @@ export default function ItemsTab({ inventory }: ItemsTabProps) {
   })
 
   const [deleteItem] = useDeleteItemMutation()
-  const { user } = useAppSelector((state) => state.auth)
 
   const items = itemsData?.items || []
   const totalItems = itemsData?.total || 0
 
   // Check if user can edit items
-  const canEdit =
-    user?.id === inventory.creatorId ||
-    user?.isAdmin ||
-    inventory.isPublic ||
-    // Add logic to check if user has write access via access list
-    false  
+  const canEdit = inventory.canWrite
 
   const handleItemDelete = async (itemId: string) => {
     try {

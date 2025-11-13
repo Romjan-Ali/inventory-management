@@ -56,7 +56,8 @@ export class CustomIdService {
         case 'SEQUENCE':
           const sequenceResult = await this.generateSequence(
             inventoryId,
-            element.format
+            element.format,
+            retryCount
           )
           part = sequenceResult.sequenceValue
           sequenceNumber = sequenceResult.sequenceNumber
@@ -101,7 +102,8 @@ export class CustomIdService {
 
   private async generateSequence(
     inventoryId: string,
-    format?: string
+    format?: string,
+    retryCount: number = 0
   ): Promise<{ sequenceValue: string; sequenceNumber: number }> {
     // Find the maximum sequence number from ITEMS in this inventory
     const maxSequenceResult = await prisma.item.aggregate({
@@ -113,8 +115,15 @@ export class CustomIdService {
       },
     })
 
+    const totalItems = await prisma.item.count({
+      where: {
+        inventoryId: inventoryId,
+      },
+    })
+
     // The next sequence is the max existing one + 1
-    const nextSequenceNumber = (maxSequenceResult._max.sequenceNumber || 0) + 1
+    // const nextSequenceNumber = (maxSequenceResult._max.sequenceNumber || 0) + 1
+    const nextSequenceNumber = (totalItems || 0) + retryCount + 1
 
     // Format the number with leading zeros if needed
     let sequenceValue = nextSequenceNumber.toString()
