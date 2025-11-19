@@ -6,12 +6,13 @@ import CustomIdManager from '../CustomId/CustomIdManager'
 import AccessManager from '../AccessManager/AccessManager'
 import { Key, Users, Sliders } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import ApiTokenManager from '../ApiTokenManager'
 
 interface SettingsTabProps {
   inventory: Inventory
 }
 
-type SettingsSection = 'fields' | 'customId' | 'access'
+type SettingsSection = 'fields' | 'customId' | 'access' | 'api'
 
 export default function SettingsTab({ inventory }: SettingsTabProps) {
   const { t } = useTranslation()
@@ -21,6 +22,7 @@ export default function SettingsTab({ inventory }: SettingsTabProps) {
     { id: 'fields' as const, nameKey: 'settingsFields', icon: Sliders },
     { id: 'customId' as const, nameKey: 'settingsCustomId', icon: Key },
     { id: 'access' as const, nameKey: 'settingsAccess', icon: Users },
+    { id: 'api' as const, nameKey: 'settingsApi', icon: Key },
   ]
 
   const renderSectionContent = () => {
@@ -31,6 +33,8 @@ export default function SettingsTab({ inventory }: SettingsTabProps) {
         return <CustomIdManager inventory={inventory} />
       case 'access':
         return <AccessManager inventory={inventory} />
+      case 'api':
+        return <ApiTokenManager inventory={inventory} />
       default:
         return null
     }

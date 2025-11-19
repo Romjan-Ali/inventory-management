@@ -12,7 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { type FilterState, CATEGORY_OPTIONS, VISIBILITY_OPTIONS, SORT_OPTIONS } from '@/types/filter'
+import {
+  type FilterState,
+  CATEGORY_OPTIONS,
+  VISIBILITY_OPTIONS,
+  SORT_OPTIONS,
+} from '@/types/filter'
 
 interface InventoryFiltersProps {
   filters: FilterState
@@ -39,13 +44,16 @@ export default function InventoryFilters({
     return () => clearTimeout(timer)
   }, [localSearch, filters, onFiltersChange])
 
-  const handleFilterChange = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
+  const handleFilterChange = <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K]
+  ) => {
     onFiltersChange({ ...filters, [key]: value } as FilterState)
   }
 
   const handleTagToggle = (tag: string) => {
     const newTags = filters.tags.includes(tag)
-      ? filters.tags.filter(t => t !== tag)
+      ? filters.tags.filter((t) => t !== tag)
       : [...filters.tags, tag]
     handleFilterChange('tags', newTags)
   }
@@ -55,14 +63,14 @@ export default function InventoryFilters({
   }
 
   const getSortDisplayValue = () => {
-    const sortOption = SORT_OPTIONS.find(opt => opt.value === filters.sort)
+    const sortOption = SORT_OPTIONS.find((opt) => opt.value === filters.sort)
     return sortOption ? sortOption.label : 'Sort by'
   }
 
-  const hasActiveFilters = 
-    filters.search || 
-    filters.category !== 'all' || 
-    filters.isPublic !== 'all' || 
+  const hasActiveFilters =
+    filters.search ||
+    filters.category !== 'all' ||
+    filters.isPublic !== 'all' ||
     filters.tags.length > 0
 
   return (
@@ -87,7 +95,7 @@ export default function InventoryFilters({
               <SelectValue>{getSortDisplayValue()}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {SORT_OPTIONS.map(option => (
+              {SORT_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>
@@ -100,12 +108,15 @@ export default function InventoryFilters({
       {/* Filter Row */}
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Category Filter */}
-        <Select value={filters.category} onValueChange={(value) => handleFilterChange('category', value)}>
+        <Select
+          value={filters.category}
+          onValueChange={(value) => handleFilterChange('category', value)}
+        >
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
-            {CATEGORY_OPTIONS.map(option => (
+            {CATEGORY_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -114,12 +125,15 @@ export default function InventoryFilters({
         </Select>
 
         {/* Visibility Filter */}
-        <Select value={filters.isPublic} onValueChange={(value) => handleFilterChange('isPublic', value)}>
+        <Select
+          value={filters.isPublic}
+          onValueChange={(value) => handleFilterChange('isPublic', value)}
+        >
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Visibility" />
           </SelectTrigger>
           <SelectContent>
-            {VISIBILITY_OPTIONS.map(option => (
+            {VISIBILITY_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -135,7 +149,7 @@ export default function InventoryFilters({
           <span className="text-sm text-muted-foreground">
             {t('activeFilters')}:
           </span>
-          
+
           {filters.search && (
             <Badge variant="secondary" className="flex items-center gap-1">
               {t('searchLabel')}: "{filters.search}"
@@ -175,8 +189,12 @@ export default function InventoryFilters({
             </Badge>
           )}
 
-          {filters.tags.map(tag => (
-            <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+          {filters.tags.map((tag) => (
+            <Badge
+              key={tag}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
               {t('tagLabel')}: {tag}
               <button
                 onClick={() => handleTagToggle(tag)}

@@ -128,9 +128,10 @@ model Inventory {
   items    Item[]            @relation("InventoryItems")
   accesses InventoryAccess[] @relation("InventoryAccess")
   posts    Post[]            @relation("InventoryPosts")
+  apiToken ApiToken[]        @relation("InventoryApiTokens")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@unique([id, version])
   @@map("inventories")
@@ -220,4 +221,17 @@ model Like {
 
   @@unique([itemId, userId])
   @@map("likes")
+}
+
+model ApiToken {
+  id          String    @id @default(uuid())
+  token       String    @unique
+  inventoryId String
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  isActive    Boolean   @default(true)
+
+  inventory Inventory @relation("InventoryApiTokens", fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@map("api_tokens")
 }

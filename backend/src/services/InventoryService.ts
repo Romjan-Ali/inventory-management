@@ -41,19 +41,17 @@ export class InventoryService {
     return inventory
   }
 
-  async getInventory(id: string, userId?: string) {
+  async getInventory(id: string, userId?: string, canRead: boolean = false) {
     const inventory = await this.inventoryRepository.findById(id)
 
     if (!inventory) {
       throw new NotFoundError('Inventory')
     }
 
-    const canReadInventory = await this.accessService.canReadInventory(
+    const canReadInventory = canRead || await this.accessService.canReadInventory(
       id,
       userId
     )
-
-    console.log({canReadInventory})
 
     if (!canReadInventory) {
       throw new PermissionError('No access to this inventory')
@@ -62,8 +60,6 @@ export class InventoryService {
     const canWrite = userId
       ? await this.accessService.canWriteInventory(id, userId)
       : false
-
-    console.log({canWrite})
 
     return { ...inventory, canWrite }
   }

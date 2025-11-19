@@ -100,13 +100,13 @@ export default function Header() {
                 </Link>
                 <LanguageSwitcher />
                 <ModeToggle />
-                <div className="flex items-center space-x-2">
+                <Link to="/profile" className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
                   <span className="text-sm hidden xl:block">{user?.name}</span>
                   <span className="text-sm xl:hidden">
                     {user?.name?.split(' ')[0]}
                   </span>
-                </div>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="p-2 hover:bg-accent rounded-md transition-colors"
@@ -152,7 +152,7 @@ export default function Header() {
           </div>
         )}
 
-{/*         {user?.isAdmin && (
+        {/*         {user?.isAdmin && (
           <Link
             to="/admin/users"
             className="block py-2 px-3 text-sm font-medium transition-colors hover:text-primary hover:bg-accent rounded-md flex items-center gap-2"

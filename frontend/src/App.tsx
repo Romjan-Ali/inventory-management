@@ -6,6 +6,7 @@ import Login from './pages/Auth/Login'
 import Dashboard from './pages/Dashboard/Dashboard'
 import InventoryPage from './pages/Inventory/InventoryPage'
 import ProtectedRoute from './components/common/ProtectedRoute'
+import Profile from './pages/Profle/Profile'
 import AuthSuccess from './pages/AuthSuccess'
 import CreateInventory from './pages/Inventory/CreateInventory'
 import EditInventory from './pages/Inventory/EditInventory'
@@ -24,6 +25,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/success" element={<AuthSuccess />} />
+          <Route path='/profile' element={<Profile />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/inventory" element={<InventoryBrowse />} />
           <Route

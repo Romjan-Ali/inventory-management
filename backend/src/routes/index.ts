@@ -6,6 +6,7 @@ import inventoryRoutes from './inventories'
 import itemRoutes from './items'
 import searchRoutes from './search'
 import postRoutes from './posts'
+import inventoryApiRoutes from './inventoryApi'
 
 const router = express.Router()
 
@@ -15,5 +16,6 @@ router.use('/inventories', inventoryRoutes)
 router.use('/items', itemRoutes)
 router.use('/search', searchRoutes)
 router.use('/posts', postRoutes)
+router.use('/inventory', inventoryApiRoutes)
 
 export default router
