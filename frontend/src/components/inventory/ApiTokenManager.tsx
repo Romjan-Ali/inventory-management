@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { API_BASE_URL } from '@/lib/constants'
 
 interface ApiToken {
   id: string
@@ -32,7 +33,7 @@ export default function ApiTokenManager({ inventory }: ApiTokenManagerProps) {
   const fetchTokens = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/inventory/${inventory.id}/tokens`, {
+      const response = await fetch(`${API_BASE_URL}/inventory/${inventory.id}/tokens`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -56,7 +57,7 @@ export default function ApiTokenManager({ inventory }: ApiTokenManagerProps) {
   const generateToken = async () => {
     setIsGenerating(true)
     try {
-      const response = await fetch(`/api/inventory/${inventory.id}/tokens`, {
+      const response = await fetch(`${API_BASE_URL}/inventory/${inventory.id}/tokens`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ export default function ApiTokenManager({ inventory }: ApiTokenManagerProps) {
 
   const revokeToken = async (tokenId: string) => {
     try {
-      const response = await fetch(`/api/inventory/${inventory.id}/tokens/${tokenId}`, {
+      const response = await fetch(`${API_BASE_URL}/inventory/${inventory.id}/tokens/${tokenId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -114,7 +115,7 @@ export default function ApiTokenManager({ inventory }: ApiTokenManagerProps) {
   }
 
   const getApiUrl = () => {
-    return `${window.location.origin}/api/inventory/odoo-data`
+    return `${API_BASE_URL}/inventory/odoo-data`
   }
 
   if (isLoading) {
